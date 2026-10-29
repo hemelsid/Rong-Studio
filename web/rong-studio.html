@@ -624,7 +624,8 @@ function propsUI(o){
   let h=`<div class="ph"><div><div class="eyebrow">নির্বাচিত</div><div class="pt">${multi?bn(ts.length)+'টি বস্তু':(KIND[k]||'বস্তু')}</div></div><button class="ib" data-a="deselect" aria-label="নির্বাচন বাতিল">${ic('close')}</button></div>`;
   if(k==='text'){
     h+=`<div class="sec"><label class="fl"><span>লেখা</span><textarea id="pText" rows="2">${esc(t.text)}</textarea></label></div>`;
-    h+=sec('ফন্ট',`<select id="pFont" aria-label="ফন্ট">${FONTS.map(([f,l])=>`<option value="${f}" ${t.fontFamily===f?'selected':''} style="font-family:'${f}'">${f}${l==='bn'?' · বাংলা':''}</option>`).join('')}</select>
+    h+=sec('ফন্ট',`<select id="pFont" aria-label="ফন্ট">${FONTS.map(([f,l])=>`<option value="${f}" ${t.fontFamily===f?'selected':''} style="font-family:'${f}'">${f}${l==='bn'?' · বাংলা':l==='custom'?' · আপনার ফন্ট':''}</option>`).join('')}</select>
+      <button class="btn sm" data-a="addFont">${ic('plus')} নিজের ফন্ট যোগ করুন (.ttf / .otf)</button>
       ${rng('আকার','data-p="fontSize"',8*KK,420*KK,1,t.fontSize,v=>bn(Math.round(v)))}
       <div class="row"><div class="seg"><button data-a="bold" class="${(t.fontWeight>=600||t.fontWeight==='bold')?'on':''}" aria-label="মোটা"><b>ব</b></button><button data-a="italic" class="${t.fontStyle==='italic'?'on':''}" aria-label="তির্যক"><i>I</i></button><button data-a="underline" class="${t.underline?'on':''}" aria-label="নিচে দাগ"><u>U</u></button></div>
       <div class="seg">${[['left','alL'],['center','alC'],['right','alR']].map(([v,i])=>`<button data-a="align" data-v="${v}" class="${t.textAlign===v?'on':''}" aria-label="${v}">${ic(i)}</button>`).join('')}</div></div>
@@ -723,10 +724,29 @@ function setProp(p,v){
   const a=canvas.getActiveObject();if(a&&a.type==='activeSelection')a.setCoords();
   canvas.requestRenderAll();
 }
+/* custom fonts: added from a .ttf/.otf file, kept in this device's storage */
+function fontDb(){ return new Promise((res,rej)=>{ const rq=indexedDB.open('rong-fonts',1); rq.onupgradeneeded=()=>rq.result.createObjectStore('fonts'); rq.onsuccess=()=>res(rq.result); rq.onerror=()=>rej(rq.error); }); }
+async function fontStore(mode,fn){ const db=await fontDb(); return new Promise((res,rej)=>{ const tx=db.transaction('fonts',mode); const r=fn(tx.objectStore('fonts')); tx.oncomplete=()=>{db.close();res(r&&r.result)}; tx.onerror=()=>{db.close();rej(tx.error)}; }); }
+async function registerFont(family,buf){ const face=new FontFace(family,buf); await face.load(); document.fonts.add(face); if(!FONTS.some(f=>f[0]===family)) FONTS.push([family,'custom']); }
+async function addFontFile(file){
+  if(!file) return; if(!/\.(ttf|otf|woff2?)$/i.test(file.name)){ toast('ফন্ট ফাইল দিন: .ttf, .otf, .woff বা .woff2'); return; }
+  let family=file.name.replace(/\.[^.]+$/,'').replace(/[-_]+/g,' ').replace(/["'\\]/g,'').trim().slice(0,60)||'My Font';
+  if(FONTS.some(f=>f[0]===family&&f[1]!=='custom')) family+=' (আপনার)';
+  try{ const buf=await file.arrayBuffer(); await registerFont(family,buf.slice(0));
+    try{ await fontStore('readwrite',st=>st.put(buf,family)); }catch(e){}
+    if(targets().some(o=>o.type==='textbox')) await setFont(family);
+    renderPanel(); toast(`“${family}” ফন্ট যোগ হয়েছে`);
+  }catch(e){ toast('এই ফন্ট ফাইলটি খোলা গেল না। অন্য ফাইল চেষ্টা করুন।'); } }
+async function loadSavedFonts(){ try{ const db=await fontDb(); const keys=await new Promise(r=>{const q=db.transaction('fonts').objectStore('fonts').getAllKeys();q.onsuccess=()=>r(q.result||[]);q.onerror=()=>r([])});
+  for(const k of keys){ const buf=await new Promise(r=>{const q=db.transaction('fonts').objectStore('fonts').get(k);q.onsuccess=()=>r(q.result);q.onerror=()=>r(null)}); if(buf) try{ await registerFont(String(k),buf); }catch(e){} }
+  db.close(); }catch(e){} }
 async function setFont(f){
   const ts=targets().filter(o=>o.type==='textbox');
   await ensureFont(f,ts[0]&&ts[0].fontWeight);
-  ts.forEach(o=>{o.set('fontFamily',f);if(fabric.util.clearFabricFontCache)fabric.util.clearFabricFontCache(f);o.initDimensions();o.setCoords()});
+  ts.forEach(o=>{ const c=o.getCenterPoint(); o.set('fontFamily',f);if(fabric.util.clearFabricFontCache)fabric.util.clearFabricFontCache(f);o.initDimensions();
+    // a wider font should not break a line that was one line before
+    if(o.textLines.length>String(o.text).split('\n').length){ o.set('width',1e5); o.initDimensions(); o.set('width',o.calcTextWidth()+o.fontSize*0.25); o.initDimensions(); o.setPositionByOrigin(c,'center','center'); }
+    o.setCoords()});
   canvas.requestRenderAll();save();
 }
 function applyBrush(){
@@ -1199,11 +1219,11 @@ async function openProject(f){if(!f)return;
     S.isSample=false;$('#chip').hidden=true;load(d,()=>{save();toast('প্রজেক্ট খোলা হয়েছে')});
   }catch(err){toast('এটা রং স্টুডিওর প্রজেক্ট ফাইল নয়।')}}
 /* file buttons: a transparent file input sits on top of each open button, so the tap lands on the input itself (phone apps often ignore a scripted click) */
-const FILEKIND={newImg:['new','image/*'],openBase:['base','image/*'],openLayer:['layer','image/*'],openProj:['proj','.json,application/json']};
-function armFiles(root){ root.querySelectorAll('[data-a="newImg"],[data-a="openBase"],[data-a="openLayer"],[data-a="openProj"]').forEach(el=>{ if(el.querySelector('.fileov'))return; const [k,acc]=FILEKIND[el.dataset.a];
+const FILEKIND={addFont:['font','.ttf,.otf,.woff,.woff2'],newImg:['new','image/*'],openBase:['base','image/*'],openLayer:['layer','image/*'],openProj:['proj','.json,application/json']};
+function armFiles(root){ root.querySelectorAll('[data-a="addFont"],[data-a="newImg"],[data-a="openBase"],[data-a="openLayer"],[data-a="openProj"]').forEach(el=>{ if(el.querySelector('.fileov'))return; const [k,acc]=FILEKIND[el.dataset.a];
   const i=document.createElement('input');i.type='file';i.accept=acc;i.className='fileov';i.dataset.file=k;i.setAttribute('aria-label',el.textContent.trim()||'ফাইল বেছে নিন');i.tabIndex=-1;el.classList.add('filebtn');el.appendChild(i); }); }
 document.addEventListener('change',e=>{ const i=e.target; if(!i.classList||!i.classList.contains('fileov'))return; const f=i.files&&i.files[0]; i.value='';
-  if(i.dataset.file==='proj') openProject(f); else handleFile(f,i.dataset.file==='layer',i.dataset.file==='new'); });
+  if(i.dataset.file==='font') addFontFile(f); else if(i.dataset.file==='proj') openProject(f); else handleFile(f,i.dataset.file==='layer',i.dataset.file==='new'); });
 armFiles(document.querySelector('.top'));
 armFiles(document.getElementById('chip'));
 const stage=$('#stage');
@@ -1400,6 +1420,7 @@ panel.addEventListener('paste',e=>{ const box=e.target.closest&&e.target.closest
   if(it){ e.preventDefault(); e.stopPropagation(); handleFile(it.getAsFile(),false); } },true);
 async function init(){
   applySheet();layoutCanvas();renderPanel();updUndo();
+  loadSavedFonts();
   initPhotos();
   try{ const loads=[];FONTS.forEach(([f,l])=>{try{loads.push(document.fonts.load(`400 40px "${f}"`,l==='bn'?'অআকখ':'Abc'));loads.push(document.fonts.load(`700 40px "${f}"`,l==='bn'?'অআকখ':'Abc'))}catch(e){}});
     await Promise.race([Promise.allSettled(loads),sleep(3000)]); }catch(e){}
