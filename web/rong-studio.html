@@ -29,7 +29,7 @@ button{cursor:pointer}
 :focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 svg.i{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex:none}
 
-.app{height:100%;display:grid;grid-template-columns:minmax(0,1fr);grid-template-rows:auto minmax(0,1fr) auto auto;grid-template-areas:"top" "stage" "panel" "tabs"}
+.app{position:relative;height:100%;display:grid;grid-template-columns:minmax(0,1fr);grid-template-rows:auto minmax(0,1fr) auto;grid-template-areas:"top" "stage" "tabs";overflow:hidden}
 
 /* top bar */
 .top{grid-area:top;display:flex;align-items:center;gap:6px;background:var(--panel);border-bottom:1px solid var(--line);
@@ -50,24 +50,41 @@ svg.i{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stro
 
 /* stage */
 .stage-wrap{grid-area:stage;position:relative;min-height:0;background:var(--stage)}
-.stage{position:absolute;inset:0;overflow:auto;display:flex;padding:22px}
-.stage .canvas-container{margin:auto;flex:none;box-shadow:0 10px 40px var(--shadow);
+.stage{position:absolute;inset:0;overflow:hidden;touch-action:none}
+.stage .canvas-container{touch-action:none;
   background-color:var(--check);background-image:conic-gradient(var(--raise2) 25%,transparent 0 50%,var(--raise2) 0 75%,transparent 0);background-size:16px 16px}
-.stage.drop .canvas-container{outline:3px dashed var(--accent);outline-offset:6px}
-.floatbar{position:absolute;top:10px;left:50%;transform:translateX(-50%);display:flex;gap:2px;padding:4px;border-radius:12px;background:var(--panel);border:1px solid var(--line);box-shadow:0 6px 24px var(--shadow);z-index:5;max-width:calc(100% - 24px);overflow-x:auto}
+.stage.drop{outline:3px dashed var(--accent);outline-offset:-8px}
+.floatbar{position:absolute;top:10px;left:max(10px,env(safe-area-inset-left,0px));display:flex;gap:2px;padding:4px;border-radius:12px;background:var(--panel);border:1px solid var(--line);box-shadow:0 6px 24px var(--shadow);z-index:5;max-width:calc(100% - 76px);overflow-x:auto}
 .floatbar .ib{width:36px;height:36px}
 .floatbar .ib.del{color:var(--danger)}
-.zoom{position:absolute;right:max(10px,env(safe-area-inset-right,0px));bottom:10px;display:flex;align-items:center;gap:2px;padding:3px;border-radius:10px;background:var(--panel);border:1px solid var(--line);z-index:5}
+.zoom{position:absolute;right:calc(var(--sheetR,0px) + max(10px,env(safe-area-inset-right,0px)));top:10px;display:flex;flex-direction:column;align-items:center;gap:2px;padding:3px;border-radius:10px;background:var(--panel);border:1px solid var(--line);z-index:5}
 .zoom .ib{width:32px;height:32px}
-.zoom output{min-width:44px;text-align:center;font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
+.zoom output{min-width:40px;padding:2px 0;text-align:center;font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
 .chip{position:absolute;left:max(10px,env(safe-area-inset-left,0px));bottom:10px;display:flex;align-items:center;gap:8px;max-width:calc(100% - 150px);padding:6px 6px 6px 12px;border-radius:10px;background:var(--panel);border:1px solid var(--line);z-index:5;font-size:13px}
 .chip span{color:var(--muted);min-width:0}
 .chip strong{color:var(--fg);font-weight:600}
 
 /* panel */
-.panel{grid-area:panel;max-height:40vh;overflow:auto;background:var(--panel);border-top:1px solid var(--line);
-  padding-block:14px 18px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+/* tool sheet: docked (drag its top edge to resize) or floating (drag anywhere) */
+.sheet{position:absolute;z-index:20;display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);box-shadow:0 -6px 28px var(--shadow);min-height:0;min-width:0}
+.sheet.dock{border-radius:18px 18px 0 0;border-bottom:0}
+.sheet.side{border-radius:0;border-top:0;border-right:0;border-bottom:0;box-shadow:none}
+.sheet.float{border-radius:16px;box-shadow:0 14px 44px var(--shadow)}
+.sheet.drag{transition:none!important;opacity:.97}
+.sheet-head{position:relative;display:flex;align-items:center;gap:4px;padding:14px 6px 6px max(16px,env(safe-area-inset-left,0px));touch-action:none;cursor:grab;user-select:none;-webkit-user-select:none;flex:none}
+.sheet.side .sheet-head{padding-top:10px;cursor:default}
+.sheet-head:active{cursor:grabbing}
+.grip{position:absolute;left:50%;top:6px;transform:translateX(-50%);width:44px;height:5px;border-radius:3px;background:var(--line)}
+.sheet.side .grip{display:none}
+.sheet-title{flex:1;min-width:0;font-weight:600;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sheet-head .ib{width:36px;height:36px}
+.sheet-resize{position:absolute;right:0;bottom:0;width:30px;height:30px;touch-action:none;cursor:nwse-resize;display:none}
+.sheet.float .sheet-resize{display:block}
+.sheet-resize::after{content:"";position:absolute;right:7px;bottom:7px;width:10px;height:10px;border-right:2px solid var(--muted);border-bottom:2px solid var(--muted);border-radius:0 0 3px 0}
+.panel{flex:1;min-height:0;overflow:auto;overscroll-behavior:contain;
+  padding-block:4px 18px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
 .pin{display:flex;flex-direction:column;gap:18px}
+.pin>.sec:first-child>.pt:first-child{display:none}
 .sec{display:flex;flex-direction:column;gap:10px}
 .eyebrow{font-size:12px;color:var(--muted);letter-spacing:.04em;font-weight:500}
 .ph{display:flex;align-items:center;justify-content:space-between;gap:10px}
@@ -178,10 +195,10 @@ select{height:38px;width:100%}
 .toast{position:fixed;left:50%;bottom:calc(90px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:60;padding:10px 16px;border-radius:12px;background:var(--fg);color:var(--bg);font-weight:500;box-shadow:0 8px 30px var(--shadow);max-width:calc(100% - 32px);text-align:center}
 
 @media (min-width:900px){
-  .app{grid-template-columns:84px minmax(0,1fr) 340px;grid-template-rows:auto minmax(0,1fr);grid-template-areas:"top top top" "tabs stage panel"}
+  .app{grid-template-columns:84px minmax(0,1fr);grid-template-rows:auto minmax(0,1fr);grid-template-areas:"top top" "tabs stage"}
   .tabs{flex-direction:column;border-top:0;border-right:1px solid var(--line);padding:10px 8px;padding-left:max(8px,env(safe-area-inset-left,0px));overflow-y:auto}
   .tab{flex:none;padding:10px 4px}
-  .panel{max-height:none;border-top:0;border-left:1px solid var(--line);padding:18px 18px 24px;padding-right:max(18px,env(safe-area-inset-right,0px))}
+  .panel{padding:4px 18px 24px;padding-right:max(18px,env(safe-area-inset-right,0px))}
   .toast{bottom:28px}
 }
 @media (max-width:640px){ .chip{display:none} }
@@ -211,7 +228,13 @@ select{height:38px;width:100%}
     </div>
   </main>
 
-  <section class="panel" id="panel" aria-live="polite"></section>
+  <section class="sheet dock" id="sheet" aria-label="টুল প্যানেল">
+    <div class="sheet-head" id="sheetHead"><span class="grip"></span><span class="sheet-title" id="sheetTitle"></span>
+      <button class="ib" id="sheetMode" aria-label="ভাসমান করুন" title="ভাসমান করুন / নিচে বসান"></button>
+      <button class="ib" id="sheetClose" aria-label="প্যানেল বন্ধ" title="বন্ধ করুন"></button></div>
+    <div class="panel" id="panel" aria-live="polite"></div>
+    <div class="sheet-resize" id="sheetResize" aria-hidden="true"></div>
+  </section>
   <nav class="tabs" id="tabs" aria-label="টুল"></nav>
 </div>
 
@@ -281,7 +304,11 @@ const IC={
  reset:'M4 4v6h6 M4.6 10A8 8 0 1 0 7 5.3',
  wand:'M4 20L15 9 M13 7l4 4 M19 3v4 M17 5h4 M8 3v2 M7 4h2 M20 12v2 M19 13h2',
  select:'M4 8V4h4 M16 4h4v4 M20 16v4h-4 M8 20H4v-4 M11 4h2 M11 20h2 M4 11v2 M20 11v2',
- compare:'M12 3v18 M4 5h16v14H4z M4 15l4-4 4 4'
+ compare:'M12 3v18 M4 5h16v14H4z M4 15l4-4 4 4',
+ float:'M4 4h10v10H4z M10 10h10v10H10z',
+ dock:'M4 4h16v16H4z M4 14h16',
+ edit:'M4 20h4L19 9l-4-4L4 16z M13 7l4 4',
+ down2:'M6 9l6 6 6-6'
 };
 const ic=(n,cls='i')=>`<svg class="${cls}" viewBox="0 0 24 24" aria-hidden="true"><path d="${IC[n]}"/></svg>`;
 
@@ -306,27 +333,37 @@ const TABS=[['smart','স্মার্ট এডিট','wand'],['image','ছ�
 /* ---------- canvas ---------- */
 fabric.textureSize=4096;
 fabric.Object.prototype.set({transparentCorners:false,cornerColor:'#f2b42c',cornerStrokeColor:'#1b1406',borderColor:'#f2b42c',cornerSize:13,touchCornerSize:30,cornerStyle:'circle',padding:4,borderScaleFactor:1.5});
-const canvas=new fabric.Canvas('c',{preserveObjectStacking:true,backgroundColor:'#ffffff',stopContextMenu:true});
+const canvas=new fabric.Canvas('c',{preserveObjectStacking:true,backgroundColor:'#ffffff',stopContextMenu:true,selection:false,controlsAboveOverlay:true,allowTouchScrolling:false});
 const S={W:1080,H:1080,zm:1,assets:{},seq:0,tab:'smart',smart:{state:'idle'},hist:[],hi:-1,restoring:false,batch:false,isSample:false,crop:null,
   draw:{mode:'pen',color:'#f2b42c',size:14},exp:{fmt:'png',scale:1}};
 const K=()=>Math.min(S.W,S.H)/1080;
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 const base=()=>canvas.getObjects().find(o=>o.isBase);
 const addAsset=url=>{const id='a'+(++S.seq);S.assets[id]=url;return id};
 
-function fit(){
-  const st=$('#stage');const r=st.getBoundingClientRect();
-  const s=Math.min((r.width-44)/S.W,(r.height-44)/S.H);
-  const z=Math.max(0.03,s*S.zm);
-  canvas.setDimensions({width:Math.round(S.W*z),height:Math.round(S.H*z)});
-  canvas.setZoom(z);canvas.requestRenderAll();
-  $('#zLbl').textContent=bn(Math.round(z*100))+'%';
-}
-new ResizeObserver(()=>fit()).observe($('#stage'));
+/* ---------- view: the canvas fills the stage; zoom and pan move the page inside it ---------- */
+const isWide=()=>window.matchMedia('(min-width:900px)').matches;
+function visibleRect(){ const w=canvas.width,h=canvas.height; const sh=$('#sheet'); let r={x:0,y:0,w,h};
+  if(S.sheet&&S.sheet.open&&S.sheet.mode!=='float'&&sh){ if(isWide()) r.w=Math.max(120,w-sh.offsetWidth); else r.h=Math.max(120,h-sh.offsetHeight); }
+  return r; }
+function updateClip(){ canvas.clipPath=new fabric.Rect({left:0,top:0,width:S.W,height:S.H,originX:'left',originY:'top',absolutePositioned:true}); }
+function zoomLbl(){ $('#zLbl').textContent=bn(Math.round(canvas.getZoom()*100))+'%'; }
+function fitView(){ const r=visibleRect(); const pad=isWide()?36:14; const z=Math.max(0.02,Math.min((r.w-pad*2)/S.W,(r.h-pad*2)/S.H));
+  S.fitZ=z; canvas.setViewportTransform([z,0,0,z,r.x+(r.w-S.W*z)/2,r.y+(r.h-S.H*z)/2]); zoomLbl(); canvas.requestRenderAll(); }
+function layoutCanvas(){ const r=$('#stage').getBoundingClientRect(); const w=Math.max(40,Math.round(r.width)),h=Math.max(40,Math.round(r.height));
+  const ow=canvas.width,oh=canvas.height; if(w===ow&&h===oh&&S.laid) return;
+  canvas.setDimensions({width:w,height:h});
+  if(!S.laid){ S.laid=true; updateClip(); fitView(); return; }
+  const v=canvas.viewportTransform.slice(); v[4]+=(w-ow)/2; v[5]+=(h-oh)/2; canvas.setViewportTransform(v); canvas.requestRenderAll(); }
+function fit(){ layoutCanvas(); updateClip(); fitView(); }
+function zoomAt(z,px,py){ const lo=(S.fitZ||0.1)*0.25,hi=Math.max(8,(S.fitZ||1)*12); z=clamp(z,lo,hi); canvas.zoomToPoint(new fabric.Point(px,py),z); zoomLbl(); canvas.requestRenderAll(); }
+function zoomBy(f){ const r=visibleRect(); zoomAt(canvas.getZoom()*f,r.x+r.w/2,r.y+r.h/2); }
+new ResizeObserver(()=>layoutCanvas()).observe($('#stage'));
 
 /* ---------- history ---------- */
 function snapshot(inline){
   const j=canvas.toJSON(PROPS);
-  j.objects=j.objects.filter(o=>o.name!=='__crop');
+  delete j.clipPath; j.objects=j.objects.filter(o=>o.name!=='__crop');
   if(!inline) j.objects.forEach(o=>{ if(o.type==='image'&&o.assetId) o.src='asset:'+o.assetId; });
   return {W:S.W,H:S.H,c:j};
 }
@@ -512,6 +549,7 @@ function act(a){
     if(b&&idx<=1){toast('মূল ছবির নিচে নেওয়া যাবে না');return} canvas.sendBackwards(o); }
   else if(a==='front'&&o){ canvas.bringToFront(o); }
   else if(a==='back'&&o){ ts.slice().reverse().forEach(t=>{canvas.sendToBack(t)}); const b=base(); if(b) canvas.sendToBack(b); }
+  else if(a==='edit'){ openSheet(); return; }
   else if(a==='flipX'){ ts.forEach(t=>t.set('flipX',!t.flipX)); }
   else if(a==='flipY'){ ts.forEach(t=>t.set('flipY',!t.flipY)); }
   else if(a==='lock'){ const v=!ts.every(t=>t.locked); ts.forEach(t=>setLocked(t,v)); toast(v?'লক করা হয়েছে':'লক খোলা হয়েছে'); }
@@ -523,7 +561,7 @@ function updBar(){
   const o=active();const bar=$('#bar');
   if(!o||S.crop||canvas.isDrawingMode){bar.hidden=true;return}
   const locked=targets().every(t=>t.locked);
-  bar.innerHTML=[['fwd','up','সামনে আনুন'],['bwd','down','পেছনে নিন'],['dup','copy','কপি করুন'],['flipX','flip','উল্টান'],['lock',locked?'unlock':'lock',locked?'লক খুলুন':'লক করুন'],['del','trash','মুছুন']]
+  bar.innerHTML=[['edit','edit','এডিট প্যানেল'],['fwd','up','সামনে আনুন'],['bwd','down','পেছনে নিন'],['dup','copy','কপি করুন'],['flipX','flip','উল্টান'],['lock',locked?'unlock':'lock',locked?'লক খুলুন':'লক করুন'],['del','trash','মুছুন']]
     .map(([a,i,l])=>`<button class="ib${a==='del'?' del':''}" data-a="${a}" aria-label="${l}" title="${l}">${ic(i)}</button>`).join('');
   bar.hidden=false;
 }
@@ -650,7 +688,8 @@ function renderPanel(){
   if(S.crop) h=S.cropMode==='pick'?pickUI():cropUI(); else if(o&&S.tab!=='draw') h=propsUI(o); else h=tabUI(S.tab);
   p.innerHTML=`<div class="pin">${h}</div>`;p.scrollTop=sc;armFiles(p);
   if(p.querySelector('.pre canvas')) drawThumbs(o&&o.type==='image'?o:fxTarget());
-  document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('on',b.dataset.t===S.tab));
+  document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('on',b.dataset.t===S.tab&&S.sheet.open));
+  const tl=TABS.find(x=>x[0]===S.tab); $('#sheetTitle').textContent=S.crop?(S.cropMode==='pick'?'অংশ বাছাই':'ক্রপ'):(o&&S.tab!=='draw')?'এডিট':(tl?tl[1]:'');
 }
 function setTab(t){
   if(S.crop) endCrop(false);
@@ -659,7 +698,7 @@ function setTab(t){
   canvas.requestRenderAll();renderPanel();updBar();
 }
 $('#tabs').innerHTML=TABS.map(([t,l,i])=>`<button class="tab" data-t="${t}">${ic(i)}<span>${l}</span></button>`).join('');
-$('#tabs').addEventListener('click',e=>{const b=e.target.closest('.tab');if(b)setTab(b.dataset.t)});
+$('#tabs').addEventListener('click',e=>{const b=e.target.closest('.tab');if(!b)return; const t=b.dataset.t; if(t===S.tab&&S.sheet.open&&!active()&&!S.crop){ closeSheet(); return; } setTab(t); openSheet(); });
 
 /* ---------- property setting ---------- */
 function setProp(p,v){
@@ -795,8 +834,17 @@ function endCrop(apply){
   }
   canvas.discardActiveObject();canvas.requestRenderAll();renderPanel();updBar();
 }
+let checkPat=null,checkKey='';
+function backdrop(ctx){ const cs=getComputedStyle(document.documentElement); const st=cs.getPropertyValue('--stage').trim()||'#0d0c0a',c1=cs.getPropertyValue('--check').trim()||'#222',c2=cs.getPropertyValue('--raise2').trim()||'#333';
+  const key=st+c1+c2; if(key!==checkKey){ const pc=document.createElement('canvas');pc.width=pc.height=16;const x=pc.getContext('2d');x.fillStyle=c1;x.fillRect(0,0,16,16);x.fillStyle=c2;x.fillRect(0,0,8,8);x.fillRect(8,8,8,8);checkPat=ctx.createPattern(pc,'repeat');checkKey=key; }
+  const v=canvas.viewportTransform,z=v[0];
+  ctx.save(); ctx.globalCompositeOperation='destination-over'; ctx.fillStyle=checkPat; ctx.fillRect(v[4],v[5],S.W*z,S.H*z);
+  ctx.shadowColor='rgba(0,0,0,0.35)'; ctx.shadowBlur=24; ctx.shadowOffsetY=6; ctx.fillStyle=st; ctx.fillRect(v[4],v[5],S.W*z,S.H*z); ctx.shadowColor='transparent';
+  ctx.fillRect(0,0,canvas.width,canvas.height); ctx.restore(); }
 canvas.on('after:render',e=>{
-  if(!S.crop)return;const ctx=e.ctx||canvas.contextContainer;const b=S.crop.getBoundingRect();
+  const ctx=e&&e.ctx; if(!ctx||ctx!==canvas.contextContainer) return;
+  backdrop(ctx);
+  if(!S.crop)return;const b=S.crop.getBoundingRect();
   ctx.save();ctx.fillStyle=S.cropMode==='pick'?'rgba(0,0,0,0.35)':'rgba(0,0,0,0.55)';ctx.beginPath();ctx.rect(0,0,canvas.width,canvas.height);ctx.rect(b.left,b.top,b.width,b.height);ctx.fill('evenodd');
   ctx.strokeStyle='rgba(255,255,255,0.35)';ctx.lineWidth=1;ctx.beginPath();
   for(let i=1;i<3;i++){ctx.moveTo(b.left+b.width*i/3,b.top);ctx.lineTo(b.left+b.width*i/3,b.top+b.height);ctx.moveTo(b.left,b.top+b.height*i/3);ctx.lineTo(b.left+b.width,b.top+b.height*i/3)}
@@ -804,7 +852,6 @@ canvas.on('after:render',e=>{
 });
 
 /* ---------- smart edit engine ---------- */
-const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 const hex=(r,g,b)=>'#'+[r,g,b].map(v=>Math.round(clamp(v,0,255)).toString(16).padStart(2,'0')).join('');
 function medf(a,len,k){ const h=k>>1,out=new Float32Array(len*3),w=[];
   for(let c=0;c<3;c++) for(let i=0;i<len;i++){ w.length=0; const j1=Math.min(len-1,i+h); for(let j=Math.max(0,i-h);j<=j1;j++) w.push(a[j*3+c]); w.sort((p,q)=>p-q); out[i*3+c]=w[w.length>>1]; }
@@ -1124,7 +1171,7 @@ canvas.on('object:modified',e=>{ if(isCrop(e.target))return; saveSoon(); });
 ['selection:created','selection:updated','selection:cleared'].forEach(ev=>canvas.on(ev,()=>{ if(S.restoring)return; if(!S.crop) renderPanel(); updBar(); }));
 canvas.on('text:changed',e=>{ const ta=$('#pText'); if(ta&&document.activeElement!==ta) ta.value=e.target.text; });
 canvas.on('text:editing:exited',()=>{ save(); renderPanel(); });
-canvas.on('path:created',e=>{ const p=e.path,m=S.draw.mode;
+canvas.on('path:created',e=>{ if(S.dropPath){ S.dropPath=false; canvas.remove(e.path); return; } const p=e.path,m=S.draw.mode;
   p.set({kind:'draw',layerName:m==='eraser'?'ইরেজার':m==='marker'?'মার্কার':'কলমের টান'});
   if(m==='eraser') p.set({globalCompositeOperation:'destination-out',stroke:'#000000'});
   canvas.requestRenderAll(); });
@@ -1172,7 +1219,8 @@ document.addEventListener('keydown',e=>{
 function render(scale,fmt){
   if(S.crop)endCrop(false);const ao=canvas.getActiveObject();if(ao&&ao.isEditing)ao.exitEditing();canvas.discardActiveObject();
   const bg=canvas.backgroundColor;if(fmt==='jpg'&&!bg)canvas.backgroundColor='#ffffff';
-  const url=canvas.toDataURL({format:fmt==='jpg'?'jpeg':fmt,quality:0.92,multiplier:scale/canvas.getZoom()});
+  const v=canvas.viewportTransform,z=v[0];
+  const url=canvas.toDataURL({format:fmt==='jpg'?'jpeg':fmt,quality:0.92,multiplier:scale/z,left:v[4],top:v[5],width:S.W*z,height:S.H*z});
   canvas.backgroundColor=bg;canvas.requestRenderAll();return url;
 }
 function toBlob(u){const [h,b]=u.split(',');const mime=h.match(/:(.*?);/)[1];const bin=atob(b);const a=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)a[i]=bin.charCodeAt(i);return new Blob([a],{type:mime})}
@@ -1216,11 +1264,106 @@ let tT;function toast(m){const t=$('#toast');t.textContent=m;t.hidden=false;clea
 $('#undo').innerHTML=ic('undo');$('#redo').innerHTML=ic('redo');$('#dlIc').outerHTML=ic('download');
 $('#zOut').innerHTML=ic('minus');$('#zIn').innerHTML=ic('plus');$('#zFit').innerHTML=ic('fit');$('#expClose').innerHTML=ic('close');
 $('#undo').addEventListener('click',undo);$('#redo').addEventListener('click',redo);
-$('#zIn').addEventListener('click',()=>{S.zm=Math.min(6,S.zm*1.25);fit()});
-$('#zOut').addEventListener('click',()=>{S.zm=Math.max(0.2,S.zm/1.25);fit()});
-$('#zFit').addEventListener('click',()=>{S.zm=1;fit()});
+$('#zIn').addEventListener('click',()=>zoomBy(1.3));
+$('#zOut').addEventListener('click',()=>zoomBy(1/1.3));
+$('#zFit').addEventListener('click',()=>fitView());
 
 /* ---------- start ---------- */
+/* ---------- tool sheet: open/close, dock or float, drag to resize or move ---------- */
+S.sheet={open:true,mode:'dock',h:0,x:0,y:0,w:330,fh:0};
+try{ const sv=JSON.parse(localStorage.getItem('rong.sheet')||'null'); if(sv&&typeof sv==='object') Object.assign(S.sheet,sv); }catch(e){}
+function saveSheet(){ try{ localStorage.setItem('rong.sheet',JSON.stringify(S.sheet)); }catch(e){} }
+const sheetEl=$('#sheet');
+function appBox(){ return $('.app').getBoundingClientRect(); }
+function applySheet(){
+  const sh=S.sheet,A=appBox(),top=$('.top').offsetHeight,tabs=$('#tabs'),wide=isWide();
+  sheetEl.hidden=!sh.open;
+  sheetEl.classList.toggle('float',sh.mode==='float');
+  sheetEl.classList.toggle('dock',sh.mode!=='float'&&!wide);
+  sheetEl.classList.toggle('side',sh.mode!=='float'&&wide);
+  const st=sheetEl.style; st.left=st.right=st.top=st.bottom=st.width=st.height='';
+  if(sh.mode==='float'){
+    const w=clamp(sh.w||330,240,Math.max(240,A.width-16)), h=clamp(sh.fh||Math.round(A.height*0.5),160,Math.max(160,A.height-top-16));
+    const x=clamp(sh.x||(A.width-w-12),4,Math.max(4,A.width-w-4)), y=clamp(sh.y||(top+60),top+4,Math.max(top+4,A.height-h-4));
+    Object.assign(st,{left:x+'px',top:y+'px',width:w+'px',height:h+'px'});
+  } else if(wide){
+    Object.assign(st,{top:top+'px',right:'0',bottom:'0',width:'340px'});
+  } else {
+    const tabsH=tabs.offsetHeight, maxH=A.height-top-tabsH-40;
+    const h=clamp(sh.h||Math.round((A.height-top-tabsH)*0.42),110,Math.max(110,maxH));
+    Object.assign(st,{left:'0',right:'0',bottom:tabsH+'px',height:h+'px'});
+  }
+  $('.stage-wrap').style.setProperty('--sheetR',(sh.open&&sh.mode!=='float'&&wide)?'340px':'0px');
+  $('#sheetMode').innerHTML=ic(sh.mode==='float'?'dock':'float');
+  $('#sheetMode').setAttribute('aria-label',sh.mode==='float'?'নিচে বসান':'ভাসমান করুন');
+  $('#sheetClose').innerHTML=ic(!wide&&sh.mode!=='float'?'down2':'close');
+  document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('on',b.dataset.t===S.tab&&sh.open));
+}
+function openSheet(){ if(!S.sheet.open){ S.sheet.open=true; applySheet(); renderPanel(); saveSheet(); } }
+function closeSheet(){ S.sheet.open=false; applySheet(); saveSheet(); }
+$('#sheetClose').addEventListener('click',closeSheet);
+$('#sheetMode').addEventListener('click',()=>{ const sh=S.sheet; if(sh.mode==='float'){ sh.mode='dock'; } else { sh.mode='float'; const A=appBox(); sh.w=Math.min(330,Math.round(A.width*0.86)); sh.fh=Math.round(A.height*0.5); sh.x=A.width-sh.w-10; sh.y=$('.top').offsetHeight+64; } applySheet(); saveSheet(); });
+new ResizeObserver(()=>applySheet()).observe($('.app'));
+(function(){ // drag the head: docked = resize height (pull down to close), floating = move
+  let d=null;
+  const head=$('#sheetHead');
+  head.addEventListener('pointerdown',e=>{ if(e.target.closest('button'))return; const sh=S.sheet; if(sh.mode!=='float'&&isWide())return;
+    d={id:e.pointerId,sy:e.clientY,sx:e.clientX,h:sheetEl.offsetHeight,x:sheetEl.offsetLeft,y:sheetEl.offsetTop,moved:false}; head.setPointerCapture(e.pointerId); sheetEl.classList.add('drag'); });
+  head.addEventListener('pointermove',e=>{ if(!d||e.pointerId!==d.id)return; const dx=e.clientX-d.sx,dy=e.clientY-d.sy; if(Math.abs(dx)+Math.abs(dy)>3)d.moved=true;
+    const sh=S.sheet,A=appBox(),top=$('.top').offsetHeight;
+    if(sh.mode==='float'){ sh.x=clamp(d.x+dx,4-sheetEl.offsetWidth+80,A.width-80); sh.y=clamp(d.y+dy,top,A.height-50); sheetEl.style.left=sh.x+'px'; sheetEl.style.top=sh.y+'px'; }
+    else { const maxH=A.height-top-$('#tabs').offsetHeight-40; const h=clamp(d.h-dy,40,maxH); sheetEl.style.height=h+'px'; sh.h=h; } });
+  const end=e=>{ if(!d||e.pointerId!==d.id)return; sheetEl.classList.remove('drag'); const sh=S.sheet;
+    if(sh.mode!=='float'){ if(sh.h<100){ sh.h=d.h; d=null; closeSheet(); return; } }
+    d=null; applySheet(); saveSheet(); };
+  head.addEventListener('pointerup',end); head.addEventListener('pointercancel',end);
+  head.addEventListener('dblclick',()=>{ const sh=S.sheet; if(sh.mode==='float'||isWide())return; const A=appBox(),top=$('.top').offsetHeight,tb=$('#tabs').offsetHeight; const full=A.height-top-tb-40; sh.h=sheetEl.offsetHeight>full*0.7?Math.round((A.height-top-tb)*0.42):full; applySheet(); saveSheet(); });
+  // floating: resize from the corner
+  let r=null; const rz=$('#sheetResize');
+  rz.addEventListener('pointerdown',e=>{ r={id:e.pointerId,sx:e.clientX,sy:e.clientY,w:sheetEl.offsetWidth,h:sheetEl.offsetHeight}; rz.setPointerCapture(e.pointerId); e.stopPropagation(); });
+  rz.addEventListener('pointermove',e=>{ if(!r||e.pointerId!==r.id)return; const sh=S.sheet; sh.w=Math.max(240,r.w+e.clientX-r.sx); sh.fh=Math.max(160,r.h+e.clientY-r.sy); sheetEl.style.width=sh.w+'px'; sheetEl.style.height=sh.fh+'px'; });
+  const rend=e=>{ if(!r||e.pointerId!==r.id)return; r=null; applySheet(); saveSheet(); };
+  rz.addEventListener('pointerup',rend); rz.addEventListener('pointercancel',rend);
+})();
+
+/* ---------- gestures: two fingers pinch-zoom and pan, one finger on empty space pans, wheel/trackpad zooms ---------- */
+(function(){
+  const wrap=canvas.wrapperEl; let pinch=null,pan=null,down=null;
+  const rel=(t)=>{ const r=canvas.upperCanvasEl.getBoundingClientRect(); return {x:t.clientX-r.left,y:t.clientY-r.top}; };
+  function cancelFabric(){ const t=canvas._currentTransform; if(t&&t.target&&t.original){ t.target.set({left:t.original.left,top:t.original.top,scaleX:t.original.scaleX,scaleY:t.original.scaleY,angle:t.original.angle}); t.target.setCoords(); }
+    canvas._currentTransform=null; if(canvas.isDrawingMode&&canvas._isCurrentlyDrawing){ S.dropPath=true; } canvas.clearContext(canvas.contextTop); canvas.requestRenderAll(); }
+  let before=null,gesture=false;
+  wrap.addEventListener('touchstart',e=>{ if(e.touches.length===1&&!gesture){ before=canvas.getActiveObject()||null; }
+    if(gesture){ e.preventDefault(); e.stopPropagation(); }
+    if(e.touches.length>=2){ e.preventDefault(); e.stopPropagation(); cancelFabric(); pan=null; gesture=true;
+      const now=canvas.getActiveObject()||null; if(now!==before){ if(before&&canvas.getObjects().includes(before)) canvas.setActiveObject(before); else canvas.discardActiveObject(); }
+      const a=rel(e.touches[0]),b=rel(e.touches[1]); pinch={d:Math.hypot(a.x-b.x,a.y-b.y)||1,cx:(a.x+b.x)/2,cy:(a.y+b.y)/2,z:canvas.getZoom()}; } },{capture:true,passive:false});
+  wrap.addEventListener('touchmove',e=>{ if(!gesture)return; e.preventDefault(); e.stopPropagation(); if(!pinch||e.touches.length<2)return;
+      const a=rel(e.touches[0]),b=rel(e.touches[1]); const d=Math.hypot(a.x-b.x,a.y-b.y)||1,cx=(a.x+b.x)/2,cy=(a.y+b.y)/2;
+      canvas.relativePan(new fabric.Point(cx-pinch.cx,cy-pinch.cy)); zoomAt(pinch.z*d/pinch.d,cx,cy); pinch.cx=cx; pinch.cy=cy; },{capture:true,passive:false});
+  const tend=e=>{ if(!gesture)return; e.preventDefault(); e.stopPropagation(); if(e.touches.length<2) pinch=null; if(e.touches.length===0){ gesture=false; canvas.requestRenderAll(); } };
+  wrap.addEventListener('touchend',tend,{capture:true}); wrap.addEventListener('touchcancel',tend,{capture:true});
+  wrap.addEventListener('wheel',e=>{ e.preventDefault(); const p=rel(e);
+      if(e.ctrlKey||e.metaKey){ zoomAt(canvas.getZoom()*Math.exp(-clamp(e.deltaY,-60,60)*0.01),p.x,p.y); }
+      else { canvas.relativePan(new fabric.Point(-e.deltaX,-e.deltaY)); canvas.requestRenderAll(); } },{passive:false});
+  // one finger / mouse drag on empty space pans the page
+  // a first touch on an object only selects it (and lets the finger pan); it moves on the next drag once selected
+  let wasActive=null;
+  canvas.on('mouse:down:before',o=>{ wasActive=canvas.getActiveObject()||null; });
+  canvas.on('mouse:down',o=>{ const p=canvas.getPointer(o.e,true); down={x:p.x,y:p.y};
+    if(canvas.isDrawingMode||pinch) return;
+    const t=o.target, fresh=t&&t!==wasActive&&t.name!=='__crop'&&!(wasActive&&wasActive.type==='activeSelection'&&wasActive.contains&&wasActive.contains(t));
+    if(fresh&&canvas._currentTransform){ canvas._currentTransform=null; }
+    if(!t||fresh){ pan={x:p.x,y:p.y}; } });
+  canvas.on('mouse:move',o=>{ if(!pan||pinch)return; const p=canvas.getPointer(o.e,true); canvas.relativePan(new fabric.Point(p.x-pan.x,p.y-pan.y)); pan={x:p.x,y:p.y}; canvas.requestRenderAll(); });
+  canvas.on('mouse:up',()=>{ pan=null; down=null; });
+  // ignore tiny finger wobble so a tap on text does not move it
+  canvas.on('object:moving',e=>{ const t=e.transform; if(!down||!t||!t.original)return; const p=canvas.getPointer(e.e,true);
+    if(Math.hypot(p.x-down.x,p.y-down.y)<9){ e.target.set({left:t.original.left,top:t.original.top}); } else down=null; });
+  // double-tap on empty space: fit the page
+  let lastTap=0; canvas.on('mouse:up',o=>{ if(o.target||canvas.isDrawingMode)return; const n=Date.now(); if(n-lastTap<300){ fitView(); lastTap=0; } else lastTap=n; });
+})();
+
 /* photos sent through the chat (stored with the artifact) and pasted images */
 S.photos=[];
 async function initPhotos(){ try{ const db=window.claude&&window.claude.use?await window.claude.use('db'):null; if(!db) return;
@@ -1242,7 +1385,7 @@ panel.addEventListener('input',async e=>{ const box=e.target.closest&&e.target.c
 panel.addEventListener('paste',e=>{ const box=e.target.closest&&e.target.closest('[data-paste]'); if(!box) return; const it=[...(e.clipboardData?.items||[])].find(i=>i.kind==='file');
   if(it){ e.preventDefault(); e.stopPropagation(); handleFile(it.getAsFile(),false); } },true);
 async function init(){
-  renderPanel();updUndo();
+  applySheet();layoutCanvas();renderPanel();updUndo();
   initPhotos();
   try{ const loads=[];FONTS.forEach(([f,l])=>{try{loads.push(document.fonts.load(`400 40px "${f}"`,l==='bn'?'অআকখ':'Abc'));loads.push(document.fonts.load(`700 40px "${f}"`,l==='bn'?'অআকখ':'Abc'))}catch(e){}});
     await Promise.race([Promise.allSettled(loads),sleep(3000)]); }catch(e){}
