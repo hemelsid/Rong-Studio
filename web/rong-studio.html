@@ -176,6 +176,8 @@ select{height:38px;width:100%}
 .pastebox{min-height:52px;padding:12px;border:1.5px dashed var(--line);border-radius:12px;color:var(--muted);font-size:13px;line-height:1.5;overflow:hidden;max-height:90px}
 .pastebox:focus{border-color:var(--accent);outline:none;color:var(--fg)}
 .pastebox img{max-height:60px}
+/* top bar new image */
+.newimg{margin-right:4px}
 /* file pick overlay */
 .filebtn{position:relative;overflow:hidden}
 .fileov{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer;font-size:100px;z-index:2}
@@ -210,6 +212,7 @@ select{height:38px;width:100%}
 <div class="app">
   <header class="top">
     <div class="brand"><b>রং</b><span>ছবি সম্পাদক</span></div>
+    <button class="btn sm newimg" data-a="newImg" aria-label="নতুন ছবি খুলুন" title="নতুন ছবি খুলুন"><span id="newIc"></span><span class="lbl">নতুন ছবি</span></button>
     <button class="ib" id="undo" aria-label="আনডু" title="আনডু (Ctrl+Z)"></button>
     <button class="ib" id="redo" aria-label="রিডু" title="রিডু (Ctrl+Y)"></button>
     <div class="vsep"></div>
@@ -426,10 +429,12 @@ async function addImageLayer(url){
   img.set({kind:'image',assetId:id,layerName:'ছবি',fx:{},originX:'center',originY:'center',left:S.W/2,top:S.H/2,scaleX:s,scaleY:s});
   canvas.add(img);canvas.setActiveObject(img);canvas.requestRenderAll();
 }
-async function handleFile(file,asLayer){
+async function handleFile(file,asLayer,fresh){
   if(!file){return} if(file.type&&!file.type.startsWith('image/')){toast('এটা ছবির ফাইল নয়। JPG, PNG বা WebP দিন।');return}
   try{ const r=await fileToURL(file);
+    if(fresh){ S.batch=true; if(S.crop) endCrop(false); canvas.discardActiveObject(); canvas.getObjects().slice().forEach(o=>canvas.remove(o)); canvas.backgroundColor='#ffffff'; S.isSample=false; S.batch=false; }
     if(asLayer&&!S.isSample&&(base()||canvas.getObjects().length)) await addImageLayer(r.url); else await setBase(r.url,r.w,r.h);
+    if(fresh) toast('নতুন ছবি খোলা হয়েছে। আগেরটায় ফিরতে আনডু চাপুন।');
   }catch(e){ toast(/heic|heif/i.test(file.type+file.name)?'HEIC ছবি এখানে খোলা যাচ্ছে না। ফোনের সেটিংসে ক্যামেরা ফরম্যাট “Most Compatible” করুন বা স্ক্রিনশট দিন।':'ছবিটি খোলা গেল না। অন্য ফাইল চেষ্টা করুন।') }
 }
 async function rotateBase(dir){
@@ -1194,11 +1199,12 @@ async function openProject(f){if(!f)return;
     S.isSample=false;$('#chip').hidden=true;load(d,()=>{save();toast('প্রজেক্ট খোলা হয়েছে')});
   }catch(err){toast('এটা রং স্টুডিওর প্রজেক্ট ফাইল নয়।')}}
 /* file buttons: a transparent file input sits on top of each open button, so the tap lands on the input itself (phone apps often ignore a scripted click) */
-const FILEKIND={openBase:['base','image/*'],openLayer:['layer','image/*'],openProj:['proj','.json,application/json']};
-function armFiles(root){ root.querySelectorAll('[data-a="openBase"],[data-a="openLayer"],[data-a="openProj"]').forEach(el=>{ if(el.querySelector('.fileov'))return; const [k,acc]=FILEKIND[el.dataset.a];
+const FILEKIND={newImg:['new','image/*'],openBase:['base','image/*'],openLayer:['layer','image/*'],openProj:['proj','.json,application/json']};
+function armFiles(root){ root.querySelectorAll('[data-a="newImg"],[data-a="openBase"],[data-a="openLayer"],[data-a="openProj"]').forEach(el=>{ if(el.querySelector('.fileov'))return; const [k,acc]=FILEKIND[el.dataset.a];
   const i=document.createElement('input');i.type='file';i.accept=acc;i.className='fileov';i.dataset.file=k;i.setAttribute('aria-label',el.textContent.trim()||'ফাইল বেছে নিন');i.tabIndex=-1;el.classList.add('filebtn');el.appendChild(i); }); }
 document.addEventListener('change',e=>{ const i=e.target; if(!i.classList||!i.classList.contains('fileov'))return; const f=i.files&&i.files[0]; i.value='';
-  if(i.dataset.file==='proj') openProject(f); else handleFile(f,i.dataset.file==='layer'); });
+  if(i.dataset.file==='proj') openProject(f); else handleFile(f,i.dataset.file==='layer',i.dataset.file==='new'); });
+armFiles(document.querySelector('.top'));
 armFiles(document.getElementById('chip'));
 const stage=$('#stage');
 stage.addEventListener('dragover',e=>{e.preventDefault();stage.classList.add('drop')});
@@ -1269,7 +1275,7 @@ $('#projSave2').addEventListener('click',saveProject);
 
 /* ---------- toast & top bar ---------- */
 let tT;function toast(m){const t=$('#toast');t.textContent=m;t.hidden=false;clearTimeout(tT);tT=setTimeout(()=>t.hidden=true,2600)}
-$('#undo').innerHTML=ic('undo');$('#redo').innerHTML=ic('redo');$('#dlIc').outerHTML=ic('download');
+$('#newIc').outerHTML=ic('addimg');$('#undo').innerHTML=ic('undo');$('#redo').innerHTML=ic('redo');$('#dlIc').outerHTML=ic('download');
 $('#zOut').innerHTML=ic('minus');$('#zIn').innerHTML=ic('plus');$('#zFit').innerHTML=ic('fit');$('#expClose').innerHTML=ic('close');
 $('#undo').addEventListener('click',undo);$('#redo').addEventListener('click',redo);
 $('#zIn').addEventListener('click',()=>zoomBy(1.3));

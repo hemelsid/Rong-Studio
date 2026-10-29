@@ -4,7 +4,7 @@
 
 <p align="center">ছবির ভেতরের লেখায় চাপ দিন, আর সরাসরি বদলে ফেলুন।<br>বাংলা ও ইংরেজি লেখা পড়তে পারে, ইন্টারনেট ছাড়াই চলে।</p>
 
-<p align="center"><a href="https://github.com/hemelsid/Rong-Studio/raw/main/releases/RongStudio-v1.3.apk"><b>⬇ সর্বশেষ অ্যাপ ডাউনলোড করুন (v1.3)</b></a></p>
+<p align="center"><a href="https://github.com/hemelsid/Rong-Studio/raw/main/releases/RongStudio-v1.4.apk"><b>⬇ সর্বশেষ অ্যাপ ডাউনলোড করুন (v1.4)</b></a></p>
 
 <p align="center">
   <img src="docs/smart-edit.png" width="240" alt="স্মার্ট এডিট: ছবির লেখা আলাদা করা">
@@ -43,7 +43,8 @@
 
 | ভার্সন | ডাউনলোড | যা বদলেছে |
 |---|---|---|
-| **v1.3** (সর্বশেষ) | [APK, ৯ MB](https://github.com/hemelsid/Rong-Studio/raw/main/releases/RongStudio-v1.3.apk) | খুঁজে পাওয়া লেখা আসল মাপের কাছাকাছি বসে। পাশের তারা বা আইকনের জন্য লেখা আর বড় হয়ে যায় না। প্যানেল খুললে উপর থেকে শুরু হয়। |
+| **v1.4** (সর্বশেষ) | [APK, ৯ MB](https://github.com/hemelsid/Rong-Studio/raw/main/releases/RongStudio-v1.4.apk) | উপরের বারে “নতুন ছবি” বোতাম: আগের কাজ সরিয়ে নতুন ছবি খোলে, আনডু দিয়ে ফেরা যায়। |
+| v1.3 | [APK, ৯ MB](https://github.com/hemelsid/Rong-Studio/raw/main/releases/RongStudio-v1.3.apk) | খুঁজে পাওয়া লেখা আসল মাপের কাছাকাছি বসে। পাশের তারা বা আইকনের জন্য লেখা আর বড় হয়ে যায় না। প্যানেল খুললে উপর থেকে শুরু হয়। |
 | v1.2 | [APK, ৯ MB](https://github.com/hemelsid/Rong-Studio/raw/main/releases/RongStudio-v1.2.apk) | পুরো স্ক্রিন ক্যানভাস, দুই আঙুলে জুম, প্রথম চাপে লেখা নড়ে না, টেনে সরানো ও ভাসমান প্যানেল। |
 | v1.1 | [APK, ৯ MB](https://github.com/hemelsid/Rong-Studio/raw/main/releases/RongStudio-v1.1.apk) | Android 7 থেকে চলে। যেসব ফোনে “App not installed” আসত সেখানে ইনস্টল হয়। |
 
