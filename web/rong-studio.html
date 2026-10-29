@@ -323,7 +323,7 @@ const FONT_HINT='Hind Siliguri (clean Bengali sans, default for Bengali body tex
 if(window.Intl&&Intl.Segmenter){ const seg=new Intl.Segmenter(undefined,{granularity:'grapheme'}); fabric.util.string.graphemeSplit=t=>Array.from(seg.segment(t),s=>s.segment); }
 const SW=['#ffffff','#111111','#f2b42c','#e4572e','#d7263d','#ff8fab','#7b2cbf','#2e86ab','#1b998b','#8ac926','#6b4423','#9aa0a6'];
 const KIND={text:'লেখা',emoji:'ইমোজি',shape:'আকার',line:'রেখা',image:'ছবি',draw:'আঁকা'};
-const PROPS=['found','origAsset','name','kind','assetId','isBase','locked','fx','layerName','selectable','evented','hasControls','lockMovementX','lockMovementY','lockScalingX','lockScalingY','lockRotation','perPixelTargetFind','paintFirst','strokeUniform'];
+const PROPS=['hintIds','fontRank','found','origAsset','name','kind','assetId','isBase','locked','fx','layerName','selectable','evented','hasControls','lockMovementX','lockMovementY','lockScalingX','lockScalingY','lockRotation','perPixelTargetFind','paintFirst','strokeUniform'];
 const PRESETS={
  'মূল':{}, 'উজ্জ্বল':{saturation:30,contrast:15,vibrance:20}, 'উষ্ণ':{warmth:55,saturation:10,brightness:3},
  'শীতল':{warmth:-50,contrast:6}, 'সাদাকালো':{gray:1,contrast:20}, 'পুরোনো':{sepia:1,contrast:-10,brightness:5,noise:12},
@@ -383,7 +383,7 @@ let saveT;const saveSoon=()=>{clearTimeout(saveT);saveT=setTimeout(save,220)};
 function load(d,cb){
   S.restoring=true;S.W=d.W;S.H=d.H;
   d.c.objects.forEach(o=>{ if(typeof o.src==='string'&&o.src.startsWith('asset:')) o.src=S.assets[o.src.slice(6)]; });
-  canvas.loadFromJSON(d.c,()=>{ canvas.getObjects().forEach(o=>{ if(o.type==='image'&&o.fx&&Object.keys(o.fx).length){o.filters=buildFilters(o.fx);o.applyFilters()} }); fit();canvas.renderAll();S.restoring=false;renderPanel();updBar();cb&&cb(); });
+  canvas.loadFromJSON(d.c,()=>{ syncHints(); canvas.getObjects().forEach(o=>{ if(o.type==='image'&&o.fx&&Object.keys(o.fx).length){o.filters=buildFilters(o.fx);o.applyFilters()} }); fit();canvas.renderAll();S.restoring=false;renderPanel();updBar();cb&&cb(); });
 }
 function undo(){ if(S.crop) endCrop(false); if(S.hi>0){S.hi--;load(JSON.parse(S.hist[S.hi]));updUndo();} }
 function redo(){ if(S.hi<S.hist.length-1){S.hi++;load(JSON.parse(S.hist[S.hi]));updUndo();} }
@@ -421,6 +421,7 @@ async function setBase(url,w,h,opts={}){
   setLocked(img,true);
   canvas.insertAt(img,0);coverBase();
   S.batch=false;canvas.discardActiveObject();fit();save();
+  S.hints=[];
   if(!opts.sample){ S.smart={state:'idle'}; $('#chip').hidden=true; setTab('smart'); detect(); } else renderPanel();
 }
 async function addImageLayer(url){
@@ -438,6 +439,7 @@ async function handleFile(file,asLayer,fresh){
   }catch(e){ toast(/heic|heif/i.test(file.type+file.name)?'HEIC ছবি এখানে খোলা যাচ্ছে না। ফোনের সেটিংসে ক্যামেরা ফরম্যাট “Most Compatible” করুন বা স্ক্রিনশট দিন।':'ছবিটি খোলা গেল না। অন্য ফাইল চেষ্টা করুন।') }
 }
 async function rotateBase(dir){
+  S.hints=[];
   const b=base();if(!b){toast('আগে একটি ছবি খুলুন');return}
   const el=await himg(S.assets[b.assetId]);const c=document.createElement('canvas');c.width=el.naturalHeight;c.height=el.naturalWidth;
   const x=c.getContext('2d');x.translate(c.width/2,c.height/2);x.rotate(dir*Math.PI/2);x.drawImage(el,-el.naturalWidth/2,-el.naturalHeight/2);
@@ -460,7 +462,12 @@ async function makeSample(){
   const T=(str,font,size,weight,color,cx,base,align='center',meta={})=>{
     x.font=`${weight} ${size}px "${font}"`;x.fillStyle=color;x.textAlign=align;x.textBaseline='alphabetic';x.fillText(str,cx,base);
     const m=x.measureText(str);const x0=cx-m.actualBoundingBoxLeft,x1=cx+m.actualBoundingBoxRight,y0=base-m.actualBoundingBoxAscent,y1=base+m.actualBoundingBoxDescent;
-    items.texts.push({text:str,lines:1,font,weight,italic:false,align,color,px:{x0,y0,x1,y1},...meta});
+    // one entry per word, like the text reader gives, so the demo behaves like a real photo
+    const start=align==='center'?cx-m.width/2:align==='right'?cx-m.width:cx; let pre='';
+    x.textAlign='left';
+    const words=str.split(' ').map(w=>{ const a=start+x.measureText(pre).width, wm=x.measureText(w); pre+=w+' ';
+      return {text:w,bbox:{x0:a-wm.actualBoundingBoxLeft,y0,x1:a+wm.actualBoundingBoxRight,y1}}; });
+    items.texts.push({text:str,words,lines:1,font,weight,italic:false,align,color,px:{x0,y0,x1,y1},...meta});
   };
   // logo
   const lx=150,ly=150,lr=58;x.fillStyle='#f2b42c';x.beginPath();x.arc(lx,ly,lr,0,Math.PI*2);x.fill();
@@ -624,6 +631,7 @@ function propsUI(o){
   let h=`<div class="ph"><div><div class="eyebrow">নির্বাচিত</div><div class="pt">${multi?bn(ts.length)+'টি বস্তু':(KIND[k]||'বস্তু')}</div></div><button class="ib" data-a="deselect" aria-label="নির্বাচন বাতিল">${ic('close')}</button></div>`;
   if(k==='text'){
     h+=`<div class="sec"><label class="fl"><span>লেখা</span><textarea id="pText" rows="2">${esc(t.text)}</textarea></label></div>`;
+    if(t.fontRank&&t.fontRank.length) h+=sec('ছবির লেখার সাথে সবচেয়ে মেলে',`<div class="row" style="gap:6px">${t.fontRank.map(([f,w],i)=>`<button class="btn sm${t.fontFamily===f&&+t.fontWeight===+w?' primary':''}" data-a="fontPick" data-v="${esc(f)}|${w}" style="font-family:'${esc(f)}';font-weight:${w}">${i===0?'★ ':''}${esc(f)} ${bn(w)}</button>`).join('')}</div>`);
     h+=sec('ফন্ট',`<select id="pFont" aria-label="ফন্ট">${FONTS.map(([f,l])=>`<option value="${f}" ${t.fontFamily===f?'selected':''} style="font-family:'${f}'">${f}${l==='bn'?' · বাংলা':l==='custom'?' · আপনার ফন্ট':''}</option>`).join('')}</select>
       <button class="btn sm" data-a="addFont">${ic('plus')} নিজের ফন্ট যোগ করুন (.ttf / .otf)</button>
       ${rng('আকার','data-p="fontSize"',8*KK,420*KK,1,t.fontSize,v=>bn(Math.round(v)))}
@@ -816,6 +824,9 @@ panel.addEventListener('click',async e=>{
     case 'llock':{const o=canvas.item(+v);if(!o)break;setLocked(o,!o.locked);canvas.requestRenderAll();save();renderPanel();break}
     case 'detect':detect(true);break;
     case 'photo':loadPhoto(v);break;
+    case 'allLines':convertAllLines();break;
+    case 'togHints':S.showHints=!S.showHints;canvas.requestRenderAll();renderPanel();break;
+    case 'fontPick':{const [f,w]=v.split('|');targets().forEach(o=>o.set('fontWeight',+w));await setFont(f);renderPanel();break}
     case 'pick':if(!base()){toast('আগে একটি ছবি খুলুন');break}startCrop('pick');break;
     case 'pickText':case 'pickGraphic':case 'pickErase':endCrop(a);break;
     case 'fsel':{const o=canvas.item(+v);if(o){canvas.setActiveObject(o);canvas.requestRenderAll()}break}
@@ -870,7 +881,7 @@ function backdrop(ctx){ const cs=getComputedStyle(document.documentElement); con
   ctx.fillRect(0,0,canvas.width,canvas.height); ctx.restore(); }
 canvas.on('after:render',e=>{
   const ctx=e&&e.ctx; if(!ctx||ctx!==canvas.contextContainer) return;
-  backdrop(ctx);
+  backdrop(ctx); drawHints(ctx);
   if(!S.crop)return;const b=S.crop.getBoundingRect();
   ctx.save();ctx.fillStyle=S.cropMode==='pick'?'rgba(0,0,0,0.35)':'rgba(0,0,0,0.55)';ctx.beginPath();ctx.rect(0,0,canvas.width,canvas.height);ctx.rect(b.left,b.top,b.width,b.height);ctx.fill('evenodd');
   ctx.strokeStyle='rgba(255,255,255,0.35)';ctx.lineWidth=1;ctx.beginPath();
@@ -931,16 +942,30 @@ function inpaintOnion(an,mu){ const {rw:w,rh:h}=an,d=an.img.data,m=mu.slice(); l
     if(!fill.length) break;
     for(let k=0;k<fill.length;k+=4){ const i=fill[k]; d[i*4]=fill[k+1];d[i*4+1]=fill[k+2];d[i*4+2]=fill[k+3];d[i*4+3]=255; m[i]=0; }
     un=next; } }
-function harmonic(an,mu,noise){ // smooth (Laplace) fill of masked pixels from their surroundings, Coons patch as the start
-  fillCoons(an,mu); const {rw:w,rh:h}=an,d=an.img.data,idx=[];
+function harmonic(an,mu,noise,avoid){ // smooth (Laplace) fill of masked pixels from their surroundings, Coons patch as the start
+  if(avoid) peelFill(an,mu,avoid); else fillCoons(an,mu); const {rw:w,rh:h}=an,d=an.img.data,idx=[];
   for(let i=0;i<w*h;i++) if(mu[i]){ const x=i%w,y=(i/w)|0; if(x>0&&y>0&&x<w-1&&y<h-1) idx.push(i); }
   if(!idx.length) return; const n=idx.length; const f=[new Float32Array(w*h),new Float32Array(w*h),new Float32Array(w*h)];
   for(let i=0;i<w*h;i++){f[0][i]=d[i*4];f[1][i]=d[i*4+1];f[2][i]=d[i*4+2]}
-  const om=1.85,iters=Math.min(400,40+Math.round(Math.sqrt(n)*1.2));
+  const om=1.85,iters=Math.min(avoid?700:400,40+Math.round(Math.sqrt(n)*(avoid?2:1.2)));
+  const ok=avoid?(j=>mu[j]||!avoid[j]):null; // neighbouring letters are not background: leave them out of the average
   for(let it=0;it<iters;it++){ let ch=0;
-    for(let c=0;c<3;c++){ const a=f[c]; for(let k=0;k<n;k++){ const i=idx[k]; const v=(a[i-1]+a[i+1]+a[i-w]+a[i+w])*0.25; const dv=v-a[i]; a[i]+=om*dv; if(dv>ch||-dv>ch) ch=Math.abs(dv); } }
+    for(let c=0;c<3;c++){ const a=f[c]; for(let k=0;k<n;k++){ const i=idx[k]; let v;
+      if(ok){ let sum=0,cnt=0; if(ok(i-1)){sum+=a[i-1];cnt++} if(ok(i+1)){sum+=a[i+1];cnt++} if(ok(i-w)){sum+=a[i-w];cnt++} if(ok(i+w)){sum+=a[i+w];cnt++} if(!cnt) continue; v=sum/cnt; }
+      else v=(a[i-1]+a[i+1]+a[i-w]+a[i+w])*0.25;
+      const dv=v-a[i]; a[i]+=om*dv; if(dv>ch||-dv>ch) ch=Math.abs(dv); } }
     if(ch<0.08) break; }
   for(let k=0;k<n;k++){ const i=idx[k]; const z=noise?(Math.random()+Math.random()+Math.random()-1.5)*noise:0; d[i*4]=f[0][i]+z;d[i*4+1]=f[1][i]+z;d[i*4+2]=f[2][i]+z;d[i*4+3]=255; } }
+function peelFill(an,mu,avoid){ // grow the background inward from the hole's edge, never sampling neighbouring letters
+  const {rw:w,rh:h}=an,d=an.img.data,todo=mu.slice(); let front=[]; for(let i=0;i<w*h;i++) if(todo[i]) front.push(i);
+  const src=j=>!todo[j]&&!(avoid[j]&&!mu[j]);
+  for(let guard=0;front.length&&guard<4000;guard++){ const fill=[],next=[];
+    for(const i of front){ const x=i%w,y=(i/w)|0; let r=0,g=0,b=0,c=0;
+      for(let dy=-1;dy<=1;dy++){ const yy=y+dy; if(yy<0||yy>=h)continue; for(let dx=-1;dx<=1;dx++){ if(!dx&&!dy)continue; const xx=x+dx; if(xx<0||xx>=w)continue; const j=yy*w+xx; if(!src(j))continue; r+=d[j*4];g+=d[j*4+1];b+=d[j*4+2];c++; } }
+      if(c) fill.push(i,r/c,g/c,b/c); else next.push(i); }
+    if(!fill.length){ fillCoons(an,todo); break; }
+    for(let k=0;k<fill.length;k+=4){ const i=fill[k]; d[i*4]=fill[k+1];d[i*4+1]=fill[k+2];d[i*4+2]=fill[k+3];d[i*4+3]=255; todo[i]=0; }
+    front=next; } }
 function fillCoons(an,mu){ const d=an.img.data; for(let i=0;i<an.rw*an.rh;i++) if(mu[i]){ d[i*4]=an.bg[i*3];d[i*4+1]=an.bg[i*3+1];d[i*4+2]=an.bg[i*3+2];d[i*4+3]=255; } }
 function smooth(an,mu,passes){ const {rw:w,rh:h}=an,d=an.img.data;
   for(let p=0;p<passes;p++){ const cp=new Uint8ClampedArray(d);
@@ -950,7 +975,7 @@ function smooth(an,mu,passes){ const {rw:w,rh:h}=an,d=an.img.data;
 function processText(work,it){
   let box=it.px, an=null;
   for(let pass=0;pass<2;pass++){
-    an=analyze(work.x,work.w,work.h,box,it.padF??0.4); if(!an||!an.tb) break;
+    an=analyze(work.x,work.w,work.h,it.clip&&it.line?{x0:it.line.x0,y0:it.line.y0,x1:it.line.x1,y1:it.line.y1}:box,it.clip?0.18:(it.padF??0.4)); if(!an) break; if(it.clip) clipAn(an,it.clip); if(!an.tb) break; if(it.clip) break;
     const t=an.tb,e=2; const grow={x0:t.x0<=e&&an.rx>0,y0:t.y0<=e&&an.ry>0,x1:t.x1>=an.rw-1-e&&an.rx+an.rw<work.w,y1:t.y1>=an.rh-1-e&&an.ry+an.rh<work.h};
     if(pass||!(grow.x0||grow.y0||grow.x1||grow.y1)) break;
     const p=an.pad; box={x0:box.x0-(grow.x0?p:0),y0:box.y0-(grow.y0?p:0),x1:box.x1+(grow.x1?p:0),y1:box.y1+(grow.y1?p:0)};
@@ -962,14 +987,57 @@ function processText(work,it){
       const g=it.px,mh=(g.y1-g.y0)*0.15,mw=(g.y1-g.y0)*0.3;
       tb={x0:Math.max(tb.x0,g.x0-mw),y0:Math.max(tb.y0,g.y0-mh),x1:Math.min(tb.x1,g.x1+mw),y1:Math.min(tb.y1,g.y1+mh)};
       if(tb.x1-tb.x0<4||tb.y1-tb.y0<4) tb=g; }
+    it.ink=inkGrid(an,tb);
     const lineH=(tb.y1-tb.y0)/Math.max(1,it.lines||1);
     const mu=dilate(an.mask,an.rw,an.rh,Math.max(2,Math.round(lineH*0.07)));
-    harmonic(an,mu,Math.min(10,an.tex*0.8)); work.x.putImageData(an.img,an.rx,an.ry);
+    harmonic(an,mu,Math.min(10,an.tex*0.8),an.fullMask?dilate(an.fullMask,an.rw,an.rh,Math.max(2,Math.round(lineH*0.07))):null); work.x.putImageData(an.img,an.rx,an.ry);
     if(!it.trustColor&&!it.outline&&an.color) color=an.color;
     density=an.cnt/Math.max(1,(tb.x1-tb.x0)*(tb.y1-tb.y0));
   }
   return {...it,tb,density,color:color||'#ffffff'};
 }
+function clipAn(an,box){ // keep only ink inside box (image px); used for single words so neighbours stay untouched
+  an.fullMask=an.mask.slice();
+  const x0=Math.floor(box.x0-an.rx),x1=Math.ceil(box.x1-an.rx),y0=Math.floor(box.y0-an.ry),y1=Math.ceil(box.y1-an.ry);
+  let cnt=0,a=an.rw,b=an.rh,c=-1,d=-1;
+  for(let y=0;y<an.rh;y++) for(let x=0;x<an.rw;x++){ const i=y*an.rw+x; if(!an.mask[i])continue;
+    if(x<x0||x>x1||y<y0||y>y1){an.mask[i]=0;continue} cnt++; if(x<a)a=x;if(x>c)c=x;if(y<b)b=y;if(y>d)d=y; }
+  an.cnt=cnt; an.tb=cnt?{x0:a,y0:b,x1:c,y1:d}:null;
+  if(cnt){ let r=0,g=0,bl=0,m=0; const dd=an.img.data; const ds=[]; for(let i=0;i<an.rw*an.rh;i++) if(an.mask[i]) ds.push(an.dist[i]); ds.sort((p,q)=>p-q); const cut=ds[Math.floor(ds.length*0.55)];
+    for(let i=0;i<an.rw*an.rh;i++) if(an.mask[i]&&an.dist[i]>=cut){r+=dd[i*4];g+=dd[i*4+1];bl+=dd[i*4+2];m++} if(m) an.color=hex(r/m,g/m,bl/m); } }
+function inkGrid(an,tb){ // the text's ink shape, shrunk to a small grid, for comparing against fonts
+  const x0=Math.round(tb.x0-an.rx),y0=Math.round(tb.y0-an.ry),w=Math.max(1,Math.round(tb.x1-tb.x0)),h=Math.max(1,Math.round(tb.y1-tb.y0));
+  const H=32,W=clamp(Math.round(H*w/h),4,320),g=new Uint8Array(W*H);
+  for(let gy=0;gy<H;gy++) for(let gx=0;gx<W;gx++){ const sx0=x0+Math.floor(gx*w/W),sx1=x0+Math.max(Math.floor(gx*w/W)+1,Math.floor((gx+1)*w/W)),sy0=y0+Math.floor(gy*h/H),sy1=y0+Math.max(Math.floor(gy*h/H)+1,Math.floor((gy+1)*h/H));
+    let on=0,tot=0; for(let y=sy0;y<sy1;y++) for(let x=sx0;x<sx1;x++){ if(x<0||y<0||x>=an.rw||y>=an.rh) continue; tot++; on+=an.mask[y*an.rw+x]; }
+    g[gy*W+gx]=tot&&on/tot>0.3?1:0; }
+  return {g,W,H,aspect:w/h}; }
+const fontWeights=f=>{ const ws=new Set(); document.fonts.forEach(ff=>{ if(ff.family.replace(/["']/g,'')===f&&ff.style!=='italic'){ const n=parseInt(ff.weight)||400; if(n>=300&&n<=900) ws.add(n); } }); return ws.size?[...ws].sort():[400]; };
+async function rankFonts(text,ink){ // render the same text in every font and weight, keep the ones whose shape matches the photo best
+  text=String(text).split('\n')[0].trim(); if(!text||!ink) return [];
+  const bnT=/[\u0980-\u09FF]/.test(text); const cands=[];
+  for(const [f,l] of FONTS){ if(bnT&&l==='en') continue; for(const w of fontWeights(f)) cands.push([f,w]); }
+  await Promise.race([Promise.all(cands.map(([f,w])=>document.fonts.load(`${w} 60px "${f}"`,text).catch(()=>{}))),sleep(3000)]);
+  const c=rankFonts.c||(rankFonts.c=document.createElement('canvas')), x=c.getContext('2d',{willReadFrequently:true});
+  const gc=rankFonts.g||(rankFonts.g=document.createElement('canvas')), gx=gc.getContext('2d',{willReadFrequently:true});
+  gc.width=ink.W; gc.height=ink.H; const out=[];
+  for(const [f,w] of cands){
+    x.font=`${w} 100px "${f}"`; const mw=Math.ceil(x.measureText(text).width)+60; c.width=Math.min(4000,mw); c.height=180;
+    x.font=`${w} 100px "${f}"`; x.fillStyle='#000'; x.textBaseline='alphabetic'; x.fillText(text,30,130);
+    const d=x.getImageData(0,0,c.width,c.height).data; let a=c.width,b=c.height,e=-1,h=-1;
+    for(let y=0;y<c.height;y++) for(let xx=0;xx<c.width;xx++) if(d[(y*c.width+xx)*4+3]>110){ if(xx<a)a=xx;if(xx>e)e=xx;if(y<b)b=y;if(y>h)h=y; }
+    if(e<0) continue; const bw=e-a+1,bh=h-b+1;
+    gx.clearRect(0,0,ink.W,ink.H); gx.drawImage(c,a,b,bw,bh,0,0,ink.W,ink.H); const gd=gx.getImageData(0,0,ink.W,ink.H).data;
+    // shape match with one-cell tolerance both ways (F1), so tiny shifts from photo blur do not decide the result
+    const W=ink.W,H=ink.H,cg=new Uint8Array(W*H); for(let i=0;i<W*H;i++) cg[i]=gd[i*4+3]>100?1:0;
+    const near=(g,i)=>{ const x=i%W,y=(i/W)|0; for(let dy=-1;dy<=1;dy++){ const yy=y+dy; if(yy<0||yy>=H)continue; for(let dx=-1;dx<=1;dx++){ const xx=x+dx; if(xx<0||xx>=W)continue; if(g[yy*W+xx]) return 1; } } return 0; };
+    let cOn=0,cHit=0,oOn=0,oHit=0; for(let i=0;i<W*H;i++){ if(cg[i]){cOn++; cHit+=near(ink.g,i);} if(ink.g[i]){oOn++; oHit+=near(cg,i);} }
+    const prec=cOn?cHit/cOn:0, rec=oOn?oHit/oOn:0, f1=prec+rec?2*prec*rec/(prec+rec):0;
+    let inter=0,uni=0; for(let i=0;i<W*H;i++){ inter+=cg[i]&ink.g[i]; uni+=cg[i]|ink.g[i]; }
+    const fill=(cOn-oOn)/Math.max(1,oOn); // too bold or too thin
+    const score=0.6*f1+0.4*(uni?inter/uni:0)-0.35*Math.abs(Math.log((bw/bh)/ink.aspect))-0.15*Math.abs(fill)-(!bnT&&FONTS.find(z=>z[0]===f)?.[1]==='bn'?0.03:0);
+    out.push({font:f,weight:w,score}); }
+  return out.sort((p,q)=>q.score-p.score); }
 function processGraphic(work,it){
   const area=(it.px.x1-it.px.x0)*(it.px.y1-it.px.y0); if(area>work.w*work.h*0.6||area<16) return null;
   const an=analyze(work.x,work.w,work.h,it.px,it.padF??0.12); if(!an||!an.tb) return null;
@@ -999,13 +1067,15 @@ async function getBaseWork(b){ const url=S.assets[b.assetId]; const el=await him
 async function commitBase(b,work){ const url=work.c.toDataURL(work.png?'image/png':'image/jpeg',0.95); const el=await himg(url); const id=addAsset(url);
   if(!b.origAsset) b.origAsset=b.assetId; b.setElement(el); b.assetId=id; b.filters=buildFilters(b.fx); b.applyFilters(); b.setCoords(); canvas.requestRenderAll(); }
 async function makeText(sp,m){
+  let rank=[];
+  if(!sp.fontKnown&&sp.ink){ try{ rank=await rankFonts(sp.text,sp.ink); }catch(e){} if(rank[0]){ sp.font=rank[0].font; sp.weight=rank[0].weight; sp.autoFont=false; } }
   if(sp.autoFont){ const bnT=/[\u0980-\u09FF]/.test(sp.text),dn=sp.density||0;
     [sp.font,sp.weight]=bnT?(dn>0.33?['Baloo Da 2',800]:dn>0.24?['Hind Siliguri',700]:['Hind Siliguri',500]):(dn>0.3?['Montserrat',800]:dn>0.22?['Poppins',600]:['Poppins',400]); }
   const font=FONTS.some(f=>f[0]===sp.font)?sp.font:(/[\u0980-\u09FF]/.test(sp.text)?'Hind Siliguri':'Montserrat');
   const weight=clamp(Math.round((+sp.weight||400)/100)*100,300,900);
   await ensureFont(font,weight);
   const L=Math.max(1,sp.lines||String(sp.text).split('\n').length);
-  const tw=(sp.tb.x1-sp.tb.x0)*m.s, th=(sp.tb.y1-sp.tb.y0)*m.s;
+  const tw=(sp.tb.x1-sp.tb.x0)*m.s, th=((sp.line?sp.line.y1-sp.line.y0:sp.tb.y1-sp.tb.y0))*m.s;
   const bnText=/[ঀ-৿]/.test(sp.text), capsOnly=!bnText&&sp.text===sp.text.toUpperCase();
   const glyph=bnText?0.95:capsOnly?0.72:0.9;
   let fs=Math.max(6,(th/L)/glyph);
@@ -1015,10 +1085,13 @@ async function makeText(sp,m){
   t.set({lineHeight:lh()});t.initDimensions();
   const mctx=(makeText._c||(makeText._c=document.createElement('canvas').getContext('2d')));
   const shaped=f=>{ mctx.font=`${sp.italic?'italic ':''}${weight} ${f}px "${font}"`; return Math.max(...String(sp.text).split('\n').map(l=>mctx.measureText(l).width)); };
-  const nat=shaped(fs); if(nat>0){ fs*=clamp(tw/nat,0.7,1.45); t.set({fontSize:fs}); t.set({lineHeight:lh()}); t.initDimensions(); }
+  const nat=shaped(fs); if(nat>0){ fs*=sp.line?clamp(tw/nat,0.85,1.18):clamp(tw/nat,0.7,1.45); t.set({fontSize:fs}); t.set({lineHeight:lh()}); t.initDimensions(); }
   t.set({width:Math.max(t.calcTextWidth(),shaped(fs))+fs*0.25}); t.initDimensions();
   if(sp.outline&&/^#[0-9a-f]{6}$/i.test(sp.outline)) t.set({stroke:sp.outline,strokeWidth:fs*0.07});
-  t.set({originX:'center',originY:'center',left:m.x((sp.tb.x0+sp.tb.x1)/2),top:m.y((sp.tb.y0+sp.tb.y1)/2),kind:'text',found:true,layerName:'লেখা'});
+  const cy=sp.line?(sp.line.y0+sp.line.y1)/2:(sp.tb.y0+sp.tb.y1)/2;
+  const wordMode=!!sp.line; if(wordMode) t.set({textAlign:'left'});
+  t.set({originX:wordMode?(b0=>b0.flipX?'right':'left')(base()):'center',originY:'center',left:wordMode?m.x(sp.tb.x0)-fs*0.06:m.x((sp.tb.x0+sp.tb.x1)/2),top:m.y(cy),kind:'text',found:true,layerName:'লেখা',
+    hintIds:sp.hintIds||null,fontRank:rank.slice(0,5).map(r=>[r.font,r.weight])});
   t.setCoords(); canvas.add(t); return t;
 }
 async function runItems(items,work){
@@ -1088,6 +1161,54 @@ function getOcr(){ if(!ocrP){ ocrP=(async()=>{
     return await Tesseract.createWorker(['ben','eng'],1,{workerPath:wUrl,corePath:cUrl,workerBlobURL:false,cacheMethod:'readOnly',gzip:true,langPath:'tess/lang',
       logger:m=>{ if(S.busy&&m&&typeof m.progress==='number'){ const lbl=m.status==='recognizing text'?'লেখা পড়ছি':'প্রস্তুত হচ্ছে'; $('#busyP').textContent=`${lbl}… ${bn(Math.round(m.progress*100))}%`; } }});
   })(); ocrP.catch(()=>{ocrP=null}); } return ocrP; }
+/* ---------- hints: found text stays untouched until you tap it ---------- */
+S.hints=[]; S.showHints=true; let hintSeq=0;
+function setHints(list){ S.hints=list.map(h=>({...h,id:'h'+(++hintSeq),done:false})); syncHints(); canvas.requestRenderAll(); }
+function syncHints(){ const used=new Set(); canvas.getObjects().forEach(o=>(o.hintIds||[]).forEach(i=>used.add(i))); S.hints.forEach(h=>h.done=used.has(h.id)); }
+const liveHints=()=>S.hints.filter(h=>!h.done);
+function wordHints(lines){ // lines: [{text,bbox,words:[{text,bbox,confidence}]}] → one hint per word, with its line for size
+  const out=[]; lines.forEach((l,li)=>{ const lb={x0:l.bbox.x0,y0:l.bbox.y0,x1:l.bbox.x1,y1:l.bbox.y1}; const lid='L'+li+'_'+hintSeq;
+    (l.words||[]).forEach(w=>{ const t=String(w.text||'').trim(); if(!t||!/[\p{L}\p{N}]/u.test(t)) return; if((w.bbox.x1-w.bbox.x0)<4||(w.bbox.y1-w.bbox.y0)<4) return;
+      out.push({type:'text',text:t,px:{x0:w.bbox.x0,y0:w.bbox.y0,x1:w.bbox.x1,y1:w.bbox.y1},line:lb,lineId:lid,lineText:String(l.text||'').trim()}); }); });
+  return out; }
+async function convertHints(hs,opts={}){
+  const b=base(); if(!b||!hs.length) return null; const work=await getBaseWork(b);
+  const texts=[],graphics=[];
+  for(const h of hs){
+    if(h.type==='graphic'){ graphics.push({label:h.label,px:h.px,padF:0.12}); continue; }
+    const pad=Math.max(2,(h.line?h.line.y1-h.line.y0:h.px.y1-h.px.y0)*0.08);
+    texts.push({text:h.text,lines:h.lines||1,font:h.font,weight:h.weight,italic:h.italic,align:'center',color:h.color,outline:h.outline,fontKnown:!!h.fontKnown,trustColor:!!h.trustColor,
+      px:h.px,line:h.line||null,padF:h.line?0.25:0.3,clip:h.line?{x0:h.px.x0-pad,y0:h.line.y0-pad,x1:h.px.x1+pad,y1:h.line.y1+pad}:null,hintIds:h.ids||[h.id]}); }
+  await runItems({texts,graphics},work); syncHints();
+  const objs=canvas.getObjects(); const last=objs[objs.length-1];
+  if(opts.select&&last&&last.found){ canvas.setActiveObject(last); canvas.requestRenderAll(); openSheet();
+    if(last.type==='textbox') setTimeout(()=>{ const ta=$('#pText'); if(ta){ ta.focus(); ta.select(); } },80); }
+  return last; }
+async function convertAllLines(){ // whole lines at once, for people who want everything editable
+  const groups=new Map(),solo=[];
+  liveHints().forEach(h=>{ if(h.type==='text'&&h.lineId){ if(!groups.has(h.lineId)) groups.set(h.lineId,[]); groups.get(h.lineId).push(h); } else solo.push(h); });
+  const items=[...solo]; groups.forEach(ws=>{ const x0=Math.min(...ws.map(w=>w.px.x0)),x1=Math.max(...ws.map(w=>w.px.x1)); const l=ws[0].line;
+    items.push({type:'text',text:ws.map(w=>w.text).join(' '),px:{x0,y0:l.y0,x1,y1:l.y1},line:null,ids:ws.map(w=>w.id),font:ws[0].font,weight:ws[0].weight,fontKnown:ws[0].fontKnown,trustColor:ws[0].trustColor,color:ws[0].color}); });
+  if(!items.length) return; showBusy(true,'সব লেখা আলাদা করছি…','প্রতিটা লাইনের ফন্ট মিলিয়ে দেখা হচ্ছে।'); $('#busyStop').hidden=true;
+  try{ await convertHints(items); } finally{ showBusy(false); $('#busyStop').hidden=false; renderPanel(); } }
+let hintBusy=false;
+canvas.on('mouse:down',o=>{ S.tap={x:o.e.clientX??(o.e.touches&&o.e.touches[0]&&o.e.touches[0].clientX),y:o.e.clientY??(o.e.touches&&o.e.touches[0]&&o.e.touches[0].clientY)}; });
+canvas.on('mouse:up',async o=>{
+  if(!S.tap||S.crop||canvas.isDrawingMode||hintBusy||!liveHints().length) return;
+  const e=o.e.changedTouches?o.e.changedTouches[0]:o.e; if(e&&Math.hypot((e.clientX||0)-S.tap.x,(e.clientY||0)-S.tap.y)>10) return;
+  if(o.target&&!o.target.isBase) return;
+  const b=base(); if(!b) return; const p=canvas.getPointer(o.e); const [ix,iy]=imgMap(b).inv(p.x,p.y); const tol=6/(canvas.getZoom()*b.scaleX);
+  const hit=liveHints().filter(h=>ix>=h.px.x0-tol&&ix<=h.px.x1+tol&&iy>=(h.line||h.px).y0-tol&&iy<=(h.line||h.px).y1+tol)
+    .sort((a,c)=>(a.px.x1-a.px.x0)*(a.px.y1-a.px.y0)-(c.px.x1-c.px.x0)*(c.px.y1-c.px.y0))[0];
+  if(!hit) return; hintBusy=true;
+  try{ await convertHints([hit],{select:true}); } finally{ hintBusy=false; } });
+function drawHints(ctx){
+  if(!S.showHints||!S.hints.length||S.crop) return; const b=base(); if(!b) return; const m=imgMap(b),v=canvas.viewportTransform;
+  const sx=x=>v[0]*m.x(x)+v[4], sy=y=>v[3]*m.y(y)+v[5];
+  ctx.save(); ctx.lineWidth=1.5; ctx.setLineDash([5,4]);
+  for(const h of liveHints()){ const y0=(h.line||h.px).y0,y1=(h.line||h.px).y1; let a=sx(h.px.x0),c=sx(h.px.x1),bb=sy(y0),d=sy(y1); if(a>c)[a,c]=[c,a]; if(bb>d)[bb,d]=[d,bb];
+    ctx.fillStyle='rgba(242,180,44,0.10)'; ctx.fillRect(a-2,bb-2,c-a+4,d-bb+4); ctx.strokeStyle=h.type==='graphic'?'rgba(80,200,255,0.95)':'rgba(242,180,44,0.95)'; ctx.strokeRect(a-2,bb-2,c-a+4,d-bb+4); }
+  ctx.restore(); }
 async function ocrDetect(){
   const b=base(); if(!b){toast('আগে একটি ছবি খুলুন');return}
   if(S.busy) return; const assetAt=b.assetId; const work=await getBaseWork(b);
@@ -1096,12 +1217,10 @@ async function ocrDetect(){
     const w=await getOcr(); const {data}=await w.recognize(work.c,{},{blocks:true,text:false});
     if(base()!==b||b.assetId!==assetAt){ S.smart={state:'idle'}; return; }
     const lines=[]; (data.blocks||[]).forEach(bl=>(bl.paragraphs||[]).forEach(pa=>(pa.lines||[]).forEach(l=>lines.push(l))));
-    const texts=lines.filter(l=>l.confidence>=45&&/[\p{L}\p{N}]/u.test(l.text||'')&&(l.bbox.y1-l.bbox.y0)>=10&&(l.bbox.x1-l.bbox.x0)>=10)
-      .map(l=>({text:String(l.text).replace(/\s+$/,'').trim(),lines:1,autoFont:true,align:'center',px:{x0:l.bbox.x0,y0:l.bbox.y0,x1:l.bbox.x1,y1:l.bbox.y1},padF:0.3}));
-    showBusy(true,'লেখা আলাদা করছি…','মূল লেখা মুছে একই জায়গায় এডিটযোগ্য লেখা বসানো হচ্ছে।');
-    const n=await runItems({texts,graphics:[]},work);
-    S.smart={state:'done',t:n.t,g:n.g};
-    if(n.t) toast('হয়ে গেছে। যেকোনো লেখায় চাপ দিয়ে এডিট করুন।');
+    const good=lines.filter(l=>l.confidence>=40&&/[\p{L}\p{N}]/u.test(l.text||'')&&(l.bbox.y1-l.bbox.y0)>=10&&(l.bbox.x1-l.bbox.x0)>=10);
+    setHints(wordHints(good));
+    S.smart={state:'hints',n:S.hints.length};
+    if(S.hints.length) toast('দাগ দেওয়া যেকোনো লেখায় চাপ দিন');
   }catch(e){ console.error(e); S.smart={state:'error',code:'ocr'}; }
   finally{ showBusy(false); $('#busyStop').hidden=false; renderPanel(); }
 }
@@ -1120,10 +1239,10 @@ async function detect(manual){
   try{
     const res=await sample.json(PROMPT(work.w,work.h),{images:blob,signal:ctl.signal});
     if(base()!==b||b.assetId!==assetAt){ S.smart={state:'idle'}; return; }
-    showBusy(true,'লেখা আলাদা করছি…','মূল লেখা মুছে একই জায়গায় এডিটযোগ্য লেখা বসানো হচ্ছে।');
-    const n=await runItems(normalize(res,work.w,work.h),work);
-    S.smart={state:'done',t:n.t,g:n.g};
-    if(n.t+n.g) toast('হয়ে গেছে। যেকোনো লেখায় চাপ দিয়ে এডিট করুন।');
+    const nz=normalize(res,work.w,work.h);
+    setHints([...nz.texts.map(t=>({type:'text',...t})),...nz.graphics.map(g=>({type:'graphic',label:g.label,px:g.px}))]);
+    S.smart={state:'hints',n:S.hints.length};
+    if(S.hints.length) toast('দাগ দেওয়া যেকোনো লেখায় চাপ দিন');
   }catch(e){ S.smart=e&&e.code==='cancelled'?{state:'idle'}:{state:'error',code:e&&e.code}; }
   finally{ showBusy(false); S.ctl=null; renderPanel(); }
 }
@@ -1154,7 +1273,7 @@ async function pickApply(action,r){
     finally{ showBusy(false); S.ctl=null; }
   }
   if(!info) info={text:'নতুন লেখা',lines:1,font:'Hind Siliguri',weight:600,align:'center'};
-  await runItems({texts:[{...info,px,padF:0.06}]},work);
+  await runItems({texts:[{...info,px,padF:0.06,fontKnown:false}]},work);
   const objs=canvas.getObjects(); const last=objs[objs.length-1];
   if(last&&last.type==='textbox'){ canvas.setActiveObject(last); canvas.requestRenderAll(); }
   if(info.text==='নতুন লেখা') setTimeout(()=>{const ta=$('#pText');if(ta){ta.focus();ta.select()}},60);
@@ -1165,8 +1284,10 @@ function smartUI(){
   if(!b) return `<div class="sec"><div class="pt">স্মার্ট এডিট</div><p class="hint">ছবি দিন। ছবির ভেতরের লেখা আর লোগো আলাদা হয়ে যাবে, তারপর যেকোনো লেখায় চাপ দিলেই ফন্ট, রঙ, আকার বদলানো যাবে।</p>
     <button class="bigbtn primary" data-a="openBase">${ic('upload')}<span><b>ছবি খুলুন</b><small>JPG, PNG বা WebP</small></span></button>${pasteBox()}${helpNote()}</div>${photosUI()}`;
   const st=S.smart; let cls='',t1='',t2='';
-  if(S.isSample){ cls='ok';t1='নমুনা পোস্টার প্রস্তুত';t2='পোস্টারের লেখাগুলো আলাদা করা আছে। “বিশাল ছাড়!” বা অন্য যেকোনো লেখায় চাপ দিয়ে বদলে দেখুন। লোগো আর বাটনও সরানো যায়।'; }
+  if(S.isSample&&liveHints().length){ cls='ok';t1='নমুনা পোস্টার';t2='দাগ দেওয়া যেকোনো শব্দে চাপ দিন, যেমন “ছাড়!”। শুধু সেই শব্দটা এডিটযোগ্য হবে, বাকি লেখা যেমন আছে থাকবে। নীল দাগের লোগো আর বাটনও আলাদা করা যায়।'; }
   else if(st.state==='busy'){ t1='খোঁজা চলছে…';t2='ছবিটি পড়া হচ্ছে।'; }
+  else if(st.state==='hints'){ const n=liveHints().length; cls=n?'ok':''; t1=n?`${bn(n)}টি লেখা পাওয়া গেছে`:'সব লেখা আলাদা করা হয়েছে';
+    t2=n?'দাগ দেওয়া যেকোনো শব্দে চাপ দিন। শুধু সেই শব্দটাই এডিটযোগ্য হবে, ফন্ট মিলিয়ে বসবে। ভুল পড়লে নিজে টাইপ করে বদলে দিন।':'লেখায় চাপ দিয়ে এডিট করুন।'; }
   else if(st.state==='done'){ cls='ok'; if(st.t+st.g){t1=st.g?`${bn(st.t)}টি লেখা ও ${bn(st.g)}টি ডিজাইন আলাদা হয়েছে`:`${bn(st.t)}টি লেখা আলাদা হয়েছে`;t2='যেকোনোটায় চাপ দিয়ে এডিট করুন। দুইবার চাপলে সরাসরি লেখা যায়। কিছু বাদ পড়লে “নিজে বাছাই করুন”।'}
     else {cls='';t1='কোনো লেখা পাওয়া যায়নি';t2='“নিজে বাছাই করুন” দিয়ে লেখার অংশটি ঘিরে দিন।'} }
   else if(st.state==='unavailable'){ cls='err';t1='স্বয়ংক্রিয় খোঁজা এখানে চালু নেই';t2='“নিজে বাছাই করুন” দিয়ে লেখা বা লোগো ঘিরে দিলে সেটা আলাদা হয়ে যাবে।'; }
@@ -1176,6 +1297,8 @@ function smartUI(){
   const ao=canvas.getActiveObject();
   return `<div class="sec"><div class="pt">স্মার্ট এডিট</div><div class="status ${cls}"><span class="dot"></span><div><b>${t1}</b>${t2}</div></div></div>
   <div class="sec">${st.state!=='unavailable'?`<button class="bigbtn primary" data-a="detect" ${S.busy?'disabled':''}>${ic('wand')}<span><b>${st.state==='done'||S.isSample?'আবার খুঁজুন':APP?'লেখা খুঁজুন':'লেখা ও লোগো খুঁজুন'}</b><small>${APP?'ছবির লেখা পড়ে এডিটযোগ্য করবে, ইন্টারনেট লাগে না':'Claude ছবি পড়ে লেখাগুলো এডিটযোগ্য করবে'}</small></span></button>`:''}
+  ${liveHints().length?`<button class="bigbtn" data-a="allLines">${ic('text')}<span><b>সব লেখা একসাথে আলাদা করুন</b><small>প্রতিটা লাইন এডিটযোগ্য হবে</small></span></button>
+  <div class="tog"><span>লেখার দাগ দেখান</span><button class="switch${S.showHints?' on':''}" data-a="togHints" aria-pressed="${S.showHints}" aria-label="লেখার দাগ দেখান"></button></div>`:''}
   <button class="bigbtn" data-a="pick">${ic('select')}<span><b>নিজে বাছাই করুন</b><small>কোনো অংশ ঘিরে লেখা, লোগো বা মুছে ফেলা বেছে নিন</small></span></button>
   ${b.origAsset?`<button class="bigbtn" id="cmp" data-a="cmp">${ic('compare')}<span><b>চেপে ধরে আগের ছবি দেখুন</b><small>ছাড়লে আবার এডিট করা ছবি</small></span></button>`:''}</div>
   ${photosUI()}
@@ -1428,8 +1551,10 @@ async function init(){
     S.isSample=true;
     const smp=await makeSample();
     await setBase(smp.url,1080,1350,{sample:true});
-    smp.items.texts.forEach(t=>{t.trustColor=true;t.padF=0.3});
-    await runItems(smp.items);
+    const hs=wordHints(smp.items.texts.map(t=>({text:t.text,bbox:t.px,words:t.words})));
+    hs.forEach(h=>{ const t=smp.items.texts.find(t=>t.text===h.lineText); if(t){ h.font=t.font; h.weight=t.weight; h.fontKnown=true; h.trustColor=true; h.color=t.color; } });
+    setHints([...hs,...smp.items.graphics.map(g=>({type:'graphic',label:g.label,px:g.px}))]);
+    S.smart={state:'hints'};
   }catch(e){ S.isSample=false; S.batch=false; $('#chip').hidden=true; console.error(e); }
   S.hist=[];S.hi=-1;save();renderPanel();updBar();
   try{ if(APP&&window.Android.hasShared&&window.Android.hasShared()){ const r=await fetch('shared-image'); if(r.ok){ const bl=await r.blob(); if(bl.size) await handleFile(bl,false); } } }catch(e){ toast('শেয়ার করা ছবিটি খোলা গেল না'); }
