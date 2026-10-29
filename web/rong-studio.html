@@ -122,6 +122,9 @@ input[type=range]{width:100%;accent-color:var(--accent);height:26px}
 .sw.on{border-color:var(--accent);box-shadow:0 0 0 2px var(--panel) inset}
 .sw.none{background:linear-gradient(135deg,transparent 45%,var(--danger) 45% 55%,transparent 55%),var(--raise)}
 .sw.pick{overflow:hidden;background:conic-gradient(#f44,#fd4,#4d6,#4cf,#64f,#f4c,#f44)}
+.sw.drop{display:inline-grid;place-items:center;background:var(--raise);color:var(--fg)}
+.sw.drop svg.i{width:16px;height:16px}
+.sw.drop.on{background:var(--accent);color:var(--accent-ink)}
 .sw.pick input{position:absolute;inset:-6px;opacity:0;width:calc(100% + 12px);height:calc(100% + 12px);cursor:pointer}
 .seg{display:inline-flex;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:var(--raise)}
 .seg button{border:0;background:transparent;height:34px;min-width:40px;padding:0 10px;display:inline-grid;place-items:center}
@@ -312,7 +315,8 @@ const IC={
  float:'M4 4h10v10H4z M10 10h10v10H10z',
  dock:'M4 4h16v16H4z M4 14h16',
  edit:'M4 20h4L19 9l-4-4L4 16z M13 7l4 4',
- down2:'M6 9l6 6 6-6'
+ down2:'M6 9l6 6 6-6',
+ drop:'M14 4l6 6 M17 7l-9 9H5v-3l9-9 M5 19l-1 1'
 };
 const ic=(n,cls='i')=>`<svg class="${cls}" viewBox="0 0 24 24" aria-hidden="true"><path d="${IC[n]}"/></svg>`;
 
@@ -323,7 +327,7 @@ const FONT_HINT='Hind Siliguri (clean Bengali sans, default for Bengali body tex
 if(window.Intl&&Intl.Segmenter){ const seg=new Intl.Segmenter(undefined,{granularity:'grapheme'}); fabric.util.string.graphemeSplit=t=>Array.from(seg.segment(t),s=>s.segment); }
 const SW=['#ffffff','#111111','#f2b42c','#e4572e','#d7263d','#ff8fab','#7b2cbf','#2e86ab','#1b998b','#8ac926','#6b4423','#9aa0a6'];
 const KIND={text:'লেখা',emoji:'ইমোজি',shape:'আকার',line:'রেখা',image:'ছবি',draw:'আঁকা'};
-const PROPS=['hintIds','fontRank','found','origAsset','name','kind','assetId','isBase','locked','fx','layerName','selectable','evented','hasControls','lockMovementX','lockMovementY','lockScalingX','lockScalingY','lockRotation','perPixelTargetFind','paintFirst','strokeUniform'];
+const PROPS=['softness','hintIds','fontRank','found','origAsset','name','kind','assetId','isBase','locked','fx','layerName','selectable','evented','hasControls','lockMovementX','lockMovementY','lockScalingX','lockScalingY','lockRotation','perPixelTargetFind','paintFirst','strokeUniform'];
 const PRESETS={
  'মূল':{}, 'উজ্জ্বল':{saturation:30,contrast:15,vibrance:20}, 'উষ্ণ':{warmth:55,saturation:10,brightness:3},
  'শীতল':{warmth:-50,contrast:6}, 'সাদাকালো':{gray:1,contrast:20}, 'পুরোনো':{sepia:1,contrast:-10,brightness:5,noise:12},
@@ -622,7 +626,23 @@ function filterUI(t){
 /* ---------- panel helpers ---------- */
 const rng=(label,attr,min,max,step,val,fmt)=>`<div class="rng"><label>${label}</label><input type="range" ${attr} min="${min}" max="${max}" step="${step}" value="${val}" aria-label="${label}"><output>${fmt?fmt(val):bn(Math.round(val*10)/10)}</output></div>`;
 function sws(prop,cur,none){ const c=(cur||'').toLowerCase();
-  return `<div class="sws">${none?`<button class="sw none${!cur?' on':''}" data-a="color" data-p="${prop}" data-v="" aria-label="রঙ নেই"></button>`:''}${SW.map(s=>`<button class="sw${c===s?' on':''}" style="background:${s}" data-a="color" data-p="${prop}" data-v="${s}" aria-label="${s}"></button>`).join('')}<label class="sw pick" aria-label="নিজের রঙ"><input type="color" data-p="${prop}" value="${/^#[0-9a-f]{6}$/i.test(cur||'')?cur:'#f2b42c'}"></label></div>`; }
+  return `<div class="sws">${none?`<button class="sw none${!cur?' on':''}" data-a="color" data-p="${prop}" data-v="" aria-label="রঙ নেই"></button>`:''}${SW.map(s=>`<button class="sw${c===s?' on':''}" style="background:${s}" data-a="color" data-p="${prop}" data-v="${s}" aria-label="${s}"></button>`).join('')}<label class="sw pick" aria-label="নিজের রঙ"><input type="color" data-p="${prop}" value="${/^#[0-9a-f]{6}$/i.test(cur||'')?cur:'#f2b42c'}"></label>${prop==='drawColor'||prop==='canvasBg'?'':`<button class="sw drop${S.pickColor===prop?' on':''}" data-a="eyedrop" data-p="${prop}" aria-label="ছবি থেকে রঙ নিন" title="ছবি থেকে রঙ নিন">${ic('drop')}</button>`}</div>`; }
+/* fill editor: one colour or a two-colour gradient */
+const gradOf=o=>o&&o.fill&&typeof o.fill==='object'&&o.fill.colorStops?o.fill:null;
+function fillUI(o,label){ const g=gradOf(o);
+  return sec(label,`<div class="seg"><button data-a="fillMode" data-v="solid" class="${g?'':'on'}">একরঙা</button><button data-a="fillMode" data-v="grad" class="${g?'on':''}">গ্রেডিয়েন্ট</button></div>
+    ${g?`<span class="hint">উপরের / বাঁয়ের রঙ</span>${sws('g1',g.colorStops[0].color)}<span class="hint">নিচের / ডানের রঙ</span>${sws('g2',g.colorStops[g.colorStops.length-1].color)}
+      <div class="seg"><button data-a="gdir" data-v="v" class="${g.coords.x2===0?'on':''}">উপর থেকে নিচে</button><button data-a="gdir" data-v="h" class="${g.coords.x2!==0?'on':''}">বাঁ থেকে ডানে</button></div>`
+    :sws('fill',typeof o.fill==='string'?o.fill:'',o.type!=='textbox')}`); }
+/* shadow editor */
+const shParts=o=>{ const sh=o.shadow; if(!sh) return null; const m=String(sh.color).match(/rgba?\(([^)]+)\)/); let c='#000000',a=1;
+  if(m){ const v=m[1].split(',').map(Number); c=hex(v[0],v[1],v[2]); a=v[3]??1; } else if(/^#/.test(sh.color)) c=sh.color.slice(0,7);
+  return {c,a,blur:sh.blur||0,x:sh.offsetX||0,y:sh.offsetY||0}; };
+function shadowUI(o){ const p=shParts(o),KK=K();
+  return sec('ছায়া / আভা',tog('ছায়া','shadow',!!p)+(p?`${sws('shColor',p.c)}
+    ${rng('ঝাপসা','data-p="shBlur"',0,80*KK,0.5,p.blur,v=>bn(Math.round(v)))}${rng('ডানে-বাঁয়ে','data-p="shX"',-60*KK,60*KK,0.5,p.x,v=>bn(Math.round(v)))}
+    ${rng('উপরে-নিচে','data-p="shY"',-60*KK,60*KK,0.5,p.y,v=>bn(Math.round(v)))}${rng('গাঢ়তা','data-p="shAlpha"',0,1,0.01,p.a,v=>bn(Math.round(v*100))+'%')}
+    <span class="hint">ডানে-বাঁয়ে আর উপরে-নিচে দুটোই ০ রাখলে চারপাশে আভা হয়।</span>`:''))}
 const sec=(t,body)=>`<div class="sec"><span class="eyebrow">${t}</span>${body}</div>`;
 const tog=(l,a,on)=>`<div class="tog"><span>${l}</span><button class="switch${on?' on':''}" data-a="${a}" aria-pressed="${!!on}" aria-label="${l}"></button></div>`;
 
@@ -638,11 +658,12 @@ function propsUI(o){
       <div class="row"><div class="seg"><button data-a="bold" class="${(t.fontWeight>=600||t.fontWeight==='bold')?'on':''}" aria-label="মোটা"><b>ব</b></button><button data-a="italic" class="${t.fontStyle==='italic'?'on':''}" aria-label="তির্যক"><i>I</i></button><button data-a="underline" class="${t.underline?'on':''}" aria-label="নিচে দাগ"><u>U</u></button></div>
       <div class="seg">${[['left','alL'],['center','alC'],['right','alR']].map(([v,i])=>`<button data-a="align" data-v="${v}" class="${t.textAlign===v?'on':''}" aria-label="${v}">${ic(i)}</button>`).join('')}</div></div>
       ${rng('অক্ষর ফাঁক','data-p="charSpacing"',-100,800,10,t.charSpacing||0)}${rng('লাইন ফাঁক','data-p="lineHeight"',0.7,2.5,0.05,t.lineHeight)}`);
-    h+=sec('লেখার রঙ',sws('fill',t.fill));
+    h+=fillUI(t,'লেখার রঙ');
     h+=sec('আউটলাইন',sws('stroke',t.stroke,true)+rng('পুরুত্ব','data-p="strokeWidth"',0,40*KK,0.5,t.strokeWidth||0));
     h+=sec('হাইলাইট পটভূমি',sws('textBackgroundColor',t.textBackgroundColor,true));
+    h+=sec('কিনারা',rng('নরম কিনারা','data-p="softness"',0,6*KK,0.1,t.softness||0,v=>bn(Math.round(v*10)/10))+'<span class="hint">ছবির লেখা একটু ঝাপসা হলে নতুন লেখাও একই রকম নরম করুন।</span>');
   } else if(k==='shape'){
-    h+=sec('ভরাট রঙ',sws('fill',typeof t.fill==='string'?t.fill:'',true));
+    h+=fillUI(t,'ভরাট রঙ');
     h+=sec('বর্ডার',sws('stroke',t.stroke,true)+rng('পুরুত্ব','data-p="strokeWidth"',0,60*KK,0.5,t.strokeWidth||0));
     if(t.type==='rect') h+=sec('কোণা',rng('গোলভাব','data-p="rx"',0,Math.min(t.width,t.height)/2,1,t.rx||0,v=>bn(Math.round(v))));
   } else if(k==='line'||k==='draw'){
@@ -654,7 +675,8 @@ function propsUI(o){
     h+=filterUI(t);
   }
   const op=multi?1:(t.opacity??1);
-  h+=sec('স্বচ্ছতা ও ছায়া',rng('অস্বচ্ছতা','data-p="opacity"',0,1,0.01,op,v=>bn(Math.round(v*100))+'%')+(multi?'':tog('ছায়া','shadow',!!t.shadow)));
+  h+=sec('স্বচ্ছতা',rng('অস্বচ্ছতা','data-p="opacity"',0,1,0.01,op,v=>bn(Math.round(v*100))+'%'));
+  if(!multi) h+=shadowUI(t);
   h+=sec('সাজানো',`<div class="row"><div class="seg"><button data-a="cH" aria-label="মাঝে আড়াআড়ি">${ic('cH')}</button><button data-a="cV" aria-label="মাঝে লম্বালম্বি">${ic('cV')}</button></div>
     <div class="seg"><button data-a="front" aria-label="একদম সামনে">${ic('top')}</button><button data-a="back" aria-label="একদম পেছনে">${ic('bottom')}</button></div>
     <div class="seg"><button data-a="flipX" aria-label="আড়াআড়ি উল্টান">${ic('flip')}</button><button data-a="flipY" aria-label="লম্বালম্বি উল্টান">${ic('flipV')}</button></div>
@@ -722,6 +744,11 @@ function setProp(p,v){
   if(p==='drawColor'){S.draw.color=v;applyBrush();return}
   if(p==='tint'||p==='tintAmt'){ targets().forEach(o=>{ if(o.type!=='image')return; o.fx={...(o.fx||{}),[p]:v||0}; if(p==='tint'&&!v){delete o.fx.tint;delete o.fx.tintAmt} applyFx(o); }); if(p==='tint')setTimeout(renderPanel,30); return; }
   targets().forEach(o=>{
+    if(p==='g1'||p==='g2'){ const g=gradOf(o); if(g){ const cs=g.colorStops.map(x=>({...x})); cs[p==='g1'?0:cs.length-1].color=v; o.set('fill',makeGrad(g.coords.x2===0?'v':'h',cs[0].color,cs[cs.length-1].color)); } o.dirty=true; return; }
+    if(['shColor','shBlur','shX','shY','shAlpha'].includes(p)){ const q=shParts(o)||{c:'#000000',a:0.55,blur:20*K(),x:4*K(),y:6*K()};
+      if(p==='shColor')q.c=v||'#000000'; if(p==='shBlur')q.blur=v; if(p==='shX')q.x=v; if(p==='shY')q.y=v; if(p==='shAlpha')q.a=v;
+      const n=parseInt(q.c.slice(1),16); o.set('shadow',new fabric.Shadow({color:`rgba(${n>>16&255},${n>>8&255},${n&255},${q.a})`,blur:q.blur,offsetX:q.x,offsetY:q.y})); o.dirty=true; return; }
+    if(p==='softness'){ o.set({softness:v,objectCaching:!(v>0.05)}); o.dirty=true; return; }
     if(p==='rx') o.set({rx:v,ry:v});
     else if(p==='stroke'&&o.type==='textbox'){ o.set('stroke',v||null); if(v&&!o.strokeWidth) o.set('strokeWidth',6*K()); }
     else if(p==='stroke'&&kindOf(o)==='shape'){ o.set('stroke',v||null); if(v&&!o.strokeWidth) o.set({strokeWidth:6*K(),strokeUniform:true}); }
@@ -772,7 +799,7 @@ panel.addEventListener('input',e=>{
   if(el.id==='pText'){ targets().forEach(o=>{if(o.type==='textbox'){o.set('text',el.value);o.initDimensions();o.setCoords()}}); canvas.requestRenderAll(); return; }
   const out=el.closest('.rng')?.querySelector('output');
   if(el.dataset.p){ const v=el.type==='range'||el.type==='number'?parseFloat(el.value):el.value; setProp(el.dataset.p,v);
-    if(out) out.textContent=el.dataset.p==='opacity'?bn(Math.round(v*100))+'%':bn(Math.round(v*10)/10);
+    if(out) out.textContent=el.dataset.p==='opacity'||el.dataset.p==='shAlpha'?bn(Math.round(v*100))+'%':bn(Math.round(v*10)/10);
     if(el.type==='color') el.closest('.sws')?.querySelectorAll('.sw').forEach(s=>s.classList.remove('on')); }
   else if(el.dataset.fx){ const t=active()&&active().type==='image'?active():fxTarget(); if(!t)return; t.fx={...(t.fx||{}),[el.dataset.fx]:parseFloat(el.value)}; applyFx(t); if(out)out.textContent=bn(el.value);
     panel.querySelectorAll('.pre').forEach(p=>p.classList.remove('on')); }
@@ -825,6 +852,9 @@ panel.addEventListener('click',async e=>{
     case 'detect':detect(true);break;
     case 'photo':loadPhoto(v);break;
     case 'allLines':convertAllLines();break;
+    case 'fillMode':{ targets().forEach(o=>{ const g=gradOf(o); if(v==='grad'&&!g){ const c=typeof o.fill==='string'&&o.fill?o.fill:'#f2b42c'; o.set('fill',makeGrad('v',c,'#ffffff')); } else if(v==='solid'&&g){ o.set('fill',g.colorStops[0].color); } o.dirty=true; }); relayout(); break; }
+    case 'gdir':{ targets().forEach(o=>{ const g=gradOf(o); if(g){ o.set('fill',makeGrad(v,g.colorStops[0].color,g.colorStops[g.colorStops.length-1].color)); o.dirty=true; } }); relayout(); break; }
+    case 'eyedrop':{ S.pickColor=S.pickColor===b.dataset.p?null:b.dataset.p; S.pickSel=canvas.getActiveObject()||null; renderPanel(); if(S.pickColor){ toast('ছবির যেখান থেকে রঙ নিতে চান সেখানে চাপ দিন'); canvas.defaultCursor='crosshair'; } break; }
     case 'togHints':S.showHints=!S.showHints;canvas.requestRenderAll();renderPanel();break;
     case 'fontPick':{const [f,w]=v.split('|');targets().forEach(o=>o.set('fontWeight',+w));await setFont(f);renderPanel();break}
     case 'pick':if(!base()){toast('আগে একটি ছবি খুলুন');break}startCrop('pick');break;
@@ -975,27 +1005,101 @@ function smooth(an,mu,passes){ const {rw:w,rh:h}=an,d=an.img.data;
 function processText(work,it){
   let box=it.px, an=null;
   for(let pass=0;pass<2;pass++){
-    an=analyze(work.x,work.w,work.h,it.clip&&it.line?{x0:it.line.x0,y0:it.line.y0,x1:it.line.x1,y1:it.line.y1}:box,it.clip?0.18:(it.padF??0.4)); if(!an) break; if(it.clip) clipAn(an,it.clip); if(!an.tb) break; if(it.clip) break;
+    an=analyze(work.x,work.w,work.h,it.clip&&it.line?{x0:it.line.x0,y0:it.line.y0,x1:it.line.x1,y1:it.line.y1}:box,it.clip?0.32:(it.padF??0.4)); if(!an) break; if(it.clip) clipAn(an,it.clip); if(!an.tb) break; if(it.clip) break;
     const t=an.tb,e=2; const grow={x0:t.x0<=e&&an.rx>0,y0:t.y0<=e&&an.ry>0,x1:t.x1>=an.rw-1-e&&an.rx+an.rw<work.w,y1:t.y1>=an.rh-1-e&&an.ry+an.rh<work.h};
     if(pass||!(grow.x0||grow.y0||grow.x1||grow.y1)) break;
     const p=an.pad; box={x0:box.x0-(grow.x0?p:0),y0:box.y0-(grow.y0?p:0),x1:box.x1+(grow.x1?p:0),y1:box.y1+(grow.y1?p:0)};
   }
   let tb=it.px, color=it.color, density=0;
+  if(an&&an.tb&&an.cnt>12){ try{ it.style=styleFromInk(an,(an.tb.y1-an.tb.y0)/Math.max(1,it.lines||1)); }catch(e){ it.style=null; } }
   if(an&&an.tb&&an.cnt>12){
     tb={x0:an.rx+an.tb.x0,y0:an.ry+an.tb.y0,x1:an.rx+an.tb.x1+1,y1:an.ry+an.tb.y1+1};
     { // keep the text box near the box we were given, so nearby stars or icons do not inflate the font size
       const g=it.px,mh=(g.y1-g.y0)*0.15,mw=(g.y1-g.y0)*0.3;
       tb={x0:Math.max(tb.x0,g.x0-mw),y0:Math.max(tb.y0,g.y0-mh),x1:Math.min(tb.x1,g.x1+mw),y1:Math.min(tb.y1,g.y1+mh)};
       if(tb.x1-tb.x0<4||tb.y1-tb.y0<4) tb=g; }
-    it.ink=inkGrid(an,tb);
+    const st0=it.style;
+    if(st0&&st0.innerTb){ const ib=st0.innerTb; it.innerTb={x0:an.rx+ib.x0,y0:an.ry+ib.y0,x1:an.rx+ib.x1+1,y1:an.ry+ib.y1+1}; it.ink=inkGrid(an,it.innerTb,st0.innerMask); delete st0.innerMask; }
+    else it.ink=inkGrid(an,tb);
     const lineH=(tb.y1-tb.y0)/Math.max(1,it.lines||1);
     const mu=dilate(an.mask,an.rw,an.rh,Math.max(2,Math.round(lineH*0.07)));
+    if(it.style&&it.style.erase){ for(let i=0;i<mu.length;i++) if(it.style.erase[i]) mu[i]=1; delete it.style.erase; }
     harmonic(an,mu,Math.min(10,an.tex*0.8),an.fullMask?dilate(an.fullMask,an.rw,an.rh,Math.max(2,Math.round(lineH*0.07))):null); work.x.putImageData(an.img,an.rx,an.ry);
-    if(!it.trustColor&&!it.outline&&an.color) color=an.color;
+    if(!it.trustColor&&!it.outline&&an.color) color=it.style&&it.style.fill?toHex(it.style.fill):an.color;
     density=an.cnt/Math.max(1,(tb.x1-tb.x0)*(tb.y1-tb.y0));
   }
   return {...it,tb,density,color:color||'#ffffff'};
 }
+/* read how the original lettering looks: fill (or gradient), outline, shadow or glow, edge softness */
+const lum=(r,g,b)=>0.299*r+0.587*g+0.114*b;
+function erode(m,w,h){ const o=new Uint8Array(w*h); for(let y=1;y<h-1;y++) for(let x=1;x<w-1;x++){ const i=y*w+x; o[i]=m[i]&m[i-1]&m[i+1]&m[i-w]&m[i+w]; } return o; }
+function medColor(d,list){ if(!list.length) return null; const step=Math.max(1,Math.floor(list.length/20000)); const R=[],G=[],B=[];
+  for(let k=0;k<list.length;k+=step){ const i=list[k]*4; R.push(d[i]);G.push(d[i+1]);B.push(d[i+2]); }
+  const md=a=>{a.sort((p,q)=>p-q);return a[a.length>>1]}; return [md(R),md(G),md(B)]; }
+const cdist=(a,b)=>a&&b?Math.hypot(a[0]-b[0],a[1]-b[1],a[2]-b[2]):0;
+const toHex=c=>hex(c[0],c[1],c[2]);
+function styleFromInk(an,lineH){
+  const {rw:w,rh:h,mask}=an,d=an.img.data,N=w*h,st={};
+  // peel the letters layer by layer from the edge inward
+  const layers=[]; let cur=mask; for(let k=0;k<10;k++){ const nx=erode(cur,w,h); const ring=[]; for(let i=0;i<N;i++) if(cur[i]&&!nx[i]) ring.push(i); if(!ring.length) break; layers.push(ring); cur=nx; }
+  const core=[]; for(let i=0;i<N;i++) if(cur[i]) core.push(i);
+  const deep=core.length>20?core:layers.slice(Math.min(2,layers.length-1)).flat();
+  const fill=medColor(d,deep.length?deep:layers.flat()); st.fill=fill;
+  let bgList=[]; for(let i=0;i<N;i++) if(mask[i]) bgList.push(i);
+  const bgc=(()=>{ const step=Math.max(1,Math.floor(bgList.length/5000)); let r=0,g=0,b=0,c=0; for(let k=0;k<bgList.length;k+=step){ const i=bgList[k]; r+=an.bg[i*3];g+=an.bg[i*3+1];b+=an.bg[i*3+2];c++; } return c?[r/c,g/c,b/c]:[0,0,0]; })();
+  st.bg=bgc;
+  // outline: the outer layers share one colour that is neither the fill nor the background
+  if(layers.length>=4){ const ringC=medColor(d,layers[1]);
+    const outRing=(()=>{ const o2=dilate(mask,w,h,2); let s2=0,c2=0; for(let i=0;i<N;i++) if(o2[i]&&!mask[i]){ s2+=an.dist[i]; c2++; } return c2?s2/c2:0; })();
+    if(cdist(ringC,fill)>70&&cdist(ringC,bgc)>50&&outRing<an.thr*0.55){ let wdt=0; for(let k=1;k<layers.length;k++){ const c=medColor(d,layers[k]); if(cdist(c,ringC)<cdist(c,fill)) wdt=k; else break; }
+      if(wdt>=1){ st.stroke={color:toHex(ringC),w:wdt+0.6,c:ringC}; const inner=layers.slice(wdt+1).flat().concat(core); if(inner.length>10) st.fill=medColor(d,inner); } } }
+  // keep only real letter pixels: a shadow or glow differs from the background too, but not towards the letter colour
+  { const f=st.fill,fb=[f[0]-bgc[0],f[1]-bgc[1],f[2]-bgc[2]],L2=fb[0]**2+fb[1]**2+fb[2]**2||1; let removed=0;
+    for(const i of bgList){ const dr=d[i*4]-an.bg[i*3],dg=d[i*4+1]-an.bg[i*3+1],db=d[i*4+2]-an.bg[i*3+2]; const t=(dr*fb[0]+dg*fb[1]+db*fb[2])/L2;
+      const okStroke=st.stroke&&cdist([d[i*4],d[i*4+1],d[i*4+2]],st.stroke.c)<Math.max(40,cdist([d[i*4],d[i*4+1],d[i*4+2]],[an.bg[i*3],an.bg[i*3+1],an.bg[i*3+2]])*0.8);
+      if(t<0.3&&!okStroke){ mask[i]=0; removed++; } }
+    if(removed){ let cnt=0,a=w,b=h,c=-1,e=-1; for(let i=0;i<N;i++) if(mask[i]){ cnt++; const x=i%w,y=i/w|0; if(x<a)a=x;if(x>c)c=x;if(y<b)b=y;if(y>e)e=y; }
+      an.cnt=cnt; an.tb=cnt?{x0:a,y0:b,x1:c,y1:e}:null; bgList=bgList.filter(i=>mask[i]); }
+    st.refined=true; }
+  if(!an.tb) return st;
+  // the letters without their outline, for font comparison and size
+  if(st.stroke){ let inner=mask; for(let k=0;k<Math.ceil(st.stroke.w);k++) inner=erode(inner,w,h); let cnt=0,a=w,b=h,c=-1,e=-1;
+    for(let i=0;i<N;i++) if(inner[i]){ cnt++; const x=i%w,y=i/w|0; if(x<a)a=x;if(x>c)c=x;if(y<b)b=y;if(y>e)e=y; }
+    if(cnt>20){ st.innerMask=inner; st.innerTb={x0:a,y0:b,x1:c,y1:e}; } }
+  // gradient: top and bottom (or left and right) of the fill differ clearly
+  const inner=(st.stroke?layers.slice(Math.ceil(st.stroke.w)+1).flat().concat(core):deep);
+  if(inner.length>60&&an.tb){ const y0=an.tb.y0,y1=an.tb.y1,x0=an.tb.x0,x1=an.tb.x1,hy=(y1-y0)/3,hx=(x1-x0)/3;
+    const top=inner.filter(i=>(i/w|0)<y0+hy),bot=inner.filter(i=>(i/w|0)>y1-hy),lef=inner.filter(i=>i%w<x0+hx),rig=inner.filter(i=>i%w>x1-hx);
+    const t=medColor(d,top),b=medColor(d,bot),l=medColor(d,lef),r=medColor(d,rig);
+    const ext=(p,q)=>[0,1,2].map(c=>clamp(p[c]+(p[c]-q[c])*0.25,0,255));
+    if(cdist(t,b)>45&&cdist(t,b)>=cdist(l,r)) st.grad={dir:'v',c1:toHex(ext(t,b)),c2:toHex(ext(b,t))}; else if(cdist(l,r)>45) st.grad={dir:'h',c1:toHex(ext(l,r)),c2:toHex(ext(r,l))}; }
+  // shadow or glow: pixels around the letters that are darker (or lighter) than the background, shifted the same way
+  const R=Math.max(2,Math.min(40,Math.round(lineH*0.2))), near=dilate(mask,w,h,2);
+  const dark=new Float32Array(N); for(let i=0;i<N;i++) dark[i]=lum(an.bg[i*3],an.bg[i*3+1],an.bg[i*3+2])-lum(d[i*4],d[i*4+1],d[i*4+2]);
+  const pts=[]; { const step=Math.max(1,Math.floor(bgList.length/1500)); for(let k=0;k<bgList.length;k+=step) pts.push(bgList[k]); }
+  const at=(dx,dy,sign)=>{ let s=0,c=0; for(const i of pts){ const x=i%w+dx,y=(i/w|0)+dy; if(x<0||y<0||x>=w||y>=h) continue; const j=y*w+x; if(near[j]) continue; s+=sign*dark[j]; c++; } return c>pts.length*0.25?s/c:-1e9; };
+  let best={v:-1e9}; for(let dy=-R;dy<=R;dy++) for(let dx=-R;dx<=R;dx++){ if(dx*dx+dy*dy>R*R) continue; const v=at(dx,dy,1); if(v>best.v) best={v,dx,dy}; }
+  const lightRing=(()=>{ const ring=dilate(mask,w,h,Math.max(3,Math.round(R/3))); let s=0,c=0; for(let i=0;i<N;i++) if(ring[i]&&!near[i]){ s+=-dark[i]; c++; } return c?s/c:0; })();
+  const lumBg=lum(...bgc);
+  if(best.v>10&&Math.hypot(best.dx,best.dy)>=1&&!(lightRing>best.v)){
+    const sh=new Uint8Array(N); for(let i=0;i<N;i++) if(mask[i]){ const x=i%w+best.dx,y=(i/w|0)+best.dy; if(x>=0&&y>=0&&x<w&&y<h) sh[y*w+x]=1; }
+    let prev=sh,blur=0; for(let r=1;r<=R;r++){ const nx=dilate(prev,w,h,1); let s=0,c=0; for(let i=0;i<N;i++) if(nx[i]&&!prev[i]&&!near[i]){ s+=dark[i]; c++; } prev=nx; if(c&&s/c<best.v*0.3){ blur=r; break; } blur=r; }
+    st.shadow={dx:best.dx,dy:best.dy,blur:blur*1.6,color:'#000000',alpha:clamp(best.v/Math.max(40,lumBg)*1.6,0.15,0.95)};
+    const er=new Uint8Array(N); const reach=dilate(sh,w,h,Math.ceil(blur+1)); for(let i=0;i<N;i++) if(reach[i]&&dark[i]>Math.max(5,best.v*0.12)) er[i]=1; st.erase=er;
+  } else if(lightRing>12){
+    let prev=dilate(mask,w,h,1),blur=0; for(let r=2;r<=R;r++){ const nx=dilate(prev,w,h,1); let s=0,c=0; for(let i=0;i<N;i++) if(nx[i]&&!prev[i]){ s+=-dark[i]; c++; } prev=nx; if(c&&s/c<lightRing*0.3){ blur=r; break; } blur=r; }
+    const ring=[]; const r2=dilate(mask,w,h,Math.max(3,Math.round(blur/2))); for(let i=0;i<N;i++) if(r2[i]&&!mask[i]) ring.push(i);
+    ring.sort((p,q)=>dark[p]-dark[q]); const top=ring.slice(0,Math.max(5,Math.floor(ring.length*0.2)));
+    const m0=medColor(d,top)||[255,255,255], b0=medColor({length:0}, [])||null;
+    const bgAt=top.length?[0,1,2].map(c=>top.reduce((s3,i)=>s3+an.bg[i*3+c],0)/top.length):bgc;
+    const gc=[0,1,2].map(c=>clamp(bgAt[c]+(m0[c]-bgAt[c])*1.6,0,255));
+    st.shadow={dx:0,dy:0,blur:blur*1.6,color:toHex(gc),alpha:0.9,glow:true};
+    const er=new Uint8Array(N); const reach=dilate(mask,w,h,Math.ceil(blur+1)); for(let i=0;i<N;i++) if(reach[i]&&-dark[i]>Math.max(5,lightRing*0.12)) er[i]=1; st.erase=er;
+  }
+  // edge softness: how wide the blend between letters and background is
+  if(layers.length){ const out=dilate(mask,w,h,1); let part=0; for(let i=0;i<N;i++) if(out[i]&&!mask[i]&&an.dist[i]>an.thr*0.3) part++;
+    const ratio=part/Math.max(1,layers[0].length); st.softRatio=ratio; st.soft=clamp((ratio-0.75)*1.6,0,5); }
+  return st; }
 function clipAn(an,box){ // keep only ink inside box (image px); used for single words so neighbours stay untouched
   an.fullMask=an.mask.slice();
   const x0=Math.floor(box.x0-an.rx),x1=Math.ceil(box.x1-an.rx),y0=Math.floor(box.y0-an.ry),y1=Math.ceil(box.y1-an.ry);
@@ -1005,18 +1109,18 @@ function clipAn(an,box){ // keep only ink inside box (image px); used for single
   an.cnt=cnt; an.tb=cnt?{x0:a,y0:b,x1:c,y1:d}:null;
   if(cnt){ let r=0,g=0,bl=0,m=0; const dd=an.img.data; const ds=[]; for(let i=0;i<an.rw*an.rh;i++) if(an.mask[i]) ds.push(an.dist[i]); ds.sort((p,q)=>p-q); const cut=ds[Math.floor(ds.length*0.55)];
     for(let i=0;i<an.rw*an.rh;i++) if(an.mask[i]&&an.dist[i]>=cut){r+=dd[i*4];g+=dd[i*4+1];bl+=dd[i*4+2];m++} if(m) an.color=hex(r/m,g/m,bl/m); } }
-function inkGrid(an,tb){ // the text's ink shape, shrunk to a small grid, for comparing against fonts
+function inkGrid(an,tb,maskOverride){ const MK=maskOverride||an.mask; // the text's ink shape, shrunk to a small grid, for comparing against fonts
   const x0=Math.round(tb.x0-an.rx),y0=Math.round(tb.y0-an.ry),w=Math.max(1,Math.round(tb.x1-tb.x0)),h=Math.max(1,Math.round(tb.y1-tb.y0));
   const H=32,W=clamp(Math.round(H*w/h),4,320),g=new Uint8Array(W*H);
   for(let gy=0;gy<H;gy++) for(let gx=0;gx<W;gx++){ const sx0=x0+Math.floor(gx*w/W),sx1=x0+Math.max(Math.floor(gx*w/W)+1,Math.floor((gx+1)*w/W)),sy0=y0+Math.floor(gy*h/H),sy1=y0+Math.max(Math.floor(gy*h/H)+1,Math.floor((gy+1)*h/H));
-    let on=0,tot=0; for(let y=sy0;y<sy1;y++) for(let x=sx0;x<sx1;x++){ if(x<0||y<0||x>=an.rw||y>=an.rh) continue; tot++; on+=an.mask[y*an.rw+x]; }
+    let on=0,tot=0; for(let y=sy0;y<sy1;y++) for(let x=sx0;x<sx1;x++){ if(x<0||y<0||x>=an.rw||y>=an.rh) continue; tot++; on+=MK[y*an.rw+x]; }
     g[gy*W+gx]=tot&&on/tot>0.3?1:0; }
   return {g,W,H,aspect:w/h}; }
 const fontWeights=f=>{ const ws=new Set(); document.fonts.forEach(ff=>{ if(ff.family.replace(/["']/g,'')===f&&ff.style!=='italic'){ const n=parseInt(ff.weight)||400; if(n>=300&&n<=900) ws.add(n); } }); return ws.size?[...ws].sort():[400]; };
-async function rankFonts(text,ink){ // render the same text in every font and weight, keep the ones whose shape matches the photo best
+async function rankFonts(text,ink,only){ // render the same text in every font and weight, keep the ones whose shape matches the photo best
   text=String(text).split('\n')[0].trim(); if(!text||!ink) return [];
   const bnT=/[\u0980-\u09FF]/.test(text); const cands=[];
-  for(const [f,l] of FONTS){ if(bnT&&l==='en') continue; for(const w of fontWeights(f)) cands.push([f,w]); }
+  if(only) cands.push(...only); else for(const [f,l] of FONTS){ if(bnT&&l==='en') continue; for(const w of fontWeights(f)) cands.push([f,w]); }
   await Promise.race([Promise.all(cands.map(([f,w])=>document.fonts.load(`${w} 60px "${f}"`,text).catch(()=>{}))),sleep(3000)]);
   const c=rankFonts.c||(rankFonts.c=document.createElement('canvas')), x=c.getContext('2d',{willReadFrequently:true});
   const gc=rankFonts.g||(rankFonts.g=document.createElement('canvas')), gx=gc.getContext('2d',{willReadFrequently:true});
@@ -1036,7 +1140,7 @@ async function rankFonts(text,ink){ // render the same text in every font and we
     let inter=0,uni=0; for(let i=0;i<W*H;i++){ inter+=cg[i]&ink.g[i]; uni+=cg[i]|ink.g[i]; }
     const fill=(cOn-oOn)/Math.max(1,oOn); // too bold or too thin
     const score=0.6*f1+0.4*(uni?inter/uni:0)-0.35*Math.abs(Math.log((bw/bh)/ink.aspect))-0.15*Math.abs(fill)-(!bnT&&FONTS.find(z=>z[0]===f)?.[1]==='bn'?0.03:0);
-    out.push({font:f,weight:w,score}); }
+    out.push({font:f,weight:w,score,bw,bh}); }
   return out.sort((p,q)=>q.score-p.score); }
 function processGraphic(work,it){
   const area=(it.px.x1-it.px.x0)*(it.px.y1-it.px.y0); if(area>work.w*work.h*0.6||area<16) return null;
@@ -1068,32 +1172,56 @@ async function commitBase(b,work){ const url=work.c.toDataURL(work.png?'image/pn
   if(!b.origAsset) b.origAsset=b.assetId; b.setElement(el); b.assetId=id; b.filters=buildFilters(b.fx); b.applyFilters(); b.setCoords(); canvas.requestRenderAll(); }
 async function makeText(sp,m){
   let rank=[];
-  if(!sp.fontKnown&&sp.ink){ try{ rank=await rankFonts(sp.text,sp.ink); }catch(e){} if(rank[0]){ sp.font=rank[0].font; sp.weight=rank[0].weight; sp.autoFont=false; } }
-  if(sp.autoFont){ const bnT=/[\u0980-\u09FF]/.test(sp.text),dn=sp.density||0;
+  if(sp.ink){ try{ rank=await rankFonts(sp.text,sp.ink,sp.fontKnown&&sp.font?[[sp.font,+sp.weight||400]]:null); }catch(e){} if(rank[0]&&!sp.fontKnown){ sp.font=rank[0].font; sp.weight=rank[0].weight; sp.autoFont=false; } }
+  if(sp.autoFont){ const bnT=/[ঀ-৿]/.test(sp.text),dn=sp.density||0;
     [sp.font,sp.weight]=bnT?(dn>0.33?['Baloo Da 2',800]:dn>0.24?['Hind Siliguri',700]:['Hind Siliguri',500]):(dn>0.3?['Montserrat',800]:dn>0.22?['Poppins',600]:['Poppins',400]); }
-  const font=FONTS.some(f=>f[0]===sp.font)?sp.font:(/[\u0980-\u09FF]/.test(sp.text)?'Hind Siliguri':'Montserrat');
+  const font=FONTS.some(f=>f[0]===sp.font)?sp.font:(/[ঀ-৿]/.test(sp.text)?'Hind Siliguri':'Montserrat');
   const weight=clamp(Math.round((+sp.weight||400)/100)*100,300,900);
   await ensureFont(font,weight);
+  const st=sp.style||{}; const sw=st.stroke?st.stroke.w*m.s:0;
   const L=Math.max(1,sp.lines||String(sp.text).split('\n').length);
-  const tw=(sp.tb.x1-sp.tb.x0)*m.s, th=((sp.line?sp.line.y1-sp.line.y0:sp.tb.y1-sp.tb.y0))*m.s;
+  const tw=(sp.tb.x1-sp.tb.x0)*m.s, tbh=(sp.tb.y1-sp.tb.y0)*m.s, th=((sp.line?sp.line.y1-sp.line.y0:sp.tb.y1-sp.tb.y0))*m.s;
   const bnText=/[ঀ-৿]/.test(sp.text), capsOnly=!bnText&&sp.text===sp.text.toUpperCase();
   const glyph=bnText?0.95:capsOnly?0.72:0.9;
-  let fs=Math.max(6,(th/L)/glyph);
-  const t=new fabric.Textbox(String(sp.text),{fontFamily:font,fontWeight:weight,fontStyle:sp.italic?'italic':'normal',fill:sp.color,fontSize:fs,
-    textAlign:['left','center','right'].includes(sp.align)?sp.align:'center',width:Math.max(tw*4,400),lineHeight:1.1,paintFirst:'stroke',strokeUniform:true});
+  const fit=rank.find(r=>r.font===font&&r.weight===weight);
+  let fs, cs=0;
+  if(fit&&L===1&&fit.score>0.3){
+    // size from the measured ink height of this exact text in this font; letter spacing makes up the width
+    const ib=sp.innerTb, ih=ib?(ib.y1-ib.y0)*m.s:tbh-2*sw, iw=ib?(ib.x1-ib.x0)*m.s:tw-2*sw;
+    fs=Math.max(4,ih*100/fit.bh);
+    const n=fabric.util.string.graphemeSplit(String(sp.text)).length, expect=fit.bw*fs/100;
+    if(n>1){ cs=clamp((iw-expect)/(n-1)/fs*1000,-120,400); if(Math.abs(cs)<8) cs=0; }
+  } else fs=Math.max(6,(th/L)/glyph);
+  const t=new fabric.Textbox(String(sp.text),{fontFamily:font,fontWeight:weight,fontStyle:sp.italic?'italic':'normal',fill:sp.color,fontSize:fs,charSpacing:cs,
+    textAlign:sp.line?'left':(['left','center','right'].includes(sp.align)?sp.align:'center'),width:Math.max(tw*4,400),lineHeight:1.1,paintFirst:'stroke',strokeUniform:true,strokeLineJoin:'round'});
   const lh=()=>L>1?clamp((th-fs*glyph)/((L-1)*1.13*fs),0.75,2.4):1.1;
   t.set({lineHeight:lh()});t.initDimensions();
   const mctx=(makeText._c||(makeText._c=document.createElement('canvas').getContext('2d')));
   const shaped=f=>{ mctx.font=`${sp.italic?'italic ':''}${weight} ${f}px "${font}"`; return Math.max(...String(sp.text).split('\n').map(l=>mctx.measureText(l).width)); };
-  const nat=shaped(fs); if(nat>0){ fs*=sp.line?clamp(tw/nat,0.85,1.18):clamp(tw/nat,0.7,1.45); t.set({fontSize:fs}); t.set({lineHeight:lh()}); t.initDimensions(); }
-  t.set({width:Math.max(t.calcTextWidth(),shaped(fs))+fs*0.25}); t.initDimensions();
-  if(sp.outline&&/^#[0-9a-f]{6}$/i.test(sp.outline)) t.set({stroke:sp.outline,strokeWidth:fs*0.07});
-  const cy=sp.line?(sp.line.y0+sp.line.y1)/2:(sp.tb.y0+sp.tb.y1)/2;
-  const wordMode=!!sp.line; if(wordMode) t.set({textAlign:'left'});
-  t.set({originX:wordMode?(b0=>b0.flipX?'right':'left')(base()):'center',originY:'center',left:wordMode?m.x(sp.tb.x0)-fs*0.06:m.x((sp.tb.x0+sp.tb.x1)/2),top:m.y(cy),kind:'text',found:true,layerName:'লেখা',
-    hintIds:sp.hintIds||null,fontRank:rank.slice(0,5).map(r=>[r.font,r.weight])});
+  if(!(fit&&L===1&&fit.score>0.3)){ const nat=shaped(fs); if(nat>0){ fs*=sp.line?clamp(tw/nat,0.85,1.18):clamp(tw/nat,0.7,1.45); t.set({fontSize:fs}); t.set({lineHeight:lh()}); t.initDimensions(); } }
+  t.set({width:1e5}); t.initDimensions(); t.set({width:t.calcTextWidth()+fs*0.3}); t.initDimensions();
+  // look: gradient, outline, shadow or glow, soft edges
+  if(st.grad&&!sp.trustColor) t.set('fill',makeGrad(st.grad.dir,st.grad.c1,st.grad.c2));
+  if(st.stroke) t.set({stroke:st.stroke.color,strokeWidth:2*sw});
+  else if(sp.outline&&/^#[0-9a-f]{6}$/i.test(sp.outline)) t.set({stroke:sp.outline,strokeWidth:fs*0.07});
+  if(st.shadow){ const c=st.shadow.color; const n=parseInt(c.slice(1),16); t.set('shadow',new fabric.Shadow({color:`rgba(${n>>16&255},${n>>8&255},${n&255},${st.shadow.alpha.toFixed(2)})`,blur:Math.max(0,st.shadow.blur*m.s),offsetX:st.shadow.dx*m.s,offsetY:st.shadow.dy*m.s})); }
+  if(st.soft>0.15){ t.set({softness:st.soft*m.s,objectCaching:false}); }
+  t.set({kind:'text',found:true,layerName:'লেখা',hintIds:sp.hintIds||null,fontRank:sp.fontKnown?[]:rank.slice(0,5).map(r=>[r.font,r.weight])});
+  // place it so its letters land exactly where the old letters were
+  const tcx=m.x((sp.tb.x0+sp.tb.x1)/2), tcy=m.y((sp.tb.y0+sp.tb.y1)/2);
+  t.set({originX:'center',originY:'center',left:tcx,top:tcy}); t.setCoords();
+  try{ const br=t.getBoundingRect(true,true), mul=Math.min(1,700/Math.max(br.width,br.height));
+    const el=t.toCanvasElement({multiplier:mul,withoutShadow:true}), x=el.getContext('2d'), dd=x.getImageData(0,0,el.width,el.height).data;
+    let a=el.width,b=el.height,c=-1,e=-1; for(let y=0;y<el.height;y++) for(let xx=0;xx<el.width;xx++) if(dd[(y*el.width+xx)*4+3]>110){ if(xx<a)a=xx;if(xx>c)c=xx;if(y<b)b=y;if(y>e)e=y; }
+    if(c>=0){ const ox=((a+c+1)/2-el.width/2)/mul, oy=((b+e+1)/2-el.height/2)/mul; t.set({left:tcx-ox,top:tcy-oy}); }
+  }catch(err){}
+  if(sp.line){ t.setCoords(); const pl=t.getPointByOrigin('left','center'); t.set({originX:'left',originY:'center',left:pl.x,top:pl.y}); }
   t.setCoords(); canvas.add(t); return t;
 }
+function makeGrad(dir,c1,c2){ return new fabric.Gradient({type:'linear',gradientUnits:'percentage',coords:dir==='h'?{x1:0,y1:0,x2:1,y2:0}:{x1:0,y1:0,x2:0,y2:1},colorStops:[{offset:0,color:c1},{offset:1,color:c2}]}); }
+/* soft edges for text: blur while drawing */
+(function(){ const r=fabric.Textbox.prototype._render; fabric.Textbox.prototype._render=function(ctx){ const s=this.softness;
+  if(s>0.05){ const tf=ctx.getTransform(), sc=Math.hypot(tf.a,tf.b)||1; ctx.save(); ctx.filter=`blur(${(s*sc*0.6).toFixed(2)}px)`; r.call(this,ctx); ctx.restore(); } else r.call(this,ctx); }; })();
 async function runItems(items,work){
   const b=base(); work=work||await getBaseWork(b);
   const texts=[],graphics=[];
@@ -1161,6 +1289,13 @@ function getOcr(){ if(!ocrP){ ocrP=(async()=>{
     return await Tesseract.createWorker(['ben','eng'],1,{workerPath:wUrl,corePath:cUrl,workerBlobURL:false,cacheMethod:'readOnly',gzip:true,langPath:'tess/lang',
       logger:m=>{ if(S.busy&&m&&typeof m.progress==='number'){ const lbl=m.status==='recognizing text'?'লেখা পড়ছি':'প্রস্তুত হচ্ছে'; $('#busyP').textContent=`${lbl}… ${bn(Math.round(m.progress*100))}%`; } }});
   })(); ocrP.catch(()=>{ocrP=null}); } return ocrP; }
+/* ---------- eyedropper ---------- */
+canvas.on('mouse:down:before',o=>{ if(!S.pickColor) return; const p=canvas.getPointer(o.e,true), rs=canvas.getRetinaScaling();
+  const sel=S.pickSel, keep=sel&&sel.visible!==false; if(keep){ sel.visible=false; canvas.renderAll(); }
+  const px=canvas.contextContainer.getImageData(Math.round(p.x*rs),Math.round(p.y*rs),1,1).data; if(keep){ sel.visible=true; }
+  const col=hex(px[0],px[1],px[2]), prop=S.pickColor; S.pickColor=null; canvas.defaultCursor='default';
+  S.pickRestore=sel; setTimeout(()=>{ if(S.pickRestore&&canvas.getObjects().includes(S.pickRestore)){ canvas._currentTransform=null; canvas.setActiveObject(S.pickRestore); } S.pickRestore=null;
+    setProp(prop,col); save(); canvas.requestRenderAll(); renderPanel(); toast('রঙ নেওয়া হয়েছে'); },0); });
 /* ---------- hints: found text stays untouched until you tap it ---------- */
 S.hints=[]; S.showHints=true; let hintSeq=0;
 function setHints(list){ S.hints=list.map(h=>({...h,id:'h'+(++hintSeq),done:false})); syncHints(); canvas.requestRenderAll(); }
