@@ -1,0 +1,13 @@
+# build output and tool cache
+build/
+.cache/
+android/build/
+android/dist/
+
+# generated from web/rong-studio.html by tools/make_index.py
+android/assets/index.html
+
+# never commit the signing key
+*.keystore
+*.jks
+*.idsig
