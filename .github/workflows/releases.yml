@@ -1,0 +1,28 @@
+# Every APK in releases/ gets its own GitHub Release (v1.1, v1.2, …) with
+# the notes from the matching .md file. Releases that already exist are left alone.
+name: Publish releases
+on:
+  push:
+    branches: [main]
+    paths: ["releases/**"]
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Create missing releases
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          for apk in $(ls releases/RongStudio-v*.apk | sort -V); do
+            v=$(basename "$apk" .apk); v=${v#RongStudio-v}
+            if gh release view "v$v" >/dev/null 2>&1; then echo "v$v already published"; continue; fi
+            notes="releases/RongStudio-v$v.md"; [ -f "$notes" ] || notes=/dev/null
+            gh release create "v$v" "$apk" --title "রং স্টুডিও v$v" --notes-file "$notes" --target "$GITHUB_SHA"
+          done
+          # mark the newest as latest
+          newest=$(ls releases/RongStudio-v*.apk | sort -V | tail -1); nv=$(basename "$newest" .apk); nv=${nv#RongStudio-v}
+          gh release edit "v$nv" --latest || true

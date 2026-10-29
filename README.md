@@ -4,7 +4,7 @@
 
 <p align="center">ছবির ভেতরের লেখায় চাপ দিন, আর সরাসরি বদলে ফেলুন।<br>বাংলা ও ইংরেজি লেখা পড়তে পারে, ইন্টারনেট ছাড়াই চলে।</p>
 
-<p align="center"><a href="https://github.com/hemelsid/Rong-Studio/releases/latest"><b>⬇ সর্বশেষ অ্যাপ ডাউনলোড করুন</b></a></p>
+<p align="center"><a href="https://github.com/hemelsid/Rong-Studio/raw/main/releases/RongStudio-v1.3.apk"><b>⬇ সর্বশেষ অ্যাপ ডাউনলোড করুন (v1.3)</b></a></p>
 
 <p align="center">
   <img src="docs/smart-edit.png" width="240" alt="স্মার্ট এডিট: ছবির লেখা আলাদা করা">
@@ -29,7 +29,7 @@
 
 ## ইনস্টল
 
-1. [Releases](https://github.com/hemelsid/Rong-Studio/releases) থেকে `RongStudio-vX.X.apk` ডাউনলোড করুন।
+1. নিচের **ভার্সনসমূহ** তালিকা থেকে APK ডাউনলোড করুন। সবচেয়ে উপরেরটাই সর্বশেষ।
 2. ফাইল ম্যানেজার থেকে ফাইলটা খুলুন। “অজানা অ্যাপ ইনস্টল” এর অনুমতি চাইলে চালু করুন।
 3. Play Protect সতর্ক করলে **More details → Install anyway** চাপুন।
 
@@ -39,13 +39,13 @@
 
 ## ভার্সনসমূহ
 
-প্রতিটা ভার্সনের APK [Releases](https://github.com/hemelsid/Rong-Studio/releases) পাতায় রাখা আছে, যেকোনো সময় ডাউনলোড করা যায়।
+প্রতিটা ভার্সনের APK [`releases/`](releases) ফোল্ডারে রাখা আছে, যেকোনো সময় ডাউনলোড করা যায়। ডাউনলোড লিংকে চাপলেই ফাইল নেমে আসবে।
 
-| ভার্সন | যা বদলেছে |
-|---|---|
-| [v1.3](https://github.com/hemelsid/Rong-Studio/releases/tag/v1.3) | খুঁজে পাওয়া লেখা আসল মাপের কাছাকাছি বসে। পাশের তারা বা আইকনের জন্য লেখা আর বড় হয়ে যায় না। প্যানেল খুললে উপর থেকে শুরু হয়। |
-| [v1.2](https://github.com/hemelsid/Rong-Studio/releases/tag/v1.2) | পুরো স্ক্রিন ক্যানভাস, দুই আঙুলে জুম, প্রথম চাপে লেখা নড়ে না, টেনে সরানো ও ভাসমান প্যানেল। |
-| [v1.1](https://github.com/hemelsid/Rong-Studio/releases/tag/v1.1) | Android 7 থেকে চলে। যেসব ফোনে “App not installed” আসত সেখানে ইনস্টল হয়। |
+| ভার্সন | ডাউনলোড | যা বদলেছে |
+|---|---|---|
+| **v1.3** (সর্বশেষ) | [APK, ৯ MB](https://github.com/hemelsid/Rong-Studio/raw/main/releases/RongStudio-v1.3.apk) | খুঁজে পাওয়া লেখা আসল মাপের কাছাকাছি বসে। পাশের তারা বা আইকনের জন্য লেখা আর বড় হয়ে যায় না। প্যানেল খুললে উপর থেকে শুরু হয়। |
+| v1.2 | [APK, ৯ MB](https://github.com/hemelsid/Rong-Studio/raw/main/releases/RongStudio-v1.2.apk) | পুরো স্ক্রিন ক্যানভাস, দুই আঙুলে জুম, প্রথম চাপে লেখা নড়ে না, টেনে সরানো ও ভাসমান প্যানেল। |
+| v1.1 | [APK, ৯ MB](https://github.com/hemelsid/Rong-Studio/raw/main/releases/RongStudio-v1.1.apk) | Android 7 থেকে চলে। যেসব ফোনে “App not installed” আসত সেখানে ইনস্টল হয়। |
 
 ## ফোল্ডার
 
@@ -57,6 +57,7 @@ android/               অ্যান্ড্রয়েড অ্যাপ: 
 tools/build.sh         সাইন করা APK বানায়
 tools/make_index.py    ওয়েব এডিটর থেকে অ্যাপের অফলাইন পেজ বানায়
 tools/zipalign.py      APK সাজায় (Android SDK ছাড়াই)
+releases/              প্রতিটা ভার্সনের APK আর তার পরিবর্তনের নোট
 ```
 
 ## নিজে APK বানানো
@@ -70,6 +71,8 @@ export RONG_KEYSTORE=~/.rong/rong.keystore    # সাইনিং চাবি�
 ```
 
 তৈরি ফাইল `build/RongStudio-v1.4.apk` এ পাওয়া যাবে। প্রতিবার ভার্সন কোড অন্তত ১ বাড়াতে হবে।
+
+নতুন ভার্সন প্রকাশ করতে APK-টা `releases/` ফোল্ডারে রাখুন, সঙ্গে একই নামের একটা `.md` ফাইলে কী বদলেছে লিখুন। তারপর README-র ভার্সন তালিকায় একটা লাইন যোগ করুন। `.github/workflows/releases.yml` চালু থাকলে GitHub নিজে থেকেই প্রতিটা ভার্সনের জন্য Release পাতা বানিয়ে দেবে।
 
 > **সাইনিং চাবি (`rong.keystore`) এই repo-তে নেই, রাখবেনও না।** repo-টা public। সব আপডেট একই চাবি দিয়ে সাইন করতে হয়, না হলে ফোন পুরোনো অ্যাপের উপরে নতুনটা ইনস্টল করতে দেবে না। চাবিটা নিরাপদ জায়গায় (Google Drive, পেনড্রাইভ) রেখে দিন।
 
