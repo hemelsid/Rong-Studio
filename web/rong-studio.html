@@ -128,7 +128,8 @@ input[type=range]{width:100%;accent-color:var(--accent);height:26px}
 .seg button+button{border-left:1px solid var(--line)}
 .seg button.on{background:var(--accent);color:var(--accent-ink)}
 select,textarea,input[type=number],input[type=text]{background:var(--raise);border:1px solid var(--line);border-radius:10px;padding:8px 10px;min-width:0}
-textarea{width:100%;resize:vertical;line-height:1.5}
+textarea{width:100%;box-sizing:border-box;resize:vertical;line-height:1.5}
+select{box-sizing:border-box}
 select{height:38px;width:100%}
 .fl{display:flex;flex-direction:column;gap:6px}
 .fl>span{color:var(--muted);font-size:13px}
@@ -686,7 +687,8 @@ function cropUI(){ return `<div class="sec"><div class="pt">ক্রপ</div><p
 function renderPanel(){
   const p=$('#panel');const sc=p.scrollTop;const o=active();let h;
   if(S.crop) h=S.cropMode==='pick'?pickUI():cropUI(); else if(o&&S.tab!=='draw') h=propsUI(o); else h=tabUI(S.tab);
-  p.innerHTML=`<div class="pin">${h}</div>`;p.scrollTop=sc;armFiles(p);
+  const key=S.crop?'crop':(o&&S.tab!=='draw')?'obj:'+(o.type==='activeSelection'?'multi':(o.layerName||'')+canvas.getObjects().indexOf(o)):'tab:'+S.tab;
+  p.innerHTML=`<div class="pin">${h}</div>`;p.scrollTop=key===S.panelKey?sc:0;S.panelKey=key;armFiles(p);
   if(p.querySelector('.pre canvas')) drawThumbs(o&&o.type==='image'?o:fxTarget());
   document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('on',b.dataset.t===S.tab&&S.sheet.open));
   const tl=TABS.find(x=>x[0]===S.tab); $('#sheetTitle').textContent=S.crop?(S.cropMode==='pick'?'অংশ বাছাই':'ক্রপ'):(o&&S.tab!=='draw')?'এডিট':(tl?tl[1]:'');
@@ -931,6 +933,10 @@ function processText(work,it){
   let tb=it.px, color=it.color, density=0;
   if(an&&an.tb&&an.cnt>12){
     tb={x0:an.rx+an.tb.x0,y0:an.ry+an.tb.y0,x1:an.rx+an.tb.x1+1,y1:an.ry+an.tb.y1+1};
+    { // keep the text box near the box we were given, so nearby stars or icons do not inflate the font size
+      const g=it.px,mh=(g.y1-g.y0)*0.15,mw=(g.y1-g.y0)*0.3;
+      tb={x0:Math.max(tb.x0,g.x0-mw),y0:Math.max(tb.y0,g.y0-mh),x1:Math.min(tb.x1,g.x1+mw),y1:Math.min(tb.y1,g.y1+mh)};
+      if(tb.x1-tb.x0<4||tb.y1-tb.y0<4) tb=g; }
     const lineH=(tb.y1-tb.y0)/Math.max(1,it.lines||1);
     const mu=dilate(an.mask,an.rw,an.rh,Math.max(2,Math.round(lineH*0.07)));
     harmonic(an,mu,Math.min(10,an.tex*0.8)); work.x.putImageData(an.img,an.rx,an.ry);
@@ -982,8 +988,10 @@ async function makeText(sp,m){
     textAlign:['left','center','right'].includes(sp.align)?sp.align:'center',width:Math.max(tw*4,400),lineHeight:1.1,paintFirst:'stroke',strokeUniform:true});
   const lh=()=>L>1?clamp((th-fs*glyph)/((L-1)*1.13*fs),0.75,2.4):1.1;
   t.set({lineHeight:lh()});t.initDimensions();
-  const nat=t.calcTextWidth(); if(nat>0){ fs*=clamp(tw/nat,0.7,1.45); t.set({fontSize:fs}); t.set({lineHeight:lh()}); t.initDimensions(); }
-  t.set({width:t.calcTextWidth()+fs*0.25}); t.initDimensions();
+  const mctx=(makeText._c||(makeText._c=document.createElement('canvas').getContext('2d')));
+  const shaped=f=>{ mctx.font=`${sp.italic?'italic ':''}${weight} ${f}px "${font}"`; return Math.max(...String(sp.text).split('\n').map(l=>mctx.measureText(l).width)); };
+  const nat=shaped(fs); if(nat>0){ fs*=clamp(tw/nat,0.7,1.45); t.set({fontSize:fs}); t.set({lineHeight:lh()}); t.initDimensions(); }
+  t.set({width:Math.max(t.calcTextWidth(),shaped(fs))+fs*0.25}); t.initDimensions();
   if(sp.outline&&/^#[0-9a-f]{6}$/i.test(sp.outline)) t.set({stroke:sp.outline,strokeWidth:fs*0.07});
   t.set({originX:'center',originY:'center',left:m.x((sp.tb.x0+sp.tb.x1)/2),top:m.y((sp.tb.y0+sp.tb.y1)/2),kind:'text',found:true,layerName:'লেখা'});
   t.setCoords(); canvas.add(t); return t;
