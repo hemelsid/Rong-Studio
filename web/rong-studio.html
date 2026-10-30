@@ -185,6 +185,22 @@ select{height:38px;width:100%}
 .filebtn{position:relative;overflow:hidden}
 .fileov{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer;font-size:100px;z-index:2}
 
+/* desktop: menu bar, layers dock */
+.menubar{display:none;align-items:center;gap:2px;margin-left:10px}
+.menubar>div{position:relative}
+.mb{height:32px;padding:0 10px;border:0;border-radius:8px;background:transparent;color:var(--fg);font-weight:500}
+.mb:hover,.mb.on{background:var(--raise)}
+.menu{position:absolute;left:0;top:36px;z-index:70;min-width:260px;padding:6px;border-radius:12px;background:var(--panel);border:1px solid var(--line);box-shadow:0 14px 44px var(--shadow);display:flex;flex-direction:column}
+.mi{display:flex;align-items:center;justify-content:space-between;gap:24px;height:34px;padding:0 10px;border:0;border-radius:8px;background:transparent;text-align:left;color:var(--fg);white-space:nowrap}
+.mi:hover{background:var(--accent-soft)}
+.mi kbd{font:12px ui-monospace,Consolas,monospace;color:var(--muted)}
+.msep{height:1px;background:var(--line);margin:5px 4px}
+.layersdock{flex:none;max-height:38%;overflow:auto;border-top:1px solid var(--line);padding:10px 14px 14px}
+.layersdock .lrow{padding:3px 4px 3px 10px}
+.layersdock .lrow .ib{width:28px;height:28px}
+.layersdock .lrow .ib svg.i{width:16px;height:16px}
+.toolhint{position:absolute;left:max(10px,env(safe-area-inset-left,0px));bottom:10px;z-index:5;padding:6px 10px;border-radius:10px;background:var(--panel);border:1px solid var(--line);font-size:12px;color:var(--muted)}
+@media (min-width:900px){ .menubar{display:flex} .brand span{display:none} }
 /* tabs */
 .tabs{grid-area:tabs;display:flex;gap:2px;overflow-x:auto;background:var(--panel);border-top:1px solid var(--line);
   padding-block:6px;padding-left:max(10px,env(safe-area-inset-left,0px));padding-right:max(10px,env(safe-area-inset-right,0px))}
@@ -214,7 +230,9 @@ select{height:38px;width:100%}
 
 <div class="app">
   <header class="top">
-    <div class="brand"><b>রং</b><span>ছবি সম্পাদক</span></div>
+    <div class="brand" style="margin-right:0"><b>রং</b><span>ছবি সম্পাদক</span></div>
+    <nav class="menubar" id="menubar" aria-label="মেনু"></nav>
+    <span style="margin-right:auto"></span>
     <button class="btn sm newimg" data-a="newImg" aria-label="নতুন ছবি খুলুন" title="নতুন ছবি খুলুন"><span id="newIc"></span><span class="lbl">নতুন ছবি</span></button>
     <button class="ib" id="undo" aria-label="আনডু" title="আনডু (Ctrl+Z)"></button>
     <button class="ib" id="redo" aria-label="রিডু" title="রিডু (Ctrl+Y)"></button>
@@ -227,6 +245,7 @@ select{height:38px;width:100%}
     <div class="floatbar" id="bar" hidden></div>
     <div class="busy" id="busy" hidden><div class="card"><div class="spin"></div><div><b id="busyT">লেখা খুঁজছি…</b><p id="busyP">ছবির লেখা ও লোগো আলাদা করা হচ্ছে। ৩০–৬০ সেকেন্ড লাগতে পারে।</p></div><button class="btn sm" id="busyStop">থামান</button></div></div>
     <div class="chip" id="chip"><span><strong>নমুনা পোস্টার।</strong> যেকোনো লেখায় চাপ দিয়ে বদলে দেখুন</span><button class="btn sm primary" data-a="openBase">নিজের ছবি</button></div>
+    <div class="toolhint" id="toolHint" hidden></div>
     <div class="zoom">
       <button class="ib" id="zOut" aria-label="ছোট করুন"></button>
       <output id="zLbl">১০০%</output>
@@ -240,6 +259,7 @@ select{height:38px;width:100%}
       <button class="ib" id="sheetMode" aria-label="ভাসমান করুন" title="ভাসমান করুন / নিচে বসান"></button>
       <button class="ib" id="sheetClose" aria-label="প্যানেল বন্ধ" title="বন্ধ করুন"></button></div>
     <div class="panel" id="panel" aria-live="polite"></div>
+    <div class="layersdock" id="layersDock" hidden></div>
     <div class="sheet-resize" id="sheetResize" aria-hidden="true"></div>
   </section>
   <nav class="tabs" id="tabs" aria-label="টুল"></nav>
@@ -249,7 +269,7 @@ select{height:38px;width:100%}
   <div class="mbox" role="dialog" aria-label="ছবি সেভ">
     <div class="ph"><div class="pt">ছবি সেভ করুন</div><button class="ib" id="expClose" aria-label="বন্ধ"></button></div>
     <img id="expImg" alt="এক্সপোর্টের প্রিভিউ">
-    <div class="mrow"><span class="eyebrow">ফরম্যাট</span><div class="seg" id="expFmt"><button data-v="png" class="on">PNG</button><button data-v="jpg">JPG</button><button data-v="webp">WebP</button></div></div>
+    <div class="mrow"><span class="eyebrow">ফরম্যাট</span><div class="seg" id="expFmt"><button data-v="png" class="on">PNG</button><button data-v="jpg">JPG</button><button data-v="webp">WebP</button><button data-v="svg">SVG</button></div></div>
     <div class="mrow"><span class="eyebrow">মাপ</span><div class="seg" id="expScale"><button data-v="1" class="on">১×</button><button data-v="2">২×</button></div></div>
     <div class="mrow"><span class="hint" id="expInfo"></span></div>
     <div class="note" id="expFallback" hidden>এখানে সরাসরি ডাউনলোড চালু নেই। উপরের ছবিটি চেপে ধরে (কম্পিউটারে রাইট-ক্লিক করে) “ছবি সেভ করুন” বেছে নিন।</div>
@@ -326,7 +346,7 @@ const FONTS=[['Hind Siliguri','bn'],['Anek Bangla','bn'],['Baloo Da 2','bn'],['T
 const FONT_HINT='Hind Siliguri (clean Bengali sans, default for Bengali body text), Anek Bangla (modern bold Bengali display), Baloo Da 2 (rounded heavy Bengali display), Tiro Bangla (Bengali serif), Noto Serif Bengali (Bengali serif), Galada (Bengali calligraphic), Atma (playful Bengali), Mina (geometric Bengali), Montserrat (geometric Latin sans), Poppins (rounded geometric Latin sans), Roboto (neutral Latin sans), Oswald (condensed Latin sans), Bebas Neue (tall all-caps condensed), Playfair Display (Latin serif), Pacifico (Latin script), Lobster (bold Latin script), Caveat (handwriting)';
 if(window.Intl&&Intl.Segmenter){ const seg=new Intl.Segmenter(undefined,{granularity:'grapheme'}); fabric.util.string.graphemeSplit=t=>Array.from(seg.segment(t),s=>s.segment); }
 const SW=['#ffffff','#111111','#f2b42c','#e4572e','#d7263d','#ff8fab','#7b2cbf','#2e86ab','#1b998b','#8ac926','#6b4423','#9aa0a6'];
-const KIND={text:'লেখা',emoji:'ইমোজি',shape:'আকার',line:'রেখা',image:'ছবি',draw:'আঁকা'};
+const KIND={group:'গ্রুপ',text:'লেখা',emoji:'ইমোজি',shape:'আকার',line:'রেখা',image:'ছবি',draw:'আঁকা'};
 const PROPS=['softness','hintIds','fontRank','found','origAsset','name','kind','assetId','isBase','locked','fx','layerName','selectable','evented','hasControls','lockMovementX','lockMovementY','lockScalingX','lockScalingY','lockRotation','perPixelTargetFind','paintFirst','strokeUniform'];
 const PRESETS={
  'মূল':{}, 'উজ্জ্বল':{saturation:30,contrast:15,vibrance:20}, 'উষ্ণ':{warmth:55,saturation:10,brightness:3},
@@ -552,7 +572,7 @@ async function runQuick(i){ S.batch=true; try{ await QUICK[i].run() } finally{ S
 const active=()=>{const o=canvas.getActiveObject();return o&&!o.isBase&&o.name!=='__crop'?o:null};
 const targets=()=>{const o=active();if(!o)return[];return o.type==='activeSelection'?o.getObjects():[o]};
 function setLocked(o,v){o.set({locked:v,lockMovementX:v,lockMovementY:v,lockScalingX:v,lockScalingY:v,lockRotation:v,hasControls:!v});if(o.isBase)o.set({selectable:!v,evented:!v})}
-function kindOf(o){return o.kind||(o.type==='textbox'?'text':o.type==='image'?'image':o.type==='path'?'draw':'shape')}
+function kindOf(o){return o.type==='group'?'group':o.kind||(o.type==='textbox'?'text':o.type==='image'?'image':o.type==='path'?'draw':'shape')}
 function nameOf(o){ if(o.isBase) return 'মূল ছবি'; if(o.type==='textbox') return (o.text||'').replace(/\s+/g,' ').trim().slice(0,28)||'লেখা'; if(o.kind==='emoji') return 'ইমোজি '+o.text; return o.layerName||KIND[kindOf(o)]||'বস্তু' }
 
 function act(a){
@@ -677,6 +697,9 @@ function propsUI(o){
   const op=multi?1:(t.opacity??1);
   h+=sec('স্বচ্ছতা',rng('অস্বচ্ছতা','data-p="opacity"',0,1,0.01,op,v=>bn(Math.round(v*100))+'%'));
   if(!multi) h+=shadowUI(t);
+  if(multi) h+=sec('একসাথে মেলান',`<div class="row" style="gap:6px">${[['l','বাঁয়ে'],['ch','মাঝে ↔'],['r','ডানে'],['t','উপরে'],['cv','মাঝে ↕'],['b','নিচে'],['dh','সমান ফাঁক ↔'],['dv','সমান ফাঁক ↕']].map(([v,l])=>`<button class="btn sm" data-a="al" data-v="${v}">${l}</button>`).join('')}</div>
+    <div class="row" style="gap:6px"><button class="btn sm" data-a="grp">গ্রুপ করুন</button></div>`);
+  else if(t&&t.type==='group') h+=sec('গ্রুপ',`<div class="row"><button class="btn sm" data-a="ungrp">গ্রুপ ভাঙুন</button></div>`);
   h+=sec('সাজানো',`<div class="row"><div class="seg"><button data-a="cH" aria-label="মাঝে আড়াআড়ি">${ic('cH')}</button><button data-a="cV" aria-label="মাঝে লম্বালম্বি">${ic('cV')}</button></div>
     <div class="seg"><button data-a="front" aria-label="একদম সামনে">${ic('top')}</button><button data-a="back" aria-label="একদম পেছনে">${ic('bottom')}</button></div>
     <div class="seg"><button data-a="flipX" aria-label="আড়াআড়ি উল্টান">${ic('flip')}</button><button data-a="flipY" aria-label="লম্বালম্বি উল্টান">${ic('flipV')}</button></div>
@@ -727,6 +750,7 @@ function renderPanel(){
   p.innerHTML=`<div class="pin">${h}</div>`;p.scrollTop=key===S.panelKey?sc:0;S.panelKey=key;armFiles(p);
   if(p.querySelector('.pre canvas')) drawThumbs(o&&o.type==='image'?o:fxTarget());
   document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('on',b.dataset.t===S.tab&&S.sheet.open));
+  setTimeout(renderLayersDock,0);
   const tl=TABS.find(x=>x[0]===S.tab); $('#sheetTitle').textContent=S.crop?(S.cropMode==='pick'?'অংশ বাছাই':'ক্রপ'):(o&&S.tab!=='draw')?'এডিট':(tl?tl[1]:'');
 }
 function setTab(t){
@@ -811,7 +835,7 @@ panel.addEventListener('change',e=>{
   if(el.dataset.p==='drawColor') return;
   if(el.id==='pText'||el.dataset.p||el.dataset.fx) save();
 });
-panel.addEventListener('click',async e=>{
+const panelClick=async e=>{
   if(e.target.classList&&e.target.classList.contains('fileov'))return;
   const b=e.target.closest('[data-a]');if(!b)return;const a=b.dataset.a,v=b.dataset.v;
   const t=active();
@@ -860,9 +884,15 @@ panel.addEventListener('click',async e=>{
     case 'pick':if(!base()){toast('আগে একটি ছবি খুলুন');break}startCrop('pick');break;
     case 'pickText':case 'pickGraphic':case 'pickErase':endCrop(a);break;
     case 'fsel':{const o=canvas.item(+v);if(o){canvas.setActiveObject(o);canvas.requestRenderAll()}break}
+    case 'al':alignObjs(v);break;
+    case 'grp':groupSel();break;
+    case 'ungrp':ungroupSel();break;
+    case 'lup':case 'ldown':{const o=canvas.item(+v);if(!o||o.isBase)break; if(a==='lup')canvas.bringForward(o); else { const i=canvas.getObjects().indexOf(o); if(base()&&i<=1){toast('মূল ছবির নিচে নেওয়া যাবে না');break} canvas.sendBackwards(o); } canvas.requestRenderAll();save();renderPanel();break}
     default:act(a);
   }
-});
+};
+panel.addEventListener('click',panelClick);
+$('#layersDock').addEventListener('click',panelClick);
 function relayout(){targets().forEach(o=>{o.initDimensions&&o.initDimensions();o.dirty=true;o.setCoords()});canvas.requestRenderAll();save();renderPanel()}
 $('#chip').addEventListener('click',e=>{if(e.target.classList.contains('fileov'))return;if(e.target.closest('[data-a="openBase"]'))$('#fBase').click()});
 
@@ -1519,7 +1549,7 @@ function toBlob(u){const [h,b]=u.split(',');const mime=h.match(/:(.*?);/)[1];con
 async function getDL(){ try{ return window.claude&&window.claude.use? await window.claude.use('downloads'):null }catch(e){return null} }
 function maxScale(){ return Math.max(1,Math.min(2,Math.floor(4096/Math.max(S.W,S.H)*10)/10)); }
 function updExp(){
-  const sc=Math.min(S.exp.scale,maxScale());$('#expInfo').textContent=`${bn(Math.round(S.W*sc))} × ${bn(Math.round(S.H*sc))} পিক্সেল · ${S.exp.fmt.toUpperCase()}${S.exp.fmt==='jpg'?' (স্বচ্ছ অংশ সাদা হবে)':''}`;
+  const sc=Math.min(S.exp.scale,maxScale());$('#expInfo').textContent=S.exp.fmt==='svg'?'SVG: লেখা আর আকার ভেক্টর থাকে, যেকোনো মাপে ঝকঝকে। ফন্টগুলো যে কম্পিউটারে খুলবেন সেখানে ইনস্টল থাকতে হবে।':`${bn(Math.round(S.W*sc))} × ${bn(Math.round(S.H*sc))} পিক্সেল · ${S.exp.fmt.toUpperCase()}${S.exp.fmt==='jpg'?' (স্বচ্ছ অংশ সাদা হবে)':''}`;
   document.querySelectorAll('#expFmt button').forEach(b=>b.classList.toggle('on',b.dataset.v===S.exp.fmt));
   document.querySelectorAll('#expScale button').forEach(b=>b.classList.toggle('on',+b.dataset.v===S.exp.scale));
 }
@@ -1545,6 +1575,7 @@ async function offer(filename,data,fallbackUrl){
   return false;
 }
 $('#expGo').addEventListener('click',async()=>{
+  if(S.exp.fmt==='svg'){ await svgExport(); closeExp(); return; }
   const fmt=S.exp.fmt,sc=Math.min(S.exp.scale,maxScale());const url=render(sc,fmt);
   const ok=await offer(`rong-${stamp()}.${fmt}`,toBlob(url),url); if(ok)closeExp();
 });
@@ -1641,8 +1672,11 @@ new ResizeObserver(()=>applySheet()).observe($('.app'));
   // one finger / mouse drag on empty space pans the page
   // a first touch on an object only selects it (and lets the finger pan); it moves on the next drag once selected
   let wasActive=null;
-  canvas.on('mouse:down:before',o=>{ wasActive=canvas.getActiveObject()||null; });
-  canvas.on('mouse:down',o=>{ const p=canvas.getPointer(o.e,true); down={x:p.x,y:p.y};
+  const isTouch=e=>!!(e&&e.type&&e.type.startsWith('touch'));
+  canvas.on('mouse:down:before',o=>{ wasActive=canvas.getActiveObject()||null; canvas.selection=!isTouch(o.e)&&S.tool!=='hand'&&!canvas.isDrawingMode; });
+  canvas.on('mouse:down',o=>{ const p=canvas.getPointer(o.e,true); down=isTouch(o.e)?{x:p.x,y:p.y}:null;
+    if(S.tool==='hand'||(o.e&&o.e.button===1)){ canvas._currentTransform=null; pan={x:p.x,y:p.y}; canvas.setCursor('grabbing'); return; }
+    if(!isTouch(o.e)) return; // mouse: drag moves objects, drag on empty space draws a selection box
     if(canvas.isDrawingMode||pinch) return;
     const t=o.target, fresh=t&&t!==wasActive&&t.name!=='__crop'&&!(wasActive&&wasActive.type==='activeSelection'&&wasActive.contains&&wasActive.contains(t));
     if(fresh&&canvas._currentTransform){ canvas._currentTransform=null; }
@@ -1656,6 +1690,102 @@ new ResizeObserver(()=>applySheet()).observe($('.app'));
   let lastTap=0; canvas.on('mouse:up',o=>{ if(o.target||canvas.isDrawingMode)return; const n=Date.now(); if(n-lastTap<300){ fitView(); lastTap=0; } else lastTap=n; });
 })();
 
+/* ---------- desktop: menus, shortcuts, smart guides, align, group, copy/paste, layers dock ---------- */
+S.guides=true; S.guideLines=[]; S.tool='select'; S.clip=null;
+function selObjs(){ const a=canvas.getActiveObject(); if(!a||a.isBase) return []; return a.type==='activeSelection'?a.getObjects().slice():[a]; }
+function reselect(objs){ objs=objs.filter(o=>canvas.getObjects().includes(o)); if(!objs.length){canvas.discardActiveObject();} else if(objs.length===1) canvas.setActiveObject(objs[0]); else canvas.setActiveObject(new fabric.ActiveSelection(objs,{canvas})); canvas.requestRenderAll(); }
+function alignObjs(mode){ const objs=selObjs(); if(!objs.length){toast('আগে কিছু বাছাই করুন');return}
+  canvas.discardActiveObject(); const rs=objs.map(o=>o.getBoundingRect(true,true));
+  const B=objs.length===1?{l:0,t:0,r:S.W,b:S.H}:{l:Math.min(...rs.map(r=>r.left)),t:Math.min(...rs.map(r=>r.top)),r:Math.max(...rs.map(r=>r.left+r.width)),b:Math.max(...rs.map(r=>r.top+r.height))};
+  if(mode==='dh'||mode==='dv'){ if(objs.length<3){toast('সমান দূরত্বের জন্য অন্তত ৩টি বস্তু বাছাই করুন');reselect(objs);return}
+    const H=mode==='dh', idx=objs.map((o,i)=>i).sort((i,j)=>H?rs[i].left-rs[j].left:rs[i].top-rs[j].top);
+    const span=H?B.r-B.l:B.b-B.t, sum=rs.reduce((s2,r)=>s2+(H?r.width:r.height),0), gap=(span-sum)/(objs.length-1); let pos=H?B.l:B.t;
+    idx.forEach(i=>{ const o=objs[i],r=rs[i]; if(H) o.left+=pos-r.left; else o.top+=pos-r.top; pos+=(H?r.width:r.height)+gap; o.setCoords(); }); }
+  else objs.forEach((o,i)=>{ const r=rs[i];
+    if(mode==='l') o.left+=B.l-r.left; if(mode==='ch') o.left+=(B.l+B.r)/2-(r.left+r.width/2); if(mode==='r') o.left+=B.r-(r.left+r.width);
+    if(mode==='t') o.top+=B.t-r.top; if(mode==='cv') o.top+=(B.t+B.b)/2-(r.top+r.height/2); if(mode==='b') o.top+=B.b-(r.top+r.height); o.setCoords(); });
+  reselect(objs); save(); }
+function groupSel(){ const a=canvas.getActiveObject(); if(!a||a.type!=='activeSelection'){toast('গ্রুপ করতে একাধিক বস্তু বাছাই করুন (Shift চেপে ক্লিক)');return}
+  const g=a.toGroup(); g.set({kind:'group',layerName:'গ্রুপ'}); canvas.requestRenderAll(); save(); renderPanel(); }
+function ungroupSel(){ const a=canvas.getActiveObject(); if(!a||a.type!=='group'){toast('আগে একটি গ্রুপ বাছাই করুন');return} a.toActiveSelection(); canvas.requestRenderAll(); save(); renderPanel(); }
+function selectAll(){ const objs=canvas.getObjects().filter(o=>!o.isBase&&o.visible!==false&&!o.locked&&o.name!=='__crop'); reselect(objs); renderPanel(); }
+function copySel(cut){ const objs=selObjs(); if(!objs.length) return false; canvas.discardActiveObject(); S.clip=objs.map(o=>o.toObject(PROPS)); S.pasteN=0;
+  if(cut){ objs.forEach(o=>canvas.remove(o)); canvas.requestRenderAll(); save(); renderPanel(); toast('কেটে নেওয়া হয়েছে'); } else { reselect(objs); toast('কপি হয়েছে'); } return true; }
+function pasteClip(){ if(!S.clip||!S.clip.length) return false; S.pasteN=(S.pasteN||0)+1; const off=20*K()*S.pasteN;
+  fabric.util.enlivenObjects(JSON.parse(JSON.stringify(S.clip)),objs=>{ S.batch=true; objs.forEach(o=>{ o.set({left:o.left+off,top:o.top+off}); if(o.type==='image'&&o.fx&&Object.keys(o.fx).length){o.filters=buildFilters(o.fx);o.applyFilters()} canvas.add(o); }); S.batch=false; reselect(objs); save(); renderPanel(); }); return true; }
+function setTool(t){ S.tool=t; canvas.defaultCursor=t==='hand'?'grab':'default'; canvas.skipTargetFind=t==='hand'; const th=$('#toolHint'); th.hidden=t!=='hand'; th.textContent='হাত টুল: টেনে ছবি সরান · V চাপলে বাছাই টুল'; }
+async function svgExport(){ if(S.crop)endCrop(false); canvas.discardActiveObject();
+  const v=canvas.viewportTransform.slice(), cp=canvas.clipPath; canvas.viewportTransform=[1,0,0,1,0,0]; canvas.clipPath=null;
+  let svg=''; try{ svg=canvas.toSVG({width:S.W,height:S.H,viewBox:{x:0,y:0,width:S.W,height:S.H}}); } finally{ canvas.viewportTransform=v; canvas.clipPath=cp; canvas.requestRenderAll(); }
+  await offer(`rong-${stamp()}.svg`,svg,null); }
+/* smart guides: snap edges and centres to the page and to other objects while dragging */
+canvas.on('object:moving',e=>{ const o=e.target; S.guideLines=[]; if(!S.guides||!o||o.isBase||o.name==='__crop') return;
+  const th=7/canvas.getZoom(), br=o.getBoundingRect(true,true), xs=[br.left,br.left+br.width/2,br.left+br.width], ys=[br.top,br.top+br.height/2,br.top+br.height];
+  const tx=[0,S.W/2,S.W], ty=[0,S.H/2,S.H]; const mine=new Set(o.type==='activeSelection'?o.getObjects():[o]);
+  canvas.getObjects().forEach(x=>{ if(mine.has(x)||x.isBase||x.visible===false||x.name==='__crop') return; const r=x.getBoundingRect(true,true); tx.push(r.left,r.left+r.width/2,r.left+r.width); ty.push(r.top,r.top+r.height/2,r.top+r.height); });
+  let bx=null,by=null; xs.forEach(a=>tx.forEach(t=>{ const d=t-a; if(Math.abs(d)<th&&(!bx||Math.abs(d)<Math.abs(bx.d))) bx={d,t}; }));
+  ys.forEach(a=>ty.forEach(t=>{ const d=t-a; if(Math.abs(d)<th&&(!by||Math.abs(d)<Math.abs(by.d))) by={d,t}; }));
+  if(bx){ o.left+=bx.d; S.guideLines.push({x:bx.t}); } if(by){ o.top+=by.d; S.guideLines.push({y:by.t}); } if(bx||by) o.setCoords(); });
+canvas.on('mouse:up',()=>{ if(S.guideLines.length){ S.guideLines=[]; canvas.requestRenderAll(); } });
+canvas.on('after:render',e=>{ const ctx=e&&e.ctx; if(!ctx||ctx!==canvas.contextContainer||!S.guideLines.length) return; const v=canvas.viewportTransform;
+  ctx.save(); ctx.strokeStyle='#ff2bd6'; ctx.lineWidth=1; ctx.beginPath();
+  S.guideLines.forEach(g=>{ if(g.x!=null){ const x=Math.round(v[0]*g.x+v[4])+0.5; ctx.moveTo(x,0); ctx.lineTo(x,canvas.height); } else { const y=Math.round(v[3]*g.y+v[5])+0.5; ctx.moveTo(0,y); ctx.lineTo(canvas.width,y); } });
+  ctx.stroke(); ctx.restore(); });
+/* menu bar */
+const MENUS=[
+ ['ফাইল',[['f:new','নতুন ছবি খুলুন…','Ctrl+O'],['a:openLayer','ছবির উপর ছবি যোগ করুন…',''],['m:blank','খালি ক্যানভাস','Ctrl+Alt+N'],'-',['a:openProj','প্রজেক্ট খুলুন…',''],['m:saveProj','প্রজেক্ট সেভ করুন','Ctrl+S'],'-',['m:export','ছবি হিসেবে সেভ (PNG/JPG)…','Ctrl+E'],['m:svg','SVG হিসেবে সেভ','Ctrl+Shift+E']]],
+ ['এডিট',[['m:undo','আনডু','Ctrl+Z'],['m:redo','রিডু','Ctrl+Y'],'-',['m:cut','কাটুন','Ctrl+X'],['m:copy','কপি','Ctrl+C'],['m:paste','পেস্ট','Ctrl+V'],['m:dup','ডুপ্লিকেট','Ctrl+D'],['m:del','মুছুন','Del'],'-',['m:all','সব বাছাই','Ctrl+A'],['m:group','গ্রুপ করুন','Ctrl+G'],['m:ungroup','গ্রুপ ভাঙুন','Ctrl+Shift+G']]],
+ ['বস্তু',[['m:fwd','এক ধাপ সামনে','Ctrl+]'],['m:bwd','এক ধাপ পেছনে','Ctrl+['],['m:front','একদম সামনে','Ctrl+Shift+]'],['m:back','একদম পেছনে','Ctrl+Shift+['],'-',['m:al:l','বাঁয়ে মেলান',''],['m:al:ch','মাঝে মেলান (আড়াআড়ি)',''],['m:al:r','ডানে মেলান',''],['m:al:t','উপরে মেলান',''],['m:al:cv','মাঝে মেলান (লম্বালম্বি)',''],['m:al:b','নিচে মেলান',''],'-',['m:al:dh','সমান দূরত্বে (আড়াআড়ি)',''],['m:al:dv','সমান দূরত্বে (লম্বালম্বি)',''],'-',['m:flipX','আড়াআড়ি উল্টান','Shift+H'],['m:flipY','লম্বালম্বি উল্টান','Shift+V'],['m:lock','লক / আনলক','Ctrl+L']]],
+ ['টুল',[['m:t:select','বাছাই টুল','V'],['m:t:hand','হাত টুল (সরানো)','H / Space'],'-',['m:t:text','লেখা যোগ','T'],['m:t:rect','আয়ত','R'],['m:t:ellipse','বৃত্ত','E'],['m:t:line','রেখা','L'],['m:t:draw','হাতে আঁকা','B'],['m:t:crop','ক্রপ','C']]],
+ ['দেখুন',[['m:zin','বড় করুন','Ctrl++'],['m:zout','ছোট করুন','Ctrl+−'],['m:fit','পর্দায় মানান','Ctrl+0'],['m:z100','আসল মাপ ১০০%','Ctrl+1'],'-',['m:guides','স্মার্ট গাইড চালু/বন্ধ','Ctrl+;'],['m:hints','লেখার দাগ দেখান/লুকান',''],['m:panel','প্যানেল দেখান/লুকান','Tab']]]];
+function buildMenus(){ const mb=$('#menubar'); mb.innerHTML=MENUS.map(([name,items],i)=>`<div><button class="mb" data-menu="${i}">${name}</button><div class="menu" hidden>${items.map(it=>it==='-'?'<div class="msep"></div>':
+  (it[0].startsWith('a:')?`<button class="mi" data-a="${it[0].slice(2)}"><span>${it[1]}</span><kbd>${it[2]}</kbd></button>`:it[0]==='f:new'?`<button class="mi" data-a="newImg"><span>${it[1]}</span><kbd>${it[2]}</kbd></button>`:`<button class="mi" data-m="${it[0].slice(2)}"><span>${it[1]}</span><kbd>${it[2]}</kbd></button>`)).join('')}</div></div>`).join('');
+  armFiles(mb); }
+let openMenu=null;
+function showMenu(i){ document.querySelectorAll('#menubar .menu').forEach((m,j)=>m.hidden=j!==i); document.querySelectorAll('#menubar .mb').forEach((b,j)=>b.classList.toggle('on',j===i)); openMenu=i; }
+function closeMenus(){ document.querySelectorAll('#menubar .menu').forEach(m=>m.hidden=true); document.querySelectorAll('#menubar .mb').forEach(b=>b.classList.remove('on')); openMenu=null; }
+function runMenu(id){ const [a,b]=id.split(':');
+  switch(a){ case 'blank':newBlank();break; case 'saveProj':saveProject();break; case 'export':openExp();break; case 'svg':svgExport();break;
+    case 'undo':undo();break; case 'redo':redo();break; case 'cut':copySel(true);break; case 'copy':copySel(false);break; case 'paste':if(!pasteClip())toast('কপি করা কিছু নেই');break;
+    case 'dup':act('dup');break; case 'del':act('del');break; case 'all':selectAll();break; case 'group':groupSel();break; case 'ungroup':ungroupSel();break;
+    case 'fwd':case 'bwd':case 'front':case 'back':case 'flipX':case 'flipY':case 'lock': if(!active()){toast('আগে কিছু বাছাই করুন');break} act(a);break;
+    case 'al':alignObjs(b);break;
+    case 't': if(b==='select'){ setTool('select'); if(S.tab==='draw') setTab('smart'); } else if(b==='hand') setTool('hand'); else if(b==='text'){ setTool('select'); addText(TEXTP[0]); } else if(b==='rect'){ setTool('select'); addShape('rect'); }
+      else if(b==='ellipse'){ setTool('select'); addShape('circle'); } else if(b==='line'){ setTool('select'); addShape('line'); } else if(b==='draw'){ setTab('draw'); openSheet(); } else if(b==='crop'){ setTab('size'); openSheet(); startCrop(); } break;
+    case 'zin':zoomBy(1.25);break; case 'zout':zoomBy(1/1.25);break; case 'fit':fitView();break; case 'z100':{ const r=visibleRect(); zoomAt(1,r.x+r.w/2,r.y+r.h/2); break; }
+    case 'guides':S.guides=!S.guides;toast(S.guides?'স্মার্ট গাইড চালু':'স্মার্ট গাইড বন্ধ');break; case 'hints':S.showHints=!S.showHints;canvas.requestRenderAll();renderPanel();break;
+    case 'panel': S.sheet.open?closeSheet():openSheet(); break; } }
+$('#menubar').addEventListener('click',e=>{ const mbtn=e.target.closest('.mb'); if(mbtn){ const i=+mbtn.dataset.menu; openMenu===i?closeMenus():showMenu(i); return; }
+  if(e.target.classList.contains('fileov')){ setTimeout(closeMenus,0); return; }
+  const mi=e.target.closest('.mi'); if(!mi) return; closeMenus(); if(mi.dataset.m) runMenu(mi.dataset.m); else if(mi.dataset.a) panelClick({target:mi}); });
+$('#menubar').addEventListener('mouseover',e=>{ const mbtn=e.target.closest('.mb'); if(mbtn&&openMenu!==null&&+mbtn.dataset.menu!==openMenu) showMenu(+mbtn.dataset.menu); });
+document.addEventListener('pointerdown',e=>{ if(openMenu!==null&&!e.target.closest('#menubar')) closeMenus(); },true);
+buildMenus();
+/* layers dock (desktop side panel) */
+function renderLayersDock(){ const el=$('#layersDock'); const show=isWide()&&S.sheet.open&&S.sheet.mode!=='float'; el.hidden=!show; if(!show) return;
+  const all=canvas.getObjects().filter(o=>o.name!=='__crop'), objs=all.slice().reverse(), ao=canvas.getActiveObject(), sel=new Set(ao&&ao.type==='activeSelection'?ao.getObjects():[ao]);
+  el.innerHTML=`<div class="ph" style="margin-bottom:8px"><span class="eyebrow">লেয়ার</span><span class="hint">${bn(all.length)}টি</span></div><div class="list">${objs.map(o=>{const i=canvas.getObjects().indexOf(o);
+    return `<div class="lrow${o.visible===false?' off':''}${sel.has(o)?' on':''}"><button class="nm" data-a="lsel" data-v="${i}">${esc(nameOf(o))} <span class="ty">· ${KIND[kindOf(o)]||''}</span></button>
+    ${o.isBase?'':`<button class="ib" data-a="lup" data-v="${i}" aria-label="সামনে">${ic('up')}</button><button class="ib" data-a="ldown" data-v="${i}" aria-label="পেছনে">${ic('down')}</button>`}
+    <button class="ib" data-a="lvis" data-v="${i}" aria-label="${o.visible===false?'দেখান':'লুকান'}">${ic(o.visible===false?'eyeoff':'eye')}</button>
+    <button class="ib" data-a="llock" data-v="${i}" aria-label="${o.locked?'লক খুলুন':'লক করুন'}">${ic(o.locked?'lock':'unlock')}</button></div>`}).join('')}</div>`; }
+['object:added','object:removed'].forEach(ev=>canvas.on(ev,()=>{ if(!S.restoring) { clearTimeout(S.ldT); S.ldT=setTimeout(renderLayersDock,60); } }));
+/* desktop keyboard: tools, clipboard, arrange, view */
+document.addEventListener('keydown',e=>{
+  if(!$('#exp').hidden) return; if(/INPUT|TEXTAREA|SELECT/.test(document.activeElement?.tagName)||document.activeElement?.isContentEditable) return;
+  const o=canvas.getActiveObject(); if(o&&o.isEditing) return;
+  const mod=e.ctrlKey||e.metaKey,k=e.key.toLowerCase(),sh=e.shiftKey;
+  if(e.key===' '&&!e.repeat&&!mod){ e.preventDefault(); if(S.tool!=='hand'){ S.spacePan=true; setTool('hand'); } return; }
+  if(e.key==='Escape'&&openMenu!==null){ closeMenus(); return; }
+  let id=null;
+  if(mod){ if(k==='o'){ e.preventDefault(); const i=document.createElement('input'); i.type='file'; i.accept='image/*'; i.onchange=()=>handleFile(i.files[0],false,true); i.click(); return; }
+    if(k==='n'&&e.altKey) id='blank'; else if(k==='s') id='saveProj'; else if(k==='e') id=sh?'svg':'export'; else if(k==='c') id='copy'; else if(k==='x') id='cut'; else if(k==='v'){ if(S.clip&&S.clip.length){ id='paste'; } else return; }
+    else if(k==='a') id='all'; else if(k==='g') id=sh?'ungroup':'group'; else if(e.key===']'||e.key==='}') id=sh?'front':'fwd'; else if(e.key==='['||e.key==='{') id=sh?'back':'bwd';
+    else if(k==='l') id='lock'; else if(e.key==='='||e.key==='+') id='zin'; else if(e.key==='-'||e.key==='_') id='zout'; else if(e.key==='0') id='fit'; else if(e.key==='1') id='z100'; else if(e.key===';') id='guides'; }
+  else if(!e.altKey){ if(k==='v'&&!sh) id='t:select'; else if(k==='h'&&!sh) id='t:hand'; else if(k==='t') id='t:text'; else if(k==='r') id='t:rect'; else if(k==='e') id='t:ellipse'; else if(k==='l') id='t:line'; else if(k==='b') id='t:draw';
+    else if(k==='c'&&!S.crop) id='t:crop'; else if(sh&&k==='h') id='flipX'; else if(sh&&k==='v') id='flipY'; else if(e.key==='Tab'){ id='panel'; } }
+  if(id){ e.preventDefault(); e.stopImmediatePropagation(); runMenu(id); } },true);
+document.addEventListener('keyup',e=>{ if(e.key===' '&&S.spacePan){ S.spacePan=false; setTool('select'); } });
 /* photos sent through the chat (stored with the artifact) and pasted images */
 S.photos=[];
 async function initPhotos(){ try{ const db=window.claude&&window.claude.use?await window.claude.use('db'):null; if(!db) return;
@@ -1692,7 +1822,8 @@ async function init(){
     S.smart={state:'hints'};
   }catch(e){ S.isSample=false; S.batch=false; $('#chip').hidden=true; console.error(e); }
   S.hist=[];S.hi=-1;save();renderPanel();updBar();
-  try{ if(APP&&window.Android.hasShared&&window.Android.hasShared()){ const r=await fetch('shared-image'); if(r.ok){ const bl=await r.blob(); if(bl.size) await handleFile(bl,false); } } }catch(e){ toast('শেয়ার করা ছবিটি খোলা গেল না'); }
+  window.__openShared=async()=>{ try{ const r=await fetch('shared-image?t='+Date.now()); if(r.ok){ const bl=await r.blob(); if(bl.size) await handleFile(bl,false,true); } }catch(e){ toast('ছবিটি খোলা গেল না'); } };
+  if(APP&&window.Android.hasShared&&window.Android.hasShared()) await window.__openShared();
   if(document.fonts&&document.fonts.ready) document.fonts.ready.then(()=>{ if(fabric.util.clearFabricFontCache)fabric.util.clearFabricFontCache(); canvas.getObjects().forEach(o=>{if(o.initDimensions){o.initDimensions();o.setCoords()}}); canvas.requestRenderAll(); });
 }
 init();

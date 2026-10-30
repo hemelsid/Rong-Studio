@@ -1,0 +1,46 @@
+# Builds the Windows app (installer + portable .exe) on GitHub's Windows machine
+# and publishes it as a release named desktop-v<version from desktop/package.json>.
+name: Build desktop app
+on:
+  push:
+    branches: [main]
+    paths: ["web/**", "desktop/**", "android/assets/**", "tools/make_index.py", ".github/workflows/desktop.yml"]
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Prepare app files
+        shell: bash
+        run: |
+          rm -rf desktop/assets && mkdir -p desktop/assets
+          cp -r android/assets/. desktop/assets/
+          python tools/make_index.py web/rong-studio.html desktop/assets/index.html
+      - name: Build
+        working-directory: desktop
+        shell: bash
+        run: |
+          npm install --no-audit --no-fund
+          npx electron-builder --win --publish never
+      - name: Publish release
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          v=$(node -p "require('./desktop/package.json').version")
+          tag="desktop-v$v"
+          files=$(ls desktop/dist/*.exe)
+          if gh release view "$tag" >/dev/null 2>&1; then
+            gh release upload "$tag" $files --clobber
+          else
+            gh release create "$tag" $files --title "রং স্টুডিও ডেস্কটপ v$v (Windows)" --notes-file desktop/RELEASE_NOTES.md --latest=false --target "$GITHUB_SHA"
+          fi

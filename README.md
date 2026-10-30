@@ -4,7 +4,7 @@
 
 <p align="center">ছবির ভেতরের লেখায় চাপ দিন, আর সরাসরি বদলে ফেলুন।<br>বাংলা ও ইংরেজি লেখা পড়তে পারে, ইন্টারনেট ছাড়াই চলে।</p>
 
-<p align="center"><a href="https://github.com/hemelsid/Rong-Studio/raw/main/releases/RongStudio-v1.7.apk"><b>⬇ সর্বশেষ অ্যাপ ডাউনলোড করুন (v1.7)</b></a></p>
+<p align="center"><a href="https://github.com/hemelsid/Rong-Studio/raw/main/releases/RongStudio-v1.8.apk"><b>⬇ ফোনের অ্যাপ (v1.8)</b></a> &nbsp;·&nbsp; <a href="https://github.com/hemelsid/Rong-Studio/releases/download/desktop-v1.8.0/RongStudio-Setup-1.8.0.exe"><b>⬇ কম্পিউটারের অ্যাপ (Windows)</b></a></p>
 
 <p align="center">
   <img src="docs/smart-edit.png" width="240" alt="স্মার্ট এডিট: ছবির লেখা আলাদা করা">
@@ -37,13 +37,35 @@
 
 গ্যালারি থেকে কোনো ছবি **শেয়ার → রং স্টুডিও** করলে সেটা সরাসরি এডিটরে খোলে।
 
+## কম্পিউটারে (Windows)
+
+| ফাইল | কী |
+|---|---|
+| [RongStudio-Setup-1.8.0.exe](https://github.com/hemelsid/Rong-Studio/releases/download/desktop-v1.8.0/RongStudio-Setup-1.8.0.exe) | ইনস্টলার: কম্পিউটারে ইনস্টল হয়, ডেস্কটপ আর স্টার্ট মেনুতে আইকন বসে |
+| [RongStudio-Portable-1.8.0.exe](https://github.com/hemelsid/Rong-Studio/releases/download/desktop-v1.8.0/RongStudio-Portable-1.8.0.exe) | পোর্টেবল: ইনস্টল ছাড়াই চলে, পেনড্রাইভেও রাখা যায় |
+
+ফোনের অ্যাপের সব কিছু আছে, ইন্টারনেট ছাড়াই চলে। সাথে কম্পিউটারের জন্য বাড়তি সুবিধা:
+
+- **বাংলা মেনু বার:** ফাইল, এডিট, বস্তু, টুল, দেখুন।
+- **কীবোর্ড শর্টকাট:** V বাছাই, H বা Space হাত, T লেখা, R আয়ত, E বৃত্ত, L রেখা, B আঁকা, C ক্রপ, Ctrl+Z/Y, Ctrl+C/X/V, Ctrl+D, Ctrl+G, Ctrl+A, Ctrl+0, Ctrl+1, Ctrl+S, Ctrl+E।
+- **মাউসে বাছাই:** টেনে একাধিক বস্তু বাছাই, Shift চেপে ক্লিক করে যোগ।
+- **স্মার্ট গাইড:** টানার সময় পেজের মাঝ, কিনারা আর অন্য বস্তুর সাথে নিজে থেকে লাইন মেলায়।
+- **সাজানো:** মেলানো, সমান ফাঁকে সাজানো, গ্রুপ।
+- **ডান পাশে লেয়ার প্যানেল**, **SVG সেভ**, Ctrl চেপে মাউস হুইলে জুম।
+- কোনো ছবিতে রাইট-ক্লিক করে **Open with → Rong Studio** দিলে সরাসরি খোলে।
+
+Windows SmartScreen সতর্ক করলে **More info → Run anyway** চাপুন। অ্যাপে ডিজিটাল সার্টিফিকেট নেই বলে এই সতর্কতা আসে।
+
+নিজে বানাতে চাইলে: `desktop/` ফোল্ডারে `npm install` তারপর `npm run dist:win` (Mac-এর জন্য `dist:mac`, Linux-এর জন্য `dist:linux`)। তার আগে `android/assets` এর ফাইলগুলো `desktop/assets` এ কপি করে `tools/make_index.py web/rong-studio.html desktop/assets/index.html` চালাতে হবে। GitHub-এ কোড পুশ করলে `.github/workflows/desktop.yml` নিজে থেকেই Windows অ্যাপ বানিয়ে Releases-এ তুলে দেয়।
+
 ## ভার্সনসমূহ
 
 প্রতিটা ভার্সনের APK [`releases/`](releases) ফোল্ডারে রাখা আছে, আর GitHub-এর [Releases পাতাতেও](https://github.com/hemelsid/Rong-Studio/releases) আলাদা করে পাওয়া যায়। যেকোনো সময় ডাউনলোড করা যায়, লিংকে চাপলেই ফাইল নেমে আসবে।
 
 | ভার্সন | ডাউনলোড | যা বদলেছে |
 |---|---|---|
-| **v1.7** (সর্বশেষ) | [APK, ৯ MB](https://github.com/hemelsid/Rong-Studio/raw/main/releases/RongStudio-v1.7.apk) | আসল লেখার মাপ, অক্ষরের ফাঁক, গ্রেডিয়েন্ট, আউটলাইন, ছায়া, আভা আর নরম কিনারা নিজে থেকে মেলায়। গ্রেডিয়েন্ট, ছায়া ও আভা, নরম কিনারা আর রঙ তোলার ড্রপার কন্ট্রোল। |
+| **v1.8** (সর্বশেষ) | [APK, ৯ MB](https://github.com/hemelsid/Rong-Studio/raw/main/releases/RongStudio-v1.8.apk) | গ্রুপ, একসাথে মেলানো, স্মার্ট গাইড, SVG সেভ। কম্পিউটার সংস্করণ এল। |
+| v1.7 | [APK, ৯ MB](https://github.com/hemelsid/Rong-Studio/raw/main/releases/RongStudio-v1.7.apk) | আসল লেখার মাপ, অক্ষরের ফাঁক, গ্রেডিয়েন্ট, আউটলাইন, ছায়া, আভা আর নরম কিনারা নিজে থেকে মেলায়। গ্রেডিয়েন্ট, ছায়া ও আভা, নরম কিনারা আর রঙ তোলার ড্রপার কন্ট্রোল। |
 | v1.6 | [APK, ৯ MB](https://github.com/hemelsid/Rong-Studio/raw/main/releases/RongStudio-v1.6.apk) | শব্দে চাপ দিলে শুধু সেই শব্দ এডিট হয়, ফন্ট নিজে থেকে মিলিয়ে বসে, সেরা মিলের ফন্ট বোতাম হিসেবে দেখায়। ভুল পড়া লেখা নিজে টাইপ করে বদলানো যায়। |
 | v1.5 | [APK, ৯ MB](https://github.com/hemelsid/Rong-Studio/raw/main/releases/RongStudio-v1.5.apk) | নিজের ফন্ট (.ttf / .otf) যোগ করা যায়, অ্যাপ মনে রাখে। ফন্ট বদলালে লেখা দুই লাইনে ভাঙে না। |
 | v1.4 | [APK, ৯ MB](https://github.com/hemelsid/Rong-Studio/raw/main/releases/RongStudio-v1.4.apk) | উপরের বারে “নতুন ছবি” বোতাম: আগের কাজ সরিয়ে নতুন ছবি খোলে, আনডু দিয়ে ফেরা যায়। |
@@ -56,6 +78,7 @@
 ```
 web/rong-studio.html   পুরো এডিটর, একটি ফাইলে (claude.ai আর্টিফ্যাক্ট হিসেবেও চলে)
 android/               অ্যান্ড্রয়েড অ্যাপ: WebView-এর ভেতরে এডিটর চালায়
+desktop/               কম্পিউটারের অ্যাপ (Electron): একই এডিটর, নিজের জানালায়
   smali/               অ্যাপের কোড: গ্যালারি থেকে ছবি নেওয়া, গ্যালারিতে সেভ, শেয়ার থেকে খোলা
   assets/              ফন্ট, fabric.js, লেখা পড়ার টুল (tesseract.js) ও বাংলা-ইংরেজি ভাষার ফাইল
 tools/build.sh         সাইন করা APK বানায়
