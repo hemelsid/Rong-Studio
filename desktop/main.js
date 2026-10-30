@@ -38,10 +38,10 @@ app.whenReady().then(() => {
     return net.fetch(pathToFileURL(full).toString());
   });
 
-  Menu.setApplicationMenu(null); // the editor has its own Bengali menu bar
+  Menu.setApplicationMenu(null); // the editor has its own menu bar
   win = new BrowserWindow({
     width: 1440, height: 900, minWidth: 900, minHeight: 600,
-    title: 'রং স্টুডিও', backgroundColor: '#141210',
+    title: 'Rong Studio', backgroundColor: '#141210',
     icon: path.join(__dirname, 'icon.png'),
     webPreferences: { preload: path.join(__dirname, 'preload.js'), contextIsolation: true, sandbox: false, spellcheck: false },
   });
@@ -53,19 +53,19 @@ app.whenReady().then(() => {
   win.loadURL('app://local/index.html');
 });
 
-// Save dialog for exported pictures and project files. Answers in Bengali, like the phone app.
+// Save dialog for exported pictures and project files.
 ipcMain.on('save-file', (e, name, b64, mime) => {
   try {
     const ext = path.extname(name).slice(1).toLowerCase();
     const dir = /^image\//.test(mime) ? app.getPath('pictures') : app.getPath('documents');
     let target = null;
     if (process.env.RONG_TEST_SAVE_DIR) target = path.join(process.env.RONG_TEST_SAVE_DIR, name);
-    else target = dialog.showSaveDialogSync(win, { title: 'সেভ করুন', defaultPath: path.join(dir, name), filters: [{ name: ext.toUpperCase(), extensions: [ext] }] });
-    if (!target) { e.returnValue = 'সেভ বাতিল'; return; }
+    else target = dialog.showSaveDialogSync(win, { title: 'Save', defaultPath: path.join(dir, name), filters: [{ name: ext.toUpperCase(), extensions: [ext] }] });
+    if (!target) { e.returnValue = 'Save cancelled'; return; }
     fs.writeFileSync(target, Buffer.from(b64, 'base64'));
-    e.returnValue = 'সেভ হয়েছে: ' + target;
+    e.returnValue = 'Saved: ' + target;
   } catch (err) {
-    e.returnValue = 'সেভ করা গেল না';
+    e.returnValue = 'Could not save';
   }
 });
 ipcMain.on('has-shared', (e) => { e.returnValue = !!openPath; });

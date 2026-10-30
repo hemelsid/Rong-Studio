@@ -1,8 +1,8 @@
 {
   "name": "rong-studio",
   "productName": "Rong Studio",
-  "version": "1.8.0",
-  "description": "রং স্টুডিও: ছবির লেখা ও ডিজাইন এডিটর",
+  "version": "1.9.0",
+  "description": "Rong Studio: picture text and design editor",
   "main": "main.js",
   "author": "Rong Studio",
   "license": "UNLICENSED",

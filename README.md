@@ -4,7 +4,7 @@
 
 <p align="center">ছবির ভেতরের লেখায় চাপ দিন, আর সরাসরি বদলে ফেলুন।<br>বাংলা ও ইংরেজি লেখা পড়তে পারে, ইন্টারনেট ছাড়াই চলে।</p>
 
-<p align="center"><a href="https://github.com/hemelsid/Rong-Studio/raw/main/releases/RongStudio-v1.8.apk"><b>⬇ ফোনের অ্যাপ (v1.8)</b></a> &nbsp;·&nbsp; <a href="https://github.com/hemelsid/Rong-Studio/releases/download/desktop-v1.8.0/RongStudio-Setup-1.8.0.exe"><b>⬇ কম্পিউটারের অ্যাপ (Windows)</b></a></p>
+<p align="center"><a href="https://github.com/hemelsid/Rong-Studio/raw/main/releases/RongStudio-v1.9.apk"><b>⬇ ফোনের অ্যাপ (v1.9)</b></a> &nbsp;·&nbsp; <a href="https://github.com/hemelsid/Rong-Studio/releases/download/desktop-v1.9.0/RongStudio-Setup-1.9.0.exe"><b>⬇ কম্পিউটারের অ্যাপ (Windows)</b></a></p>
 
 <p align="center">
   <img src="docs/smart-edit.png" width="240" alt="স্মার্ট এডিট: ছবির লেখা আলাদা করা">
@@ -41,12 +41,12 @@
 
 | ফাইল | কী |
 |---|---|
-| [RongStudio-Setup-1.8.0.exe](https://github.com/hemelsid/Rong-Studio/releases/download/desktop-v1.8.0/RongStudio-Setup-1.8.0.exe) | ইনস্টলার: কম্পিউটারে ইনস্টল হয়, ডেস্কটপ আর স্টার্ট মেনুতে আইকন বসে |
-| [RongStudio-Portable-1.8.0.exe](https://github.com/hemelsid/Rong-Studio/releases/download/desktop-v1.8.0/RongStudio-Portable-1.8.0.exe) | পোর্টেবল: ইনস্টল ছাড়াই চলে, পেনড্রাইভেও রাখা যায় |
+| [RongStudio-Setup-1.9.0.exe](https://github.com/hemelsid/Rong-Studio/releases/download/desktop-v1.9.0/RongStudio-Setup-1.9.0.exe) | ইনস্টলার: কম্পিউটারে ইনস্টল হয়, ডেস্কটপ আর স্টার্ট মেনুতে আইকন বসে |
+| [RongStudio-Portable-1.9.0.exe](https://github.com/hemelsid/Rong-Studio/releases/download/desktop-v1.9.0/RongStudio-Portable-1.9.0.exe) | পোর্টেবল: ইনস্টল ছাড়াই চলে, পেনড্রাইভেও রাখা যায় |
 
 ফোনের অ্যাপের সব কিছু আছে, ইন্টারনেট ছাড়াই চলে। সাথে কম্পিউটারের জন্য বাড়তি সুবিধা:
 
-- **বাংলা মেনু বার:** ফাইল, এডিট, বস্তু, টুল, দেখুন।
+- **মেনু বার:** File, Edit, Object, Tools, View।
 - **কীবোর্ড শর্টকাট:** V বাছাই, H বা Space হাত, T লেখা, R আয়ত, E বৃত্ত, L রেখা, B আঁকা, C ক্রপ, Ctrl+Z/Y, Ctrl+C/X/V, Ctrl+D, Ctrl+G, Ctrl+A, Ctrl+0, Ctrl+1, Ctrl+S, Ctrl+E।
 - **মাউসে বাছাই:** টেনে একাধিক বস্তু বাছাই, Shift চেপে ক্লিক করে যোগ।
 - **স্মার্ট গাইড:** টানার সময় পেজের মাঝ, কিনারা আর অন্য বস্তুর সাথে নিজে থেকে লাইন মেলায়।
@@ -64,7 +64,8 @@ Windows SmartScreen সতর্ক করলে **More info → Run anyway** �
 
 | ভার্সন | ডাউনলোড | যা বদলেছে |
 |---|---|---|
-| **v1.8** (সর্বশেষ) | [APK, ৯ MB](https://github.com/hemelsid/Rong-Studio/raw/main/releases/RongStudio-v1.8.apk) | গ্রুপ, একসাথে মেলানো, স্মার্ট গাইড, SVG সেভ। কম্পিউটার সংস্করণ এল। |
+| **v1.9** (সর্বশেষ) | [APK, ৯ MB](https://github.com/hemelsid/Rong-Studio/raw/main/releases/RongStudio-v1.9.apk) | অ্যাপের সব লেখা ইংরেজিতে, নাম “Rong Studio”। |
+| v1.8 | [APK, ৯ MB](https://github.com/hemelsid/Rong-Studio/raw/main/releases/RongStudio-v1.8.apk) | গ্রুপ, একসাথে মেলানো, স্মার্ট গাইড, SVG সেভ। কম্পিউটার সংস্করণ এল। |
 | v1.7 | [APK, ৯ MB](https://github.com/hemelsid/Rong-Studio/raw/main/releases/RongStudio-v1.7.apk) | আসল লেখার মাপ, অক্ষরের ফাঁক, গ্রেডিয়েন্ট, আউটলাইন, ছায়া, আভা আর নরম কিনারা নিজে থেকে মেলায়। গ্রেডিয়েন্ট, ছায়া ও আভা, নরম কিনারা আর রঙ তোলার ড্রপার কন্ট্রোল। |
 | v1.6 | [APK, ৯ MB](https://github.com/hemelsid/Rong-Studio/raw/main/releases/RongStudio-v1.6.apk) | শব্দে চাপ দিলে শুধু সেই শব্দ এডিট হয়, ফন্ট নিজে থেকে মিলিয়ে বসে, সেরা মিলের ফন্ট বোতাম হিসেবে দেখায়। ভুল পড়া লেখা নিজে টাইপ করে বদলানো যায়। |
 | v1.5 | [APK, ৯ MB](https://github.com/hemelsid/Rong-Studio/raw/main/releases/RongStudio-v1.5.apk) | নিজের ফন্ট (.ttf / .otf) যোগ করা যায়, অ্যাপ মনে রাখে। ফন্ট বদলালে লেখা দুই লাইনে ভাঙে না। |

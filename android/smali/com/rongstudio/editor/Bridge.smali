@@ -40,11 +40,11 @@
     move-result v2
     if-eqz v2, :ldl
     sget-object v3, Landroid/os/Environment;->DIRECTORY_PICTURES:Ljava/lang/String;
-    const-string v6, "\u0997\u09cd\u09af\u09be\u09b2\u09be\u09b0\u09bf\u09a4\u09c7 \u09b8\u09c7\u09ad \u09b9\u09af\u09bc\u09c7\u099b\u09c7 (Pictures/Rong Studio)"
+    const-string v6, "Saved to Gallery (Pictures/Rong Studio)"
     goto :lgo
     :ldl
     sget-object v3, Landroid/os/Environment;->DIRECTORY_DOWNLOADS:Ljava/lang/String;
-    const-string v6, "Download/Rong Studio \u09ab\u09cb\u09b2\u09cd\u09a1\u09be\u09b0\u09c7 \u09b8\u09c7\u09ad \u09b9\u09af\u09bc\u09c7\u099b\u09c7"
+    const-string v6, "Saved to Download/Rong Studio"
     :lgo
     invoke-static {v3}, Landroid/os/Environment;->getExternalStoragePublicDirectory(Ljava/lang/String;)Ljava/io/File;
     move-result-object v3
@@ -83,13 +83,13 @@
     const-string v4, "Pictures/Rong Studio"
     invoke-virtual {v1, v3, v4}, Landroid/content/ContentValues;->put(Ljava/lang/String;Ljava/lang/String;)V
     sget-object v5, Landroid/provider/MediaStore$Images$Media;->EXTERNAL_CONTENT_URI:Landroid/net/Uri;
-    const-string v6, "\u0997\u09cd\u09af\u09be\u09b2\u09be\u09b0\u09bf\u09a4\u09c7 \u09b8\u09c7\u09ad \u09b9\u09af\u09bc\u09c7\u099b\u09c7 (Pictures/Rong Studio)"
+    const-string v6, "Saved to Gallery (Pictures/Rong Studio)"
     goto :ins
     :dl
     const-string v4, "Download/Rong Studio"
     invoke-virtual {v1, v3, v4}, Landroid/content/ContentValues;->put(Ljava/lang/String;Ljava/lang/String;)V
     sget-object v5, Landroid/provider/MediaStore$Downloads;->EXTERNAL_CONTENT_URI:Landroid/net/Uri;
-    const-string v6, "Download/Rong Studio \u09ab\u09cb\u09b2\u09cd\u09a1\u09be\u09b0\u09c7 \u09b8\u09c7\u09ad \u09b9\u09af\u09bc\u09c7\u099b\u09c7"
+    const-string v6, "Saved to Download/Rong Studio"
     :ins
     iget-object v2, p0, Lcom/rongstudio/editor/Bridge;->act:Lcom/rongstudio/editor/MainActivity;
     invoke-virtual {v2}, Lcom/rongstudio/editor/MainActivity;->getContentResolver()Landroid/content/ContentResolver;
@@ -108,9 +108,9 @@
     .catch Ljava/lang/Throwable; {:try_start .. :try_end} :caught
     return-object v6
     :bad
-    const-string v0, "\u09b8\u09c7\u09ad \u0995\u09b0\u09be \u0997\u09c7\u09b2 \u09a8\u09be"
+    const-string v0, "Could not save"
     return-object v0
     :caught
-    const-string v0, "\u09b8\u09c7\u09ad \u0995\u09b0\u09be \u0997\u09c7\u09b2 \u09a8\u09be"
+    const-string v0, "Could not save"
     return-object v0
 .end method

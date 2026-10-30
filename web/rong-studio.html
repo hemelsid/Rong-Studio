@@ -230,50 +230,50 @@ select{height:38px;width:100%}
 
 <div class="app">
   <header class="top">
-    <div class="brand" style="margin-right:0"><b>রং</b><span>ছবি সম্পাদক</span></div>
-    <nav class="menubar" id="menubar" aria-label="মেনু"></nav>
+    <div class="brand" style="margin-right:0"><b>Rong</b><span>Studio</span></div>
+    <nav class="menubar" id="menubar" aria-label="Menu"></nav>
     <span style="margin-right:auto"></span>
-    <button class="btn sm newimg" data-a="newImg" aria-label="নতুন ছবি খুলুন" title="নতুন ছবি খুলুন"><span id="newIc"></span><span class="lbl">নতুন ছবি</span></button>
-    <button class="ib" id="undo" aria-label="আনডু" title="আনডু (Ctrl+Z)"></button>
-    <button class="ib" id="redo" aria-label="রিডু" title="রিডু (Ctrl+Y)"></button>
+    <button class="btn sm newimg" data-a="newImg" aria-label="Open new picture" title="Open new picture"><span id="newIc"></span><span class="lbl">New picture</span></button>
+    <button class="ib" id="undo" aria-label="Undo" title="Undo (Ctrl+Z)"></button>
+    <button class="ib" id="redo" aria-label="Redo" title="Redo (Ctrl+Y)"></button>
     <div class="vsep"></div>
-    <button class="btn primary" id="exportBtn"><span id="dlIc"></span><span class="lbl">সেভ করুন</span></button>
+    <button class="btn primary" id="exportBtn"><span id="dlIc"></span><span class="lbl">Save</span></button>
   </header>
 
   <main class="stage-wrap">
     <div class="stage" id="stage"><canvas id="c"></canvas></div>
     <div class="floatbar" id="bar" hidden></div>
-    <div class="busy" id="busy" hidden><div class="card"><div class="spin"></div><div><b id="busyT">লেখা খুঁজছি…</b><p id="busyP">ছবির লেখা ও লোগো আলাদা করা হচ্ছে। ৩০–৬০ সেকেন্ড লাগতে পারে।</p></div><button class="btn sm" id="busyStop">থামান</button></div></div>
-    <div class="chip" id="chip"><span><strong>নমুনা পোস্টার।</strong> যেকোনো লেখায় চাপ দিয়ে বদলে দেখুন</span><button class="btn sm primary" data-a="openBase">নিজের ছবি</button></div>
+    <div class="busy" id="busy" hidden><div class="card"><div class="spin"></div><div><b id="busyT">Finding text…</b><p id="busyP">Separating the text and logos in the picture. This can take 30–60 seconds.</p></div><button class="btn sm" id="busyStop">Stop</button></div></div>
+    <div class="chip" id="chip"><span><strong>Sample poster.</strong> Tap any text to try changing it</span><button class="btn sm primary" data-a="openBase">Your picture</button></div>
     <div class="toolhint" id="toolHint" hidden></div>
     <div class="zoom">
-      <button class="ib" id="zOut" aria-label="ছোট করুন"></button>
-      <output id="zLbl">১০০%</output>
-      <button class="ib" id="zIn" aria-label="বড় করুন"></button>
-      <button class="ib" id="zFit" aria-label="পর্দায় মানিয়ে নিন"></button>
+      <button class="ib" id="zOut" aria-label="Zoom out"></button>
+      <output id="zLbl">100%</output>
+      <button class="ib" id="zIn" aria-label="Zoom in"></button>
+      <button class="ib" id="zFit" aria-label="Fit to screen"></button>
     </div>
   </main>
 
-  <section class="sheet dock" id="sheet" aria-label="টুল প্যানেল">
+  <section class="sheet dock" id="sheet" aria-label="Tool panel">
     <div class="sheet-head" id="sheetHead"><span class="grip"></span><span class="sheet-title" id="sheetTitle"></span>
-      <button class="ib" id="sheetMode" aria-label="ভাসমান করুন" title="ভাসমান করুন / নিচে বসান"></button>
-      <button class="ib" id="sheetClose" aria-label="প্যানেল বন্ধ" title="বন্ধ করুন"></button></div>
+      <button class="ib" id="sheetMode" aria-label="Float" title="Float / dock"></button>
+      <button class="ib" id="sheetClose" aria-label="Close panel" title="Close"></button></div>
     <div class="panel" id="panel" aria-live="polite"></div>
     <div class="layersdock" id="layersDock" hidden></div>
     <div class="sheet-resize" id="sheetResize" aria-hidden="true"></div>
   </section>
-  <nav class="tabs" id="tabs" aria-label="টুল"></nav>
+  <nav class="tabs" id="tabs" aria-label="Tools"></nav>
 </div>
 
 <div class="modal" id="exp" hidden>
-  <div class="mbox" role="dialog" aria-label="ছবি সেভ">
-    <div class="ph"><div class="pt">ছবি সেভ করুন</div><button class="ib" id="expClose" aria-label="বন্ধ"></button></div>
-    <img id="expImg" alt="এক্সপোর্টের প্রিভিউ">
-    <div class="mrow"><span class="eyebrow">ফরম্যাট</span><div class="seg" id="expFmt"><button data-v="png" class="on">PNG</button><button data-v="jpg">JPG</button><button data-v="webp">WebP</button><button data-v="svg">SVG</button></div></div>
-    <div class="mrow"><span class="eyebrow">মাপ</span><div class="seg" id="expScale"><button data-v="1" class="on">১×</button><button data-v="2">২×</button></div></div>
+  <div class="mbox" role="dialog" aria-label="Save picture">
+    <div class="ph"><div class="pt">Save picture</div><button class="ib" id="expClose" aria-label="Close"></button></div>
+    <img id="expImg" alt="Export preview">
+    <div class="mrow"><span class="eyebrow">Format</span><div class="seg" id="expFmt"><button data-v="png" class="on">PNG</button><button data-v="jpg">JPG</button><button data-v="webp">WebP</button><button data-v="svg">SVG</button></div></div>
+    <div class="mrow"><span class="eyebrow">Size</span><div class="seg" id="expScale"><button data-v="1" class="on">1×</button><button data-v="2">2×</button></div></div>
     <div class="mrow"><span class="hint" id="expInfo"></span></div>
-    <div class="note" id="expFallback" hidden>এখানে সরাসরি ডাউনলোড চালু নেই। উপরের ছবিটি চেপে ধরে (কম্পিউটারে রাইট-ক্লিক করে) “ছবি সেভ করুন” বেছে নিন।</div>
-    <div class="mrow"><button class="btn" id="projSave2">প্রজেক্ট ফাইল (.json)</button><button class="btn primary" id="expGo">ডাউনলোড করুন</button></div>
+    <div class="note" id="expFallback" hidden>Direct download isn’t available here. Press and hold the picture above (right-click on a computer) and choose “Save image”.</div>
+    <div class="mrow"><button class="btn" id="projSave2">Project file (.json)</button><button class="btn primary" id="expGo">Download</button></div>
   </div>
 </div>
 <div class="toast" id="toast" hidden></div>
@@ -287,7 +287,7 @@ select{height:38px;width:100%}
 (function(){
 const $=s=>document.querySelector(s);
 const BN='০১২৩৪৫৬৭৮৯';
-const bn=v=>String(v).replace(/\d/g,d=>BN[d]);
+const bn=v=>String(v);
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 
 /* ---------- icons ---------- */
@@ -346,17 +346,17 @@ const FONTS=[['Hind Siliguri','bn'],['Anek Bangla','bn'],['Baloo Da 2','bn'],['T
 const FONT_HINT='Hind Siliguri (clean Bengali sans, default for Bengali body text), Anek Bangla (modern bold Bengali display), Baloo Da 2 (rounded heavy Bengali display), Tiro Bangla (Bengali serif), Noto Serif Bengali (Bengali serif), Galada (Bengali calligraphic), Atma (playful Bengali), Mina (geometric Bengali), Montserrat (geometric Latin sans), Poppins (rounded geometric Latin sans), Roboto (neutral Latin sans), Oswald (condensed Latin sans), Bebas Neue (tall all-caps condensed), Playfair Display (Latin serif), Pacifico (Latin script), Lobster (bold Latin script), Caveat (handwriting)';
 if(window.Intl&&Intl.Segmenter){ const seg=new Intl.Segmenter(undefined,{granularity:'grapheme'}); fabric.util.string.graphemeSplit=t=>Array.from(seg.segment(t),s=>s.segment); }
 const SW=['#ffffff','#111111','#f2b42c','#e4572e','#d7263d','#ff8fab','#7b2cbf','#2e86ab','#1b998b','#8ac926','#6b4423','#9aa0a6'];
-const KIND={group:'গ্রুপ',text:'লেখা',emoji:'ইমোজি',shape:'আকার',line:'রেখা',image:'ছবি',draw:'আঁকা'};
+const KIND={group:'Group',text:'Text',emoji:'Emoji',shape:'Shape',line:'Line',image:'Picture',draw:'Draw'};
 const PROPS=['softness','hintIds','fontRank','found','origAsset','name','kind','assetId','isBase','locked','fx','layerName','selectable','evented','hasControls','lockMovementX','lockMovementY','lockScalingX','lockScalingY','lockRotation','perPixelTargetFind','paintFirst','strokeUniform'];
 const PRESETS={
- 'মূল':{}, 'উজ্জ্বল':{saturation:30,contrast:15,vibrance:20}, 'উষ্ণ':{warmth:55,saturation:10,brightness:3},
- 'শীতল':{warmth:-50,contrast:6}, 'সাদাকালো':{gray:1,contrast:20}, 'পুরোনো':{sepia:1,contrast:-10,brightness:5,noise:12},
- 'ম্লান':{contrast:-25,saturation:-25,brightness:8}, 'নাটকীয়':{contrast:40,saturation:-15,brightness:-6,sharpen:1}
+ 'Original':{}, 'Vivid':{saturation:30,contrast:15,vibrance:20}, 'Warm':{warmth:55,saturation:10,brightness:3},
+ 'Cool':{warmth:-50,contrast:6}, 'Black & white':{gray:1,contrast:20}, 'Vintage':{sepia:1,contrast:-10,brightness:5,noise:12},
+ 'Faded':{contrast:-25,saturation:-25,brightness:8}, 'Dramatic':{contrast:40,saturation:-15,brightness:-6,sharpen:1}
 };
-const SLIDERS=[['brightness','উজ্জ্বলতা',-100,100],['contrast','কনট্রাস্ট',-100,100],['saturation','রঙের গাঢ়তা',-100,100],['vibrance','ভাইব্রেন্স',-100,100],
- ['warmth','উষ্ণতা',-100,100],['hue','রঙ বদল',-180,180],['blur','ঝাপসা',0,100],['noise','দানা',0,100],['pixelate','পিক্সেল',0,40]];
-const SIZES=[['বর্গ ১:১',1080,1080],['পোস্ট ৪:৫',1080,1350],['স্টোরি ৯:১৬',1080,1920],['ওয়াইড ১৬:৯',1920,1080],['ফেসবুক কভার',1640,624],['ইউটিউব থাম্বনেইল',1280,720],['A4 পোস্টার',1240,1754],['প্রোফাইল ছবি',800,800]];
-const TABS=[['smart','স্মার্ট এডিট','wand'],['image','ছবি','image'],['text','লেখা','text'],['shape','ডিজাইন','shape'],['draw','আঁকা','draw'],['filter','ফিল্টার','filter'],['size','মাপ ও ক্রপ','crop'],['layers','লেয়ার','layers']];
+const SLIDERS=[['brightness','Brightness',-100,100],['contrast','Contrast',-100,100],['saturation','Saturation',-100,100],['vibrance','Vibrance',-100,100],
+ ['warmth','Warmth',-100,100],['hue','Hue',-180,180],['blur','Blur',0,100],['noise','Grain',0,100],['pixelate','Pixelate',0,40]];
+const SIZES=[['Square 1:1',1080,1080],['Post 4:5',1080,1350],['Story 9:16',1080,1920],['Wide 16:9',1920,1080],['Facebook cover',1640,624],['YouTube thumbnail',1280,720],['A4 poster',1240,1754],['Profile picture',800,800]];
+const TABS=[['smart','Smart edit','wand'],['image','Picture','image'],['text','Text','text'],['shape','Design','shape'],['draw','Draw','draw'],['filter','Filters','filter'],['size','Size & crop','crop'],['layers','Layers','layers']];
 
 /* ---------- canvas ---------- */
 fabric.textureSize=4096;
@@ -441,7 +441,7 @@ async function setBase(url,w,h,opts={}){
   if(S.isSample&&!opts.sample){ canvas.getObjects().slice().forEach(o=>canvas.remove(o)); S.isSample=false; $('#chip').hidden=true; }
   const old=base(); if(old) canvas.remove(old);
   const ow=S.W,oh=S.H; S.W=w;S.H=h; reposition(ow,oh);
-  img.set({isBase:true,kind:'image',assetId:id,layerName:'মূল ছবি',fx:{}});
+  img.set({isBase:true,kind:'image',assetId:id,layerName:'Main picture',fx:{}});
   setLocked(img,true);
   canvas.insertAt(img,0);coverBase();
   S.batch=false;canvas.discardActiveObject();fit();save();
@@ -451,20 +451,20 @@ async function setBase(url,w,h,opts={}){
 async function addImageLayer(url){
   const img=await fimg(url);const id=addAsset(url);
   const s=Math.min(S.W*0.6/img.width,S.H*0.6/img.height,1/Math.max(0.0001,1));
-  img.set({kind:'image',assetId:id,layerName:'ছবি',fx:{},originX:'center',originY:'center',left:S.W/2,top:S.H/2,scaleX:s,scaleY:s});
+  img.set({kind:'image',assetId:id,layerName:'Picture',fx:{},originX:'center',originY:'center',left:S.W/2,top:S.H/2,scaleX:s,scaleY:s});
   canvas.add(img);canvas.setActiveObject(img);canvas.requestRenderAll();
 }
 async function handleFile(file,asLayer,fresh){
-  if(!file){return} if(file.type&&!file.type.startsWith('image/')){toast('এটা ছবির ফাইল নয়। JPG, PNG বা WebP দিন।');return}
+  if(!file){return} if(file.type&&!file.type.startsWith('image/')){toast('That isn’t a picture. Use a JPG, PNG or WebP file.');return}
   try{ const r=await fileToURL(file);
     if(fresh){ S.batch=true; if(S.crop) endCrop(false); canvas.discardActiveObject(); canvas.getObjects().slice().forEach(o=>canvas.remove(o)); canvas.backgroundColor='#ffffff'; S.isSample=false; S.batch=false; }
     if(asLayer&&!S.isSample&&(base()||canvas.getObjects().length)) await addImageLayer(r.url); else await setBase(r.url,r.w,r.h);
-    if(fresh) toast('নতুন ছবি খোলা হয়েছে। আগেরটায় ফিরতে আনডু চাপুন।');
-  }catch(e){ toast(/heic|heif/i.test(file.type+file.name)?'HEIC ছবি এখানে খোলা যাচ্ছে না। ফোনের সেটিংসে ক্যামেরা ফরম্যাট “Most Compatible” করুন বা স্ক্রিনশট দিন।':'ছবিটি খোলা গেল না। অন্য ফাইল চেষ্টা করুন।') }
+    if(fresh) toast('New picture opened. Press Undo to go back to the previous one.');
+  }catch(e){ toast(/heic|heif/i.test(file.type+file.name)?'HEIC pictures can’t be opened here. Set the camera format to “Most Compatible” in your phone’s settings, or use a screenshot.':'This picture couldn’t be opened. Try another file.') }
 }
 async function rotateBase(dir){
   S.hints=[];
-  const b=base();if(!b){toast('আগে একটি ছবি খুলুন');return}
+  const b=base();if(!b){toast('Open a picture first');return}
   const el=await himg(S.assets[b.assetId]);const c=document.createElement('canvas');c.width=el.naturalHeight;c.height=el.naturalWidth;
   const x=c.getContext('2d');x.translate(c.width/2,c.height/2);x.rotate(dir*Math.PI/2);x.drawImage(el,-el.naturalWidth/2,-el.naturalHeight/2);
   const url=c.toDataURL('image/png');const id=addAsset(url);const ne=await himg(url);
@@ -497,18 +497,18 @@ async function makeSample(){
   const lx=150,ly=150,lr=58;x.fillStyle='#f2b42c';x.beginPath();x.arc(lx,ly,lr,0,Math.PI*2);x.fill();
   x.fillStyle='#0f4c45';x.beginPath();x.moveTo(lx-26,ly+24);x.bezierCurveTo(lx-30,ly-20,lx+4,ly-34,lx+30,ly-30);x.bezierCurveTo(lx+30,ly+6,lx+6,ly+30,lx-26,ly+24);x.fill();
   x.strokeStyle='#f2b42c';x.lineWidth=4;x.lineCap='round';x.beginPath();x.moveTo(lx-18,ly+16);x.quadraticCurveTo(lx+2,ly-4,lx+20,ly-20);x.stroke();
-  items.graphics.push({label:'লোগো',px:{x0:lx-lr,y0:ly-lr,x1:lx+lr,y1:ly+lr}});
-  T('সবুজ বাজার','Baloo Da 2',50,700,'#ffffff',232,166,'left');
+  items.graphics.push({label:'Logo',px:{x0:lx-lr,y0:ly-lr,x1:lx+lr,y1:ly+lr}});
+  T('Green Market','Baloo Da 2',50,700,'#ffffff',232,166,'left');
   // headline
   for(const [sx,sy,s] of [[190,420,22],[880,470,16],[835,360,10]]){x.fillStyle='#ffd166';x.beginPath();x.moveTo(sx,sy-s);x.quadraticCurveTo(sx,sy,sx+s,sy);x.quadraticCurveTo(sx,sy,sx,sy+s);x.quadraticCurveTo(sx,sy,sx-s,sy);x.quadraticCurveTo(sx,sy,sx,sy-s);x.fill()}
-  T('বিশাল ছাড়!','Baloo Da 2',190,800,'#ffd166',540,585);
-  T('সব পণ্যে ৫০% পর্যন্ত','Hind Siliguri',70,600,'#ffffff',540,755);
+  T('BIG SALE!','Baloo Da 2',190,800,'#ffd166',540,585);
+  T('Up to 50% off everything','Hind Siliguri',70,600,'#ffffff',540,755);
   // pill button
   const pw=480,ph=116,px=540-pw/2,py=850;x.fillStyle='#f2b42c';x.beginPath();x.roundRect?x.roundRect(px,py,pw,ph,ph/2):x.rect(px,py,pw,ph);x.fill();
-  T('এখনই অর্ডার করুন','Hind Siliguri',50,700,'#1b1406',540,py+ph/2+20);
-  items.graphics.push({label:'বাটন',px:{x0:px,y0:py,x1:px+pw,y1:py+ph}});
+  T('Order now','Hind Siliguri',50,700,'#1b1406',540,py+ph/2+20);
+  items.graphics.push({label:'Button',px:{x0:px,y0:py,x1:px+pw,y1:py+ph}});
   x.fillStyle='rgba(255,255,255,.18)';x.fillRect(140,1180,800,2);
-  T('অফার চলবে ৩১ অক্টোবর পর্যন্ত','Hind Siliguri',40,500,'#cfe8e0',540,1262);
+  T('Offer ends 31 October','Hind Siliguri',40,500,'#cfe8e0',540,1262);
   return {url:c.toDataURL('image/png'),items};
 }
 
@@ -518,12 +518,12 @@ function place(o,kind,name){
   canvas.add(o);canvas.setActiveObject(o);canvas.requestRenderAll();return o;
 }
 const TEXTP=[
- {lbl:'শিরোনাম',text:'আপনার শিরোনাম',font:'Baloo Da 2',w:800,size:110,fill:'#ffffff',shadow:1},
- {lbl:'উপশিরোনাম',text:'এখানে ছোট একটি লাইন',font:'Hind Siliguri',w:600,size:56,fill:'#ffffff'},
- {lbl:'সাধারণ লেখা',text:'এখানে আপনার লেখা লিখুন। দুইবার চাপলে সরাসরি বদলানো যায়।',font:'Hind Siliguri',w:400,size:40,fill:'#ffffff',width:.7},
- {lbl:'আউটলাইন',text:'জোরালো কথা',font:'Baloo Da 2',w:800,size:120,fill:'#ffffff',stroke:'#111111',sw:10},
- {lbl:'লেবেল',text:' আজকের অফার ',font:'Hind Siliguri',w:700,size:54,fill:'#1b1406',bg:'#f2b42c'},
- {lbl:'ক্যালিগ্রাফি',text:'ভালোবাসা',font:'Galada',w:400,size:130,fill:'#ffe2a0',shadow:1},
+ {lbl:'Headline',text:'Your headline',font:'Baloo Da 2',w:800,size:110,fill:'#ffffff',shadow:1},
+ {lbl:'Subheading',text:'A short line goes here',font:'Hind Siliguri',w:600,size:56,fill:'#ffffff'},
+ {lbl:'Body text',text:'Write your text here. Double-tap to edit it directly.',font:'Hind Siliguri',w:400,size:40,fill:'#ffffff',width:.7},
+ {lbl:'Outline',text:'BOLD WORDS',font:'Baloo Da 2',w:800,size:120,fill:'#ffffff',stroke:'#111111',sw:10},
+ {lbl:'Label',text:' TODAY’S OFFER ',font:'Hind Siliguri',w:700,size:54,fill:'#1b1406',bg:'#f2b42c'},
+ {lbl:'Bengali calligraphy',text:'ভালোবাসা',font:'Galada',w:400,size:130,fill:'#ffe2a0',shadow:1},
  {lbl:'English Title',text:'BIG SALE',font:'Bebas Neue',w:400,size:170,fill:'#ffffff',cs:120},
  {lbl:'Handwritten',text:'with love',font:'Caveat',w:700,size:110,fill:'#ffffff'}
 ];
@@ -533,38 +533,38 @@ async function addText(p,extra={}){
   const t=new fabric.Textbox(p.text,{fontFamily:p.font,fontWeight:p.w,fontSize:p.size*k,fill:p.fill,width:S.W*(p.width||.86),textAlign:'center',
     lineHeight:1.15,charSpacing:p.cs||0,paintFirst:'stroke',strokeUniform:true,stroke:p.stroke||null,strokeWidth:(p.sw||0)*k,
     textBackgroundColor:p.bg||'',shadow:p.shadow?mkShadow():null,splitByGrapheme:false,...extra});
-  return place(t,'text','লেখা');
+  return place(t,'text','Text');
 }
 const mkShadow=()=>{const k=K();return new fabric.Shadow({color:'rgba(0,0,0,0.55)',blur:22*k,offsetX:4*k,offsetY:6*k})};
 const SHAPES={
- rect:{lbl:'আয়ত',svg:'<rect x="4" y="9" width="32" height="22"/>',make:k=>new fabric.Rect({width:420*k,height:280*k,fill:'#f2b42c'})},
- round:{lbl:'গোল কোণা',svg:'<rect x="4" y="9" width="32" height="22" rx="7"/>',make:k=>new fabric.Rect({width:420*k,height:280*k,rx:40*k,ry:40*k,fill:'#f2b42c'})},
- circle:{lbl:'বৃত্ত',svg:'<circle cx="20" cy="20" r="15"/>',make:k=>new fabric.Circle({radius:170*k,fill:'#f2b42c'})},
- tri:{lbl:'ত্রিভুজ',svg:'<path d="M20 5L36 34H4z"/>',make:k=>new fabric.Triangle({width:340*k,height:300*k,fill:'#f2b42c'})},
- star:{lbl:'তারা',svg:'<path d="M20 3l4.9 10.5 11.5 1.4-8.5 7.9 2.2 11.4L20 28.6 9.9 34.2l2.2-11.4-8.5-7.9 11.5-1.4z"/>',make:k=>new fabric.Polygon(starPts(170*k,72*k,5),{fill:'#f2b42c'})},
- heart:{lbl:'হৃদয়',svg:'<path d="M20 34S5 25 5 14a7.5 7.5 0 0 1 15-1 7.5 7.5 0 0 1 15 1c0 11-15 20-15 20z"/>',make:k=>{const p=new fabric.Path('M 0 -30 C -20 -70 -90 -60 -90 -10 C -90 30 -40 60 0 90 C 40 60 90 30 90 -10 C 90 -60 20 -70 0 -30 Z',{fill:'#e4572e'});p.scale(2*k);return p}},
- hex:{lbl:'ষড়ভুজ',svg:'<path d="M20 3l15 8.5v17L20 37 5 28.5v-17z"/>',make:k=>new fabric.Polygon([...Array(6)].map((_,i)=>({x:Math.cos(i*Math.PI/3-Math.PI/2)*170*k,y:Math.sin(i*Math.PI/3-Math.PI/2)*170*k})),{fill:'#f2b42c'})},
- arrow:{lbl:'তীর',svg:'<path d="M3 16h22V9l12 11-12 11v-7H3z"/>',make:k=>new fabric.Polygon([{x:0,y:30},{x:260,y:30},{x:260,y:0},{x:350,y:50},{x:260,y:100},{x:260,y:70},{x:0,y:70}].map(p=>({x:p.x*k*1.2,y:p.y*k*1.2})),{fill:'#f2b42c'})},
- bubble:{lbl:'কথার বুদবুদ',svg:'<path d="M6 5h28a3 3 0 0 1 3 3v17a3 3 0 0 1-3 3H17l-7 7 1-7H6a3 3 0 0 1-3-3V8a3 3 0 0 1 3-3z"/>',make:k=>{const p=new fabric.Path('M20 0 H380 Q400 0 400 20 V200 Q400 220 380 220 H150 L80 300 L100 220 H20 Q0 220 0 200 V20 Q0 0 20 0 Z',{fill:'#ffffff',stroke:'#111111',strokeWidth:6*k,strokeUniform:true});p.scale(1.1*k);return p}},
- line:{lbl:'রেখা',svg:'<path class="ol" d="M5 30L35 10"/>',make:k=>new fabric.Line([0,0,440*k,0],{stroke:'#ffffff',strokeWidth:10*k,strokeLineCap:'round'}),kind:'line'},
- ring:{lbl:'বৃত্ত রেখা',svg:'<circle class="ol" cx="20" cy="20" r="14"/>',make:k=>new fabric.Circle({radius:170*k,fill:'',stroke:'#ffffff',strokeWidth:10*k,strokeUniform:true,perPixelTargetFind:true})},
- box:{lbl:'আয়ত রেখা',svg:'<rect class="ol" x="5" y="10" width="30" height="20"/>',make:k=>new fabric.Rect({width:420*k,height:280*k,fill:'',stroke:'#ffffff',strokeWidth:10*k,strokeUniform:true,perPixelTargetFind:true})}
+ rect:{lbl:'Rectangle',svg:'<rect x="4" y="9" width="32" height="22"/>',make:k=>new fabric.Rect({width:420*k,height:280*k,fill:'#f2b42c'})},
+ round:{lbl:'Rounded',svg:'<rect x="4" y="9" width="32" height="22" rx="7"/>',make:k=>new fabric.Rect({width:420*k,height:280*k,rx:40*k,ry:40*k,fill:'#f2b42c'})},
+ circle:{lbl:'Circle',svg:'<circle cx="20" cy="20" r="15"/>',make:k=>new fabric.Circle({radius:170*k,fill:'#f2b42c'})},
+ tri:{lbl:'Triangle',svg:'<path d="M20 5L36 34H4z"/>',make:k=>new fabric.Triangle({width:340*k,height:300*k,fill:'#f2b42c'})},
+ star:{lbl:'Star',svg:'<path d="M20 3l4.9 10.5 11.5 1.4-8.5 7.9 2.2 11.4L20 28.6 9.9 34.2l2.2-11.4-8.5-7.9 11.5-1.4z"/>',make:k=>new fabric.Polygon(starPts(170*k,72*k,5),{fill:'#f2b42c'})},
+ heart:{lbl:'Heart',svg:'<path d="M20 34S5 25 5 14a7.5 7.5 0 0 1 15-1 7.5 7.5 0 0 1 15 1c0 11-15 20-15 20z"/>',make:k=>{const p=new fabric.Path('M 0 -30 C -20 -70 -90 -60 -90 -10 C -90 30 -40 60 0 90 C 40 60 90 30 90 -10 C 90 -60 20 -70 0 -30 Z',{fill:'#e4572e'});p.scale(2*k);return p}},
+ hex:{lbl:'Hexagon',svg:'<path d="M20 3l15 8.5v17L20 37 5 28.5v-17z"/>',make:k=>new fabric.Polygon([...Array(6)].map((_,i)=>({x:Math.cos(i*Math.PI/3-Math.PI/2)*170*k,y:Math.sin(i*Math.PI/3-Math.PI/2)*170*k})),{fill:'#f2b42c'})},
+ arrow:{lbl:'Arrow',svg:'<path d="M3 16h22V9l12 11-12 11v-7H3z"/>',make:k=>new fabric.Polygon([{x:0,y:30},{x:260,y:30},{x:260,y:0},{x:350,y:50},{x:260,y:100},{x:260,y:70},{x:0,y:70}].map(p=>({x:p.x*k*1.2,y:p.y*k*1.2})),{fill:'#f2b42c'})},
+ bubble:{lbl:'Speech bubble',svg:'<path d="M6 5h28a3 3 0 0 1 3 3v17a3 3 0 0 1-3 3H17l-7 7 1-7H6a3 3 0 0 1-3-3V8a3 3 0 0 1 3-3z"/>',make:k=>{const p=new fabric.Path('M20 0 H380 Q400 0 400 20 V200 Q400 220 380 220 H150 L80 300 L100 220 H20 Q0 220 0 200 V20 Q0 0 20 0 Z',{fill:'#ffffff',stroke:'#111111',strokeWidth:6*k,strokeUniform:true});p.scale(1.1*k);return p}},
+ line:{lbl:'Line',svg:'<path class="ol" d="M5 30L35 10"/>',make:k=>new fabric.Line([0,0,440*k,0],{stroke:'#ffffff',strokeWidth:10*k,strokeLineCap:'round'}),kind:'line'},
+ ring:{lbl:'Circle outline',svg:'<circle class="ol" cx="20" cy="20" r="14"/>',make:k=>new fabric.Circle({radius:170*k,fill:'',stroke:'#ffffff',strokeWidth:10*k,strokeUniform:true,perPixelTargetFind:true})},
+ box:{lbl:'Box outline',svg:'<rect class="ol" x="5" y="10" width="30" height="20"/>',make:k=>new fabric.Rect({width:420*k,height:280*k,fill:'',stroke:'#ffffff',strokeWidth:10*k,strokeUniform:true,perPixelTargetFind:true})}
 };
 function starPts(R,r,n){const a=[];for(let i=0;i<n*2;i++){const rad=i%2?r:R;const an=i*Math.PI/n-Math.PI/2;a.push({x:Math.cos(an)*rad,y:Math.sin(an)*rad})}return a}
 function addShape(key){const s=SHAPES[key];place(s.make(K()),s.kind||'shape',s.lbl)}
 const EMOJI=['😀','😍','🥳','😎','❤️','🔥','⭐','✨','🎉','🎂','🌸','🌙','☀️','👍','🙏','📍'];
-function addEmoji(e){place(new fabric.Text(e,{fontSize:180*K()}),'emoji','ইমোজি')}
+function addEmoji(e){place(new fabric.Text(e,{fontSize:180*K()}),'emoji','Emoji')}
 const QUICK=[
- {lbl:'নিচে ক্যাপশন',run:async()=>{const k=K();place(new fabric.Rect({width:S.W,height:S.H*0.2,fill:'#000000',opacity:.55,top:S.H*0.9}),'shape','ক্যাপশন পটি');
-   await addText({text:'এখানে ক্যাপশন লিখুন',font:'Hind Siliguri',w:600,size:58,fill:'#ffffff'},{top:S.H*0.9,width:S.W*0.86})}},
- {lbl:'বর্ডার ফ্রেম',run:async()=>{const k=K(),m=Math.min(S.W,S.H)*0.04;place(new fabric.Rect({width:S.W-m*2,height:S.H-m*2,fill:'',stroke:'#ffffff',strokeWidth:12*k,strokeUniform:true,perPixelTargetFind:true}),'shape','ফ্রেম')}},
- {lbl:'ছাড়ের ব্যাজ',run:async()=>{const k=K(),r=150*k;place(new fabric.Circle({radius:r,fill:'#f2b42c',left:S.W-r*1.3,top:r*1.3,shadow:mkShadow()}),'shape','ব্যাজ');
-   await addText({text:'৫০%\nছাড়',font:'Baloo Da 2',w:800,size:84,fill:'#1b1406'},{left:S.W-r*1.3,top:r*1.3,width:r*1.7,lineHeight:.9})}},
- {lbl:'উদ্ধৃতি কার্ড',run:async()=>{place(new fabric.Rect({width:S.W,height:S.H,fill:'#000000',opacity:.45}),'shape','গাঢ় পর্দা');
-   await addText({text:'“স্বপ্ন সেটা নয় যা তুমি ঘুমিয়ে দেখো”',font:'Tiro Bangla',w:400,size:78,fill:'#ffffff'},{top:S.H*0.46,width:S.W*0.78,fontStyle:'italic'});
-   await addText({text:'— এ পি জে আবদুল কালাম',font:'Hind Siliguri',w:500,size:38,fill:'#f2b42c'},{top:S.H*0.62,width:S.W*0.7})}},
- {lbl:'শিরোনাম ও রেখা',run:async()=>{const k=K();await addText({text:'নতুন সংগ্রহ',font:'Baloo Da 2',w:800,size:120,fill:'#ffffff',shadow:1},{top:S.H*0.16});
-   place(new fabric.Line([0,0,260*k,0],{stroke:'#f2b42c',strokeWidth:10*k,strokeLineCap:'round',top:S.H*0.16+80*k}),'line','রেখা')}}
+ {lbl:'Bottom caption',run:async()=>{const k=K();place(new fabric.Rect({width:S.W,height:S.H*0.2,fill:'#000000',opacity:.55,top:S.H*0.9}),'shape','Caption bar');
+   await addText({text:'Write your caption here',font:'Hind Siliguri',w:600,size:58,fill:'#ffffff'},{top:S.H*0.9,width:S.W*0.86})}},
+ {lbl:'Border frame',run:async()=>{const k=K(),m=Math.min(S.W,S.H)*0.04;place(new fabric.Rect({width:S.W-m*2,height:S.H-m*2,fill:'',stroke:'#ffffff',strokeWidth:12*k,strokeUniform:true,perPixelTargetFind:true}),'shape','Frame')}},
+ {lbl:'Discount badge',run:async()=>{const k=K(),r=150*k;place(new fabric.Circle({radius:r,fill:'#f2b42c',left:S.W-r*1.3,top:r*1.3,shadow:mkShadow()}),'shape','Badge');
+   await addText({text:'50%\nOFF',font:'Baloo Da 2',w:800,size:84,fill:'#1b1406'},{left:S.W-r*1.3,top:r*1.3,width:r*1.7,lineHeight:.9})}},
+ {lbl:'Quote card',run:async()=>{place(new fabric.Rect({width:S.W,height:S.H,fill:'#000000',opacity:.45}),'shape','Dark overlay');
+   await addText({text:'“Dreams are not what you see in sleep”',font:'Tiro Bangla',w:400,size:78,fill:'#ffffff'},{top:S.H*0.46,width:S.W*0.78,fontStyle:'italic'});
+   await addText({text:'— A. P. J. Abdul Kalam',font:'Hind Siliguri',w:500,size:38,fill:'#f2b42c'},{top:S.H*0.62,width:S.W*0.7})}},
+ {lbl:'Title with line',run:async()=>{const k=K();await addText({text:'New collection',font:'Baloo Da 2',w:800,size:120,fill:'#ffffff',shadow:1},{top:S.H*0.16});
+   place(new fabric.Line([0,0,260*k,0],{stroke:'#f2b42c',strokeWidth:10*k,strokeLineCap:'round',top:S.H*0.16+80*k}),'line','Line')}}
 ];
 async function runQuick(i){ S.batch=true; try{ await QUICK[i].run() } finally{ S.batch=false; save(); } }
 
@@ -573,7 +573,7 @@ const active=()=>{const o=canvas.getActiveObject();return o&&!o.isBase&&o.name!=
 const targets=()=>{const o=active();if(!o)return[];return o.type==='activeSelection'?o.getObjects():[o]};
 function setLocked(o,v){o.set({locked:v,lockMovementX:v,lockMovementY:v,lockScalingX:v,lockScalingY:v,lockRotation:v,hasControls:!v});if(o.isBase)o.set({selectable:!v,evented:!v})}
 function kindOf(o){return o.type==='group'?'group':o.kind||(o.type==='textbox'?'text':o.type==='image'?'image':o.type==='path'?'draw':'shape')}
-function nameOf(o){ if(o.isBase) return 'মূল ছবি'; if(o.type==='textbox') return (o.text||'').replace(/\s+/g,' ').trim().slice(0,28)||'লেখা'; if(o.kind==='emoji') return 'ইমোজি '+o.text; return o.layerName||KIND[kindOf(o)]||'বস্তু' }
+function nameOf(o){ if(o.isBase) return 'Main picture'; if(o.type==='textbox') return (o.text||'').replace(/\s+/g,' ').trim().slice(0,28)||'Text'; if(o.kind==='emoji') return 'Emoji '+o.text; return o.layerName||KIND[kindOf(o)]||'Object' }
 
 function act(a){
   const o=active();const ts=targets();
@@ -583,13 +583,13 @@ function act(a){
       if(--n===0){ canvas.setActiveObject(made.length>1?new fabric.ActiveSelection(made,{canvas}):made[0]);canvas.requestRenderAll(); } },PROPS)); }
   else if(a==='fwd'&&o){ canvas.bringForward(o); }
   else if(a==='bwd'&&o){ const objs=canvas.getObjects();const first=ts[0];const idx=objs.indexOf(first);const b=base();
-    if(b&&idx<=1){toast('মূল ছবির নিচে নেওয়া যাবে না');return} canvas.sendBackwards(o); }
+    if(b&&idx<=1){toast('Can’t go below the main picture');return} canvas.sendBackwards(o); }
   else if(a==='front'&&o){ canvas.bringToFront(o); }
   else if(a==='back'&&o){ ts.slice().reverse().forEach(t=>{canvas.sendToBack(t)}); const b=base(); if(b) canvas.sendToBack(b); }
   else if(a==='edit'){ openSheet(); return; }
   else if(a==='flipX'){ ts.forEach(t=>t.set('flipX',!t.flipX)); }
   else if(a==='flipY'){ ts.forEach(t=>t.set('flipY',!t.flipY)); }
-  else if(a==='lock'){ const v=!ts.every(t=>t.locked); ts.forEach(t=>setLocked(t,v)); toast(v?'লক করা হয়েছে':'লক খোলা হয়েছে'); }
+  else if(a==='lock'){ const v=!ts.every(t=>t.locked); ts.forEach(t=>setLocked(t,v)); toast(v?'Locked':'Unlocked'); }
   else if(a==='cH'||a==='cV'){ ts.forEach(t=>{const c=t.getCenterPoint();t.setPositionByOrigin(new fabric.Point(a==='cH'?S.W/2:c.x,a==='cV'?S.H/2:c.y),'center','center');t.setCoords()}); if(o&&o.type==='activeSelection'){o.setCoords()} }
   else return;
   canvas.requestRenderAll();save();updBar();if(a==='lock'||a==='dup'||a==='del')renderPanel();
@@ -598,7 +598,7 @@ function updBar(){
   const o=active();const bar=$('#bar');
   if(!o||S.crop||canvas.isDrawingMode){bar.hidden=true;return}
   const locked=targets().every(t=>t.locked);
-  bar.innerHTML=[['edit','edit','এডিট প্যানেল'],['fwd','up','সামনে আনুন'],['bwd','down','পেছনে নিন'],['dup','copy','কপি করুন'],['flipX','flip','উল্টান'],['lock',locked?'unlock':'lock',locked?'লক খুলুন':'লক করুন'],['del','trash','মুছুন']]
+  bar.innerHTML=[['edit','edit','Edit panel'],['fwd','up','Bring forward'],['bwd','down','Send backward'],['dup','copy','Duplicate'],['flipX','flip','Flip'],['lock',locked?'unlock':'lock',locked?'Unlock':'Lock'],['del','trash','Delete']]
     .map(([a,i,l])=>`<button class="ib${a==='del'?' del':''}" data-a="${a}" aria-label="${l}" title="${l}">${ic(i)}</button>`).join('');
   bar.hidden=false;
 }
@@ -635,113 +635,113 @@ function drawThumbs(t){
     try{x.filter=cssFx(fx)}catch(e){} x.drawImage(src,(124-iw*s)/2,(124-ih*s)/2,iw*s,ih*s); });
 }
 function filterUI(t){
-  if(!t) return `<div class="sec"><div class="pt">ফিল্টার</div><p class="hint">ফিল্টার দিতে আগে একটি ছবি খুলুন বা যোগ করুন।</p><div><button class="btn primary" data-a="openBase">${ic('upload')} ছবি খুলুন</button></div></div>`;
+  if(!t) return `<div class="sec"><div class="pt">Filters</div><p class="hint">Open or add a picture first to use filters.</p><div><button class="btn primary" data-a="openBase">${ic('upload')} Open picture</button></div></div>`;
   const fx=t.fx||{};const cur=Object.keys(PRESETS).find(n=>JSON.stringify(PRESETS[n])===JSON.stringify(Object.fromEntries(Object.entries(fx).filter(([,v])=>v))));
-  return `<div class="sec"><span class="eyebrow">প্রিসেট</span><div class="presets">${Object.keys(PRESETS).map(n=>`<button class="pre${n===cur?' on':''}" data-a="preset" data-v="${n}"><canvas data-p="${n}"></canvas>${n}</button>`).join('')}</div></div>
-  <div class="sec"><div class="ph"><span class="eyebrow">সমন্বয়</span><button class="btn sm" data-a="fxReset">${ic('reset')} রিসেট</button></div>
+  return `<div class="sec"><span class="eyebrow">Presets</span><div class="presets">${Object.keys(PRESETS).map(n=>`<button class="pre${n===cur?' on':''}" data-a="preset" data-v="${n}"><canvas data-p="${n}"></canvas>${n}</button>`).join('')}</div></div>
+  <div class="sec"><div class="ph"><span class="eyebrow">Adjust</span><button class="btn sm" data-a="fxReset">${ic('reset')} Reset</button></div>
   ${SLIDERS.map(([k,l,mn,mx])=>rng(l,`data-fx="${k}"`,mn,mx,1,fx[k]||0)).join('')}
-  ${[['gray','সাদাকালো'],['sepia','সেপিয়া'],['invert','উল্টো রঙ'],['sharpen','ধারালো']].map(([k,l])=>`<div class="tog"><span>${l}</span><button class="switch${fx[k]?' on':''}" data-a="fxTog" data-v="${k}" aria-pressed="${!!fx[k]}" aria-label="${l}"></button></div>`).join('')}</div>`;
+  ${[['gray','Black & white'],['sepia','Sepia'],['invert','Invert'],['sharpen','Sharpen']].map(([k,l])=>`<div class="tog"><span>${l}</span><button class="switch${fx[k]?' on':''}" data-a="fxTog" data-v="${k}" aria-pressed="${!!fx[k]}" aria-label="${l}"></button></div>`).join('')}</div>`;
 }
 
 /* ---------- panel helpers ---------- */
 const rng=(label,attr,min,max,step,val,fmt)=>`<div class="rng"><label>${label}</label><input type="range" ${attr} min="${min}" max="${max}" step="${step}" value="${val}" aria-label="${label}"><output>${fmt?fmt(val):bn(Math.round(val*10)/10)}</output></div>`;
 function sws(prop,cur,none){ const c=(cur||'').toLowerCase();
-  return `<div class="sws">${none?`<button class="sw none${!cur?' on':''}" data-a="color" data-p="${prop}" data-v="" aria-label="রঙ নেই"></button>`:''}${SW.map(s=>`<button class="sw${c===s?' on':''}" style="background:${s}" data-a="color" data-p="${prop}" data-v="${s}" aria-label="${s}"></button>`).join('')}<label class="sw pick" aria-label="নিজের রঙ"><input type="color" data-p="${prop}" value="${/^#[0-9a-f]{6}$/i.test(cur||'')?cur:'#f2b42c'}"></label>${prop==='drawColor'||prop==='canvasBg'?'':`<button class="sw drop${S.pickColor===prop?' on':''}" data-a="eyedrop" data-p="${prop}" aria-label="ছবি থেকে রঙ নিন" title="ছবি থেকে রঙ নিন">${ic('drop')}</button>`}</div>`; }
+  return `<div class="sws">${none?`<button class="sw none${!cur?' on':''}" data-a="color" data-p="${prop}" data-v="" aria-label="No colour"></button>`:''}${SW.map(s=>`<button class="sw${c===s?' on':''}" style="background:${s}" data-a="color" data-p="${prop}" data-v="${s}" aria-label="${s}"></button>`).join('')}<label class="sw pick" aria-label="Custom colour"><input type="color" data-p="${prop}" value="${/^#[0-9a-f]{6}$/i.test(cur||'')?cur:'#f2b42c'}"></label>${prop==='drawColor'||prop==='canvasBg'?'':`<button class="sw drop${S.pickColor===prop?' on':''}" data-a="eyedrop" data-p="${prop}" aria-label="Pick colour from picture" title="Pick colour from picture">${ic('drop')}</button>`}</div>`; }
 /* fill editor: one colour or a two-colour gradient */
 const gradOf=o=>o&&o.fill&&typeof o.fill==='object'&&o.fill.colorStops?o.fill:null;
 function fillUI(o,label){ const g=gradOf(o);
-  return sec(label,`<div class="seg"><button data-a="fillMode" data-v="solid" class="${g?'':'on'}">একরঙা</button><button data-a="fillMode" data-v="grad" class="${g?'on':''}">গ্রেডিয়েন্ট</button></div>
-    ${g?`<span class="hint">উপরের / বাঁয়ের রঙ</span>${sws('g1',g.colorStops[0].color)}<span class="hint">নিচের / ডানের রঙ</span>${sws('g2',g.colorStops[g.colorStops.length-1].color)}
-      <div class="seg"><button data-a="gdir" data-v="v" class="${g.coords.x2===0?'on':''}">উপর থেকে নিচে</button><button data-a="gdir" data-v="h" class="${g.coords.x2!==0?'on':''}">বাঁ থেকে ডানে</button></div>`
+  return sec(label,`<div class="seg"><button data-a="fillMode" data-v="solid" class="${g?'':'on'}">Solid</button><button data-a="fillMode" data-v="grad" class="${g?'on':''}">Gradient</button></div>
+    ${g?`<span class="hint">Top / left colour</span>${sws('g1',g.colorStops[0].color)}<span class="hint">Bottom / right colour</span>${sws('g2',g.colorStops[g.colorStops.length-1].color)}
+      <div class="seg"><button data-a="gdir" data-v="v" class="${g.coords.x2===0?'on':''}">Top to bottom</button><button data-a="gdir" data-v="h" class="${g.coords.x2!==0?'on':''}">Left to right</button></div>`
     :sws('fill',typeof o.fill==='string'?o.fill:'',o.type!=='textbox')}`); }
 /* shadow editor */
 const shParts=o=>{ const sh=o.shadow; if(!sh) return null; const m=String(sh.color).match(/rgba?\(([^)]+)\)/); let c='#000000',a=1;
   if(m){ const v=m[1].split(',').map(Number); c=hex(v[0],v[1],v[2]); a=v[3]??1; } else if(/^#/.test(sh.color)) c=sh.color.slice(0,7);
   return {c,a,blur:sh.blur||0,x:sh.offsetX||0,y:sh.offsetY||0}; };
 function shadowUI(o){ const p=shParts(o),KK=K();
-  return sec('ছায়া / আভা',tog('ছায়া','shadow',!!p)+(p?`${sws('shColor',p.c)}
-    ${rng('ঝাপসা','data-p="shBlur"',0,80*KK,0.5,p.blur,v=>bn(Math.round(v)))}${rng('ডানে-বাঁয়ে','data-p="shX"',-60*KK,60*KK,0.5,p.x,v=>bn(Math.round(v)))}
-    ${rng('উপরে-নিচে','data-p="shY"',-60*KK,60*KK,0.5,p.y,v=>bn(Math.round(v)))}${rng('গাঢ়তা','data-p="shAlpha"',0,1,0.01,p.a,v=>bn(Math.round(v*100))+'%')}
-    <span class="hint">ডানে-বাঁয়ে আর উপরে-নিচে দুটোই ০ রাখলে চারপাশে আভা হয়।</span>`:''))}
+  return sec('Shadow / glow',tog('Shadow','shadow',!!p)+(p?`${sws('shColor',p.c)}
+    ${rng('Blur','data-p="shBlur"',0,80*KK,0.5,p.blur,v=>bn(Math.round(v)))}${rng('Horizontal','data-p="shX"',-60*KK,60*KK,0.5,p.x,v=>bn(Math.round(v)))}
+    ${rng('Vertical','data-p="shY"',-60*KK,60*KK,0.5,p.y,v=>bn(Math.round(v)))}${rng('Strength','data-p="shAlpha"',0,1,0.01,p.a,v=>bn(Math.round(v*100))+'%')}
+    <span class="hint">Set both horizontal and vertical to 0 for a glow all around.</span>`:''))}
 const sec=(t,body)=>`<div class="sec"><span class="eyebrow">${t}</span>${body}</div>`;
 const tog=(l,a,on)=>`<div class="tog"><span>${l}</span><button class="switch${on?' on':''}" data-a="${a}" aria-pressed="${!!on}" aria-label="${l}"></button></div>`;
 
 function propsUI(o){
   const ts=targets();const multi=o.type==='activeSelection';const t=multi?null:o;const k=t?kindOf(t):'multi';const KK=K();
-  let h=`<div class="ph"><div><div class="eyebrow">নির্বাচিত</div><div class="pt">${multi?bn(ts.length)+'টি বস্তু':(KIND[k]||'বস্তু')}</div></div><button class="ib" data-a="deselect" aria-label="নির্বাচন বাতিল">${ic('close')}</button></div>`;
+  let h=`<div class="ph"><div><div class="eyebrow">Selected</div><div class="pt">${multi?ts.length+' objects':(KIND[k]||'Object')}</div></div><button class="ib" data-a="deselect" aria-label="Clear selection">${ic('close')}</button></div>`;
   if(k==='text'){
-    h+=`<div class="sec"><label class="fl"><span>লেখা</span><textarea id="pText" rows="2">${esc(t.text)}</textarea></label></div>`;
-    if(t.fontRank&&t.fontRank.length) h+=sec('ছবির লেখার সাথে সবচেয়ে মেলে',`<div class="row" style="gap:6px">${t.fontRank.map(([f,w],i)=>`<button class="btn sm${t.fontFamily===f&&+t.fontWeight===+w?' primary':''}" data-a="fontPick" data-v="${esc(f)}|${w}" style="font-family:'${esc(f)}';font-weight:${w}">${i===0?'★ ':''}${esc(f)} ${bn(w)}</button>`).join('')}</div>`);
-    h+=sec('ফন্ট',`<select id="pFont" aria-label="ফন্ট">${FONTS.map(([f,l])=>`<option value="${f}" ${t.fontFamily===f?'selected':''} style="font-family:'${f}'">${f}${l==='bn'?' · বাংলা':l==='custom'?' · আপনার ফন্ট':''}</option>`).join('')}</select>
-      <button class="btn sm" data-a="addFont">${ic('plus')} নিজের ফন্ট যোগ করুন (.ttf / .otf)</button>
-      ${rng('আকার','data-p="fontSize"',8*KK,420*KK,1,t.fontSize,v=>bn(Math.round(v)))}
-      <div class="row"><div class="seg"><button data-a="bold" class="${(t.fontWeight>=600||t.fontWeight==='bold')?'on':''}" aria-label="মোটা"><b>ব</b></button><button data-a="italic" class="${t.fontStyle==='italic'?'on':''}" aria-label="তির্যক"><i>I</i></button><button data-a="underline" class="${t.underline?'on':''}" aria-label="নিচে দাগ"><u>U</u></button></div>
+    h+=`<div class="sec"><label class="fl"><span>Text</span><textarea id="pText" rows="2">${esc(t.text)}</textarea></label></div>`;
+    if(t.fontRank&&t.fontRank.length) h+=sec('Best match for the text in the picture',`<div class="row" style="gap:6px">${t.fontRank.map(([f,w],i)=>`<button class="btn sm${t.fontFamily===f&&+t.fontWeight===+w?' primary':''}" data-a="fontPick" data-v="${esc(f)}|${w}" style="font-family:'${esc(f)}';font-weight:${w}">${i===0?'★ ':''}${esc(f)} ${bn(w)}</button>`).join('')}</div>`);
+    h+=sec('Font',`<select id="pFont" aria-label="Font">${FONTS.map(([f,l])=>`<option value="${f}" ${t.fontFamily===f?'selected':''} style="font-family:'${f}'">${f}${l==='bn'?' · Bengali':l==='custom'?' · your font':''}</option>`).join('')}</select>
+      <button class="btn sm" data-a="addFont">${ic('plus')} Add your own font (.ttf / .otf)</button>
+      ${rng('Shape','data-p="fontSize"',8*KK,420*KK,1,t.fontSize,v=>bn(Math.round(v)))}
+      <div class="row"><div class="seg"><button data-a="bold" class="${(t.fontWeight>=600||t.fontWeight==='bold')?'on':''}" aria-label="Bold"><b>B</b></button><button data-a="italic" class="${t.fontStyle==='italic'?'on':''}" aria-label="Italic"><i>I</i></button><button data-a="underline" class="${t.underline?'on':''}" aria-label="Underline"><u>U</u></button></div>
       <div class="seg">${[['left','alL'],['center','alC'],['right','alR']].map(([v,i])=>`<button data-a="align" data-v="${v}" class="${t.textAlign===v?'on':''}" aria-label="${v}">${ic(i)}</button>`).join('')}</div></div>
-      ${rng('অক্ষর ফাঁক','data-p="charSpacing"',-100,800,10,t.charSpacing||0)}${rng('লাইন ফাঁক','data-p="lineHeight"',0.7,2.5,0.05,t.lineHeight)}`);
-    h+=fillUI(t,'লেখার রঙ');
-    h+=sec('আউটলাইন',sws('stroke',t.stroke,true)+rng('পুরুত্ব','data-p="strokeWidth"',0,40*KK,0.5,t.strokeWidth||0));
-    h+=sec('হাইলাইট পটভূমি',sws('textBackgroundColor',t.textBackgroundColor,true));
-    h+=sec('কিনারা',rng('নরম কিনারা','data-p="softness"',0,6*KK,0.1,t.softness||0,v=>bn(Math.round(v*10)/10))+'<span class="hint">ছবির লেখা একটু ঝাপসা হলে নতুন লেখাও একই রকম নরম করুন।</span>');
+      ${rng('Letter spacing','data-p="charSpacing"',-100,800,10,t.charSpacing||0)}${rng('Line spacing','data-p="lineHeight"',0.7,2.5,0.05,t.lineHeight)}`);
+    h+=fillUI(t,'Text colour');
+    h+=sec('Outline',sws('stroke',t.stroke,true)+rng('Thickness','data-p="strokeWidth"',0,40*KK,0.5,t.strokeWidth||0));
+    h+=sec('Highlight background',sws('textBackgroundColor',t.textBackgroundColor,true));
+    h+=sec('Edges',rng('Soft edges','data-p="softness"',0,6*KK,0.1,t.softness||0,v=>bn(Math.round(v*10)/10))+'<span class="hint">If the text in the picture is a little blurry, soften the new text to match.</span>');
   } else if(k==='shape'){
-    h+=fillUI(t,'ভরাট রঙ');
-    h+=sec('বর্ডার',sws('stroke',t.stroke,true)+rng('পুরুত্ব','data-p="strokeWidth"',0,60*KK,0.5,t.strokeWidth||0));
-    if(t.type==='rect') h+=sec('কোণা',rng('গোলভাব','data-p="rx"',0,Math.min(t.width,t.height)/2,1,t.rx||0,v=>bn(Math.round(v))));
+    h+=fillUI(t,'Fill colour');
+    h+=sec('Border',sws('stroke',t.stroke,true)+rng('Thickness','data-p="strokeWidth"',0,60*KK,0.5,t.strokeWidth||0));
+    if(t.type==='rect') h+=sec('Corners',rng('Roundness','data-p="rx"',0,Math.min(t.width,t.height)/2,1,t.rx||0,v=>bn(Math.round(v))));
   } else if(k==='line'||k==='draw'){
-    if(!(k==='draw'&&t.globalCompositeOperation==='destination-out')) h+=sec('রঙ',sws('stroke',t.stroke));
-    h+=sec('পুরুত্ব',rng('পুরুত্ব','data-p="strokeWidth"',1,120*KK,0.5,t.strokeWidth||1));
+    if(!(k==='draw'&&t.globalCompositeOperation==='destination-out')) h+=sec('Colour',sws('stroke',t.stroke));
+    h+=sec('Thickness',rng('Thickness','data-p="strokeWidth"',1,120*KK,0.5,t.strokeWidth||1));
   } else if(k==='image'){
     const fx=t.fx||{};
-    h+=sec('রঙ বদলান',`<p class="hint" style="margin:0">লোগো বা আইকনের রঙ এক রঙে বদলাতে একটি রঙ বেছে নিন।</p>`+sws('tint',fx.tint,true)+(fx.tint?rng('মাত্রা','data-p="tintAmt"',0,1,0.01,fx.tintAmt??1,v=>bn(Math.round(v*100))+'%'):''));
+    h+=sec('Recolour',`<p class="hint" style="margin:0">Pick a colour to recolour a logo or icon in one colour.</p>`+sws('tint',fx.tint,true)+(fx.tint?rng('Amount','data-p="tintAmt"',0,1,0.01,fx.tintAmt??1,v=>bn(Math.round(v*100))+'%'):''));
     h+=filterUI(t);
   }
   const op=multi?1:(t.opacity??1);
-  h+=sec('স্বচ্ছতা',rng('অস্বচ্ছতা','data-p="opacity"',0,1,0.01,op,v=>bn(Math.round(v*100))+'%'));
+  h+=sec('Transparency',rng('Opacity','data-p="opacity"',0,1,0.01,op,v=>bn(Math.round(v*100))+'%'));
   if(!multi) h+=shadowUI(t);
-  if(multi) h+=sec('একসাথে মেলান',`<div class="row" style="gap:6px">${[['l','বাঁয়ে'],['ch','মাঝে ↔'],['r','ডানে'],['t','উপরে'],['cv','মাঝে ↕'],['b','নিচে'],['dh','সমান ফাঁক ↔'],['dv','সমান ফাঁক ↕']].map(([v,l])=>`<button class="btn sm" data-a="al" data-v="${v}">${l}</button>`).join('')}</div>
-    <div class="row" style="gap:6px"><button class="btn sm" data-a="grp">গ্রুপ করুন</button></div>`);
-  else if(t&&t.type==='group') h+=sec('গ্রুপ',`<div class="row"><button class="btn sm" data-a="ungrp">গ্রুপ ভাঙুন</button></div>`);
-  h+=sec('সাজানো',`<div class="row"><div class="seg"><button data-a="cH" aria-label="মাঝে আড়াআড়ি">${ic('cH')}</button><button data-a="cV" aria-label="মাঝে লম্বালম্বি">${ic('cV')}</button></div>
-    <div class="seg"><button data-a="front" aria-label="একদম সামনে">${ic('top')}</button><button data-a="back" aria-label="একদম পেছনে">${ic('bottom')}</button></div>
-    <div class="seg"><button data-a="flipX" aria-label="আড়াআড়ি উল্টান">${ic('flip')}</button><button data-a="flipY" aria-label="লম্বালম্বি উল্টান">${ic('flipV')}</button></div>
-    <button class="btn sm danger" data-a="del">${ic('trash')} মুছুন</button></div>`);
+  if(multi) h+=sec('Align together',`<div class="row" style="gap:6px">${[['l','Left'],['ch','Centre ↔'],['r','Right'],['t','Top'],['cv','Centre ↕'],['b','Bottom'],['dh','Space evenly ↔'],['dv','Space evenly ↕']].map(([v,l])=>`<button class="btn sm" data-a="al" data-v="${v}">${l}</button>`).join('')}</div>
+    <div class="row" style="gap:6px"><button class="btn sm" data-a="grp">Group</button></div>`);
+  else if(t&&t.type==='group') h+=sec('Group',`<div class="row"><button class="btn sm" data-a="ungrp">Ungroup</button></div>`);
+  h+=sec('Arrange',`<div class="row"><div class="seg"><button data-a="cH" aria-label="Centre horizontally">${ic('cH')}</button><button data-a="cV" aria-label="Centre vertically">${ic('cV')}</button></div>
+    <div class="seg"><button data-a="front" aria-label="Bring to front">${ic('top')}</button><button data-a="back" aria-label="Send to back">${ic('bottom')}</button></div>
+    <div class="seg"><button data-a="flipX" aria-label="Flip horizontal">${ic('flip')}</button><button data-a="flipY" aria-label="Flip vertical">${ic('flipV')}</button></div>
+    <button class="btn sm danger" data-a="del">${ic('trash')} Delete</button></div>`);
   return h;
 }
 const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 
 function tabUI(tab){
   if(tab==='smart') return smartUI();
-  if(tab==='image') return `${photosUI()}<div class="sec"><div class="pt">ছবি</div><p class="hint">ছবি খুলুন, অথবা ফাইল টেনে এনে ক্যানভাসে ছাড়ুন। কপি করা ছবি পেস্টও করা যায়।</p>${pasteBox()}${helpNote()}
-    <div class="tiles"><button class="tile" data-a="openBase">${ic('upload')}ছবি খুলুন</button><button class="tile" data-a="openLayer">${ic('addimg')}ছবির উপর ছবি</button>
-    <button class="tile" data-a="blank">${ic('blank')}খালি ক্যানভাস</button><button class="tile" data-a="openProj">${ic('folder')}প্রজেক্ট খুলুন</button><button class="tile" data-a="saveProj">${ic('save')}প্রজেক্ট সেভ</button></div></div>
-    ${sec('ক্যানভাসের পটভূমি',sws('canvasBg',canvas.backgroundColor,true))}<p class="hint">পটভূমি “রঙ নেই” রাখলে PNG-তে স্বচ্ছ থাকবে।</p>`;
-  if(tab==='text') return `<div class="sec"><div class="pt">লেখা যোগ করুন</div><p class="hint">একটি ধরন বেছে নিন, তারপর লেখা বদলান। বাংলা ও ইংরেজি দুই রকম ফন্টই আছে।</p>
+  if(tab==='image') return `${photosUI()}<div class="sec"><div class="pt">Picture</div><p class="hint">Open a picture, or drag a file onto the canvas. You can also paste a copied picture.</p>${pasteBox()}${helpNote()}
+    <div class="tiles"><button class="tile" data-a="openBase">${ic('upload')}Open picture</button><button class="tile" data-a="openLayer">${ic('addimg')}Picture on top</button>
+    <button class="tile" data-a="blank">${ic('blank')}Blank canvas</button><button class="tile" data-a="openProj">${ic('folder')}Open project</button><button class="tile" data-a="saveProj">${ic('save')}Save project</button></div></div>
+    ${sec('Canvas background',sws('canvasBg',canvas.backgroundColor,true))}<p class="hint">With “no colour”, the background stays transparent in PNG.</p>`;
+  if(tab==='text') return `<div class="sec"><div class="pt">Add text</div><p class="hint">Pick a style, then change the text. Fonts for both Bengali and English are included.</p>
     <div class="tiles">${TEXTP.map((p,i)=>`<button class="tile txtp" data-a="addText" data-v="${i}" style="font-family:'${p.font}';font-weight:${p.w}"><span style="font-size:${Math.min(26,Math.max(15,p.size/4.5))}px;line-height:1.1">${p.lbl}</span><small>${p.font}</small></button>`).join('')}</div></div>`;
-  if(tab==='shape') return `<div class="sec"><div class="pt">ডিজাইন</div><span class="eyebrow">দ্রুত লেআউট</span>
+  if(tab==='shape') return `<div class="sec"><div class="pt">Design</div><span class="eyebrow">Quick layouts</span>
     <div class="tiles">${QUICK.map((q,i)=>`<button class="tile" data-a="quick" data-v="${i}">${q.lbl}</button>`).join('')}</div></div>
-    ${sec('আকার',`<div class="tiles">${Object.entries(SHAPES).map(([k,s])=>`<button class="tile" data-a="addShape" data-v="${k}"><svg class="shp" viewBox="0 0 40 40" aria-hidden="true">${s.svg}</svg>${s.lbl}</button>`).join('')}</div>`)}
-    ${sec('ইমোজি ও স্টিকার',`<div class="tiles" style="grid-template-columns:repeat(auto-fill,minmax(52px,1fr))">${EMOJI.map(e=>`<button class="tile" style="min-height:52px" data-a="addEmoji" data-v="${e}"><span class="big">${e}</span></button>`).join('')}</div>`)}`;
-  if(tab==='draw'){ const d=S.draw; return `<div class="sec"><div class="pt">হাতে আঁকুন</div><p class="hint">ক্যানভাসে আঙুল বা মাউস দিয়ে আঁকুন। প্রতিটি টান আলাদা লেয়ার হয়, পরে সরানো বা মোছা যায়।</p>
-    <div class="tiles">${[['pen','pen','কলম'],['marker','marker','মার্কার'],['eraser','eraser','ইরেজার']].map(([m,i,l])=>`<button class="tile${d.mode===m?' on':''}" data-a="drawMode" data-v="${m}">${ic(i)}${l}</button>`).join('')}</div></div>
-    ${d.mode==='eraser'?'<p class="hint">ইরেজার নিচের সব কিছু মুছে স্বচ্ছ করে দেয়। ভুল হলে আনডু চাপুন।</p>':sec('রঙ',sws('drawColor',d.color))}
-    ${sec('মোটা-চিকন',rng('আকার','data-draw="size"',1,120,1,d.size,v=>bn(v)))}`; }
-  if(tab==='filter'){ const t=fxTarget(); return `<div class="sec"><div class="pt">ফিল্টার ও রঙ</div>${t?`<p class="hint">${t.isBase?'মূল ছবিতে প্রযোজ্য। উপরের কোনো ছবিতে দিতে সেটি বেছে নিন।':'নির্বাচিত ছবিতে প্রযোজ্য।'}</p>`:''}</div>${t?filterUI(t):filterUI(null)}`; }
-  if(tab==='size'){ const b=base(); return `<div class="sec"><div class="pt">মাপ ও ক্রপ</div><p class="hint">এখনকার মাপ: <b style="font-variant-numeric:tabular-nums">${bn(S.W)} × ${bn(S.H)}</b> পিক্সেল</p>
-    <div class="tiles"><button class="tile" data-a="crop">${ic('crop')}ক্রপ করুন</button><button class="tile" data-a="rotL">${ic('rotL')}বাঁয়ে ঘোরান</button><button class="tile" data-a="rotR">${ic('rotR')}ডানে ঘোরান</button>
-    <button class="tile" data-a="bflipX">${ic('flip')}আড়াআড়ি উল্টান</button><button class="tile" data-a="bflipY">${ic('flipV')}লম্বালম্বি উল্টান</button></div></div>
-    ${sec('ক্যানভাসের মাপ',`<div class="sizes">${b?`<button class="size" data-a="sizeBase"><span>মূল ছবির মাপ</span><em>${bn(Math.round(b.width))}×${bn(Math.round(b.height))}</em></button>`:''}${SIZES.map(([l,w,h],i)=>`<button class="size${S.W===w&&S.H===h?' on':''}" data-a="size" data-v="${i}"><span>${l}</span><em>${bn(w)}×${bn(h)}</em></button>`).join('')}</div>`)}
-    ${sec('নিজের মাপ',`<div class="dims"><input type="number" id="cw" min="16" max="4096" value="${S.W}" aria-label="প্রস্থ"><span>×</span><input type="number" id="ch" min="16" max="4096" value="${S.H}" aria-label="উচ্চতা"><button class="btn sm" data-a="sizeCustom">প্রয়োগ</button></div>`)}`; }
+    ${sec('Shape',`<div class="tiles">${Object.entries(SHAPES).map(([k,s])=>`<button class="tile" data-a="addShape" data-v="${k}"><svg class="shp" viewBox="0 0 40 40" aria-hidden="true">${s.svg}</svg>${s.lbl}</button>`).join('')}</div>`)}
+    ${sec('Emoji and stickers',`<div class="tiles" style="grid-template-columns:repeat(auto-fill,minmax(52px,1fr))">${EMOJI.map(e=>`<button class="tile" style="min-height:52px" data-a="addEmoji" data-v="${e}"><span class="big">${e}</span></button>`).join('')}</div>`)}`;
+  if(tab==='draw'){ const d=S.draw; return `<div class="sec"><div class="pt">Draw by hand</div><p class="hint">Draw on the canvas with your finger or mouse. Each stroke is its own layer that you can move or delete later.</p>
+    <div class="tiles">${[['pen','pen','Pen'],['marker','marker','Marker'],['eraser','eraser','Eraser']].map(([m,i,l])=>`<button class="tile${d.mode===m?' on':''}" data-a="drawMode" data-v="${m}">${ic(i)}${l}</button>`).join('')}</div></div>
+    ${d.mode==='eraser'?'<p class="hint">The eraser makes everything underneath transparent. Press Undo if you make a mistake.</p>':sec('Colour',sws('drawColor',d.color))}
+    ${sec('Size',rng('Shape','data-draw="size"',1,120,1,d.size,v=>bn(v)))}`; }
+  if(tab==='filter'){ const t=fxTarget(); return `<div class="sec"><div class="pt">Filters and colour</div>${t?`<p class="hint">${t.isBase?'Applies to the main picture. Select another picture to apply it there.':'Applies to the selected picture.'}</p>`:''}</div>${t?filterUI(t):filterUI(null)}`; }
+  if(tab==='size'){ const b=base(); return `<div class="sec"><div class="pt">Size & crop</div><p class="hint">Current size: <b style="font-variant-numeric:tabular-nums">${bn(S.W)} × ${bn(S.H)}</b> Pixelate</p>
+    <div class="tiles"><button class="tile" data-a="crop">${ic('crop')}Crop</button><button class="tile" data-a="rotL">${ic('rotL')}Rotate left</button><button class="tile" data-a="rotR">${ic('rotR')}Rotate right</button>
+    <button class="tile" data-a="bflipX">${ic('flip')}Flip horizontal</button><button class="tile" data-a="bflipY">${ic('flipV')}Flip vertical</button></div></div>
+    ${sec('Canvas size',`<div class="sizes">${b?`<button class="size" data-a="sizeBase"><span>Original picture size</span><em>${bn(Math.round(b.width))}×${bn(Math.round(b.height))}</em></button>`:''}${SIZES.map(([l,w,h],i)=>`<button class="size${S.W===w&&S.H===h?' on':''}" data-a="size" data-v="${i}"><span>${l}</span><em>${bn(w)}×${bn(h)}</em></button>`).join('')}</div>`)}
+    ${sec('Custom size',`<div class="dims"><input type="number" id="cw" min="16" max="4096" value="${S.W}" aria-label="Width"><span>×</span><input type="number" id="ch" min="16" max="4096" value="${S.H}" aria-label="Height"><button class="btn sm" data-a="sizeCustom">Apply</button></div>`)}`; }
   if(tab==='layers'){ const objs=canvas.getObjects().filter(o=>o.name!=='__crop').slice().reverse();
-    if(!objs.length) return `<div class="sec"><div class="pt">লেয়ার</div><p class="hint">এখনো কিছু নেই। ছবি, লেখা বা আকার যোগ করলে এখানে দেখা যাবে।</p></div>`;
+    if(!objs.length) return `<div class="sec"><div class="pt">Layers</div><p class="hint">Nothing here yet. Pictures, text and shapes you add will appear here.</p></div>`;
     const all=canvas.getObjects(); const ao=canvas.getActiveObject();
-    return `<div class="sec"><div class="pt">লেয়ার</div><p class="hint">উপরেরটা সবার সামনে। নাম চাপলে বেছে নেওয়া হবে।</p><div class="list">${objs.map(o=>{const i=all.indexOf(o);
+    return `<div class="sec"><div class="pt">Layers</div><p class="hint">The top one is in front. Tap a name to select it.</p><div class="list">${objs.map(o=>{const i=all.indexOf(o);
       return `<div class="lrow${o.visible===false?' off':''}${ao===o?' on':''}"><button class="nm" data-a="lsel" data-v="${i}">${esc(nameOf(o))} <span class="ty">· ${KIND[kindOf(o)]||''}</span></button>
-      <button class="ib" data-a="lvis" data-v="${i}" aria-label="${o.visible===false?'দেখান':'লুকান'}">${ic(o.visible===false?'eyeoff':'eye')}</button>
-      <button class="ib" data-a="llock" data-v="${i}" aria-label="${o.locked?'লক খুলুন':'লক করুন'}">${ic(o.locked?'lock':'unlock')}</button></div>`}).join('')}</div></div>`; }
+      <button class="ib" data-a="lvis" data-v="${i}" aria-label="${o.visible===false?'Show':'Hide'}">${ic(o.visible===false?'eyeoff':'eye')}</button>
+      <button class="ib" data-a="llock" data-v="${i}" aria-label="${o.locked?'Unlock':'Lock'}">${ic(o.locked?'lock':'unlock')}</button></div>`}).join('')}</div></div>`; }
   return '';
 }
-function cropUI(){ return `<div class="sec"><div class="pt">ক্রপ</div><p class="hint">ফ্রেমটি সরান ও কোণা টেনে মাপ ঠিক করুন। লেখা ও ডিজাইন জায়গামতো থাকবে।</p>
-  <div class="row" style="gap:6px">${[['free','মুক্ত'],['1:1','১:১'],['4:5','৪:৫'],['3:2','৩:২'],['16:9','১৬:৯'],['9:16','৯:১৬']].map(([v,l])=>`<button class="btn sm${S.cropRatio===v?' primary':''}" data-a="cropRatio" data-v="${v}">${l}</button>`).join('')}</div>
-  <div class="two"><button class="btn" data-a="cropCancel">বাতিল</button><button class="btn primary" data-a="cropApply">${ic('crop')} ক্রপ করুন</button></div></div>`; }
+function cropUI(){ return `<div class="sec"><div class="pt">Crop</div><p class="hint">Move the frame and drag its corners to set the size. Text and designs stay in place.</p>
+  <div class="row" style="gap:6px">${[['free','Free'],['1:1','1:1'],['4:5','4:5'],['3:2','3:2'],['16:9','16:9'],['9:16','9:16']].map(([v,l])=>`<button class="btn sm${S.cropRatio===v?' primary':''}" data-a="cropRatio" data-v="${v}">${l}</button>`).join('')}</div>
+  <div class="two"><button class="btn" data-a="cropCancel">Cancel</button><button class="btn primary" data-a="cropApply">${ic('crop')} Crop</button></div></div>`; }
 
 function renderPanel(){
   const p=$('#panel');const sc=p.scrollTop;const o=active();let h;
@@ -751,7 +751,7 @@ function renderPanel(){
   if(p.querySelector('.pre canvas')) drawThumbs(o&&o.type==='image'?o:fxTarget());
   document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('on',b.dataset.t===S.tab&&S.sheet.open));
   setTimeout(renderLayersDock,0);
-  const tl=TABS.find(x=>x[0]===S.tab); $('#sheetTitle').textContent=S.crop?(S.cropMode==='pick'?'অংশ বাছাই':'ক্রপ'):(o&&S.tab!=='draw')?'এডিট':(tl?tl[1]:'');
+  const tl=TABS.find(x=>x[0]===S.tab); $('#sheetTitle').textContent=S.crop?(S.cropMode==='pick'?'Select area':'Crop'):(o&&S.tab!=='draw')?'Edit':(tl?tl[1]:'');
 }
 function setTab(t){
   if(S.crop) endCrop(false);
@@ -788,14 +788,14 @@ function fontDb(){ return new Promise((res,rej)=>{ const rq=indexedDB.open('rong
 async function fontStore(mode,fn){ const db=await fontDb(); return new Promise((res,rej)=>{ const tx=db.transaction('fonts',mode); const r=fn(tx.objectStore('fonts')); tx.oncomplete=()=>{db.close();res(r&&r.result)}; tx.onerror=()=>{db.close();rej(tx.error)}; }); }
 async function registerFont(family,buf){ const face=new FontFace(family,buf); await face.load(); document.fonts.add(face); if(!FONTS.some(f=>f[0]===family)) FONTS.push([family,'custom']); }
 async function addFontFile(file){
-  if(!file) return; if(!/\.(ttf|otf|woff2?)$/i.test(file.name)){ toast('ফন্ট ফাইল দিন: .ttf, .otf, .woff বা .woff2'); return; }
+  if(!file) return; if(!/\.(ttf|otf|woff2?)$/i.test(file.name)){ toast('Use a font file: .ttf, .otf, .woff or .woff2'); return; }
   let family=file.name.replace(/\.[^.]+$/,'').replace(/[-_]+/g,' ').replace(/["'\\]/g,'').trim().slice(0,60)||'My Font';
-  if(FONTS.some(f=>f[0]===family&&f[1]!=='custom')) family+=' (আপনার)';
+  if(FONTS.some(f=>f[0]===family&&f[1]!=='custom')) family+=' (yours)';
   try{ const buf=await file.arrayBuffer(); await registerFont(family,buf.slice(0));
     try{ await fontStore('readwrite',st=>st.put(buf,family)); }catch(e){}
     if(targets().some(o=>o.type==='textbox')) await setFont(family);
-    renderPanel(); toast(`“${family}” ফন্ট যোগ হয়েছে`);
-  }catch(e){ toast('এই ফন্ট ফাইলটি খোলা গেল না। অন্য ফাইল চেষ্টা করুন।'); } }
+    renderPanel(); toast(`Font “${family}” added`);
+  }catch(e){ toast('This font file couldn’t be opened. Try another file.'); } }
 async function loadSavedFonts(){ try{ const db=await fontDb(); const keys=await new Promise(r=>{const q=db.transaction('fonts').objectStore('fonts').getAllKeys();q.onsuccess=()=>r(q.result||[]);q.onerror=()=>r([])});
   for(const k of keys){ const buf=await new Promise(r=>{const q=db.transaction('fonts').objectStore('fonts').get(k);q.onsuccess=()=>r(q.result);q.onerror=()=>r(null)}); if(buf) try{ await registerFont(String(k),buf); }catch(e){} }
   db.close(); }catch(e){} }
@@ -866,11 +866,11 @@ const panelClick=async e=>{
     case 'cropApply':endCrop(true);break;
     case 'rotL':rotateBase(-1);break;
     case 'rotR':rotateBase(1);break;
-    case 'bflipX':case 'bflipY':{const x=base();if(!x){toast('আগে একটি ছবি খুলুন');break}x.set(a==='bflipX'?'flipX':'flipY',!x[a==='bflipX'?'flipX':'flipY']);canvas.requestRenderAll();save();break}
+    case 'bflipX':case 'bflipY':{const x=base();if(!x){toast('Open a picture first');break}x.set(a==='bflipX'?'flipX':'flipY',!x[a==='bflipX'?'flipX':'flipY']);canvas.requestRenderAll();save();break}
     case 'size':{const s=SIZES[+v];resizeCanvas(s[1],s[2]);break}
     case 'sizeBase':{const x=base();if(x)resizeCanvas(Math.round(x.width),Math.round(x.height));break}
-    case 'sizeCustom':{const w=Math.round(+$('#cw').value),h=Math.round(+$('#ch').value);if(!(w>=16&&w<=4096&&h>=16&&h<=4096)){toast('মাপ ১৬ থেকে ৪০৯৬ পিক্সেলের মধ্যে দিন');break}resizeCanvas(w,h);break}
-    case 'lsel':{const o=canvas.item(+v);if(!o)break;if(o.isBase&&o.locked){toast('মূল ছবি লক করা। সরাতে আগে লক খুলুন।');break}if(o.visible===false){toast('লুকানো লেয়ার। আগে দেখান।');break}canvas.setActiveObject(o);canvas.requestRenderAll();break}
+    case 'sizeCustom':{const w=Math.round(+$('#cw').value),h=Math.round(+$('#ch').value);if(!(w>=16&&w<=4096&&h>=16&&h<=4096)){toast('Enter a size between 16 and 4096 pixels');break}resizeCanvas(w,h);break}
+    case 'lsel':{const o=canvas.item(+v);if(!o)break;if(o.isBase&&o.locked){toast('The main picture is locked. Unlock it to move it.');break}if(o.visible===false){toast('This layer is hidden. Show it first.');break}canvas.setActiveObject(o);canvas.requestRenderAll();break}
     case 'lvis':{const o=canvas.item(+v);if(!o)break;o.set('visible',o.visible===false);if(o.visible===false&&canvas.getActiveObject()===o)canvas.discardActiveObject();canvas.requestRenderAll();save();renderPanel();break}
     case 'llock':{const o=canvas.item(+v);if(!o)break;setLocked(o,!o.locked);canvas.requestRenderAll();save();renderPanel();break}
     case 'detect':detect(true);break;
@@ -878,16 +878,16 @@ const panelClick=async e=>{
     case 'allLines':convertAllLines();break;
     case 'fillMode':{ targets().forEach(o=>{ const g=gradOf(o); if(v==='grad'&&!g){ const c=typeof o.fill==='string'&&o.fill?o.fill:'#f2b42c'; o.set('fill',makeGrad('v',c,'#ffffff')); } else if(v==='solid'&&g){ o.set('fill',g.colorStops[0].color); } o.dirty=true; }); relayout(); break; }
     case 'gdir':{ targets().forEach(o=>{ const g=gradOf(o); if(g){ o.set('fill',makeGrad(v,g.colorStops[0].color,g.colorStops[g.colorStops.length-1].color)); o.dirty=true; } }); relayout(); break; }
-    case 'eyedrop':{ S.pickColor=S.pickColor===b.dataset.p?null:b.dataset.p; S.pickSel=canvas.getActiveObject()||null; renderPanel(); if(S.pickColor){ toast('ছবির যেখান থেকে রঙ নিতে চান সেখানে চাপ দিন'); canvas.defaultCursor='crosshair'; } break; }
+    case 'eyedrop':{ S.pickColor=S.pickColor===b.dataset.p?null:b.dataset.p; S.pickSel=canvas.getActiveObject()||null; renderPanel(); if(S.pickColor){ toast('Tap the spot in the picture to take its colour'); canvas.defaultCursor='crosshair'; } break; }
     case 'togHints':S.showHints=!S.showHints;canvas.requestRenderAll();renderPanel();break;
     case 'fontPick':{const [f,w]=v.split('|');targets().forEach(o=>o.set('fontWeight',+w));await setFont(f);renderPanel();break}
-    case 'pick':if(!base()){toast('আগে একটি ছবি খুলুন');break}startCrop('pick');break;
+    case 'pick':if(!base()){toast('Open a picture first');break}startCrop('pick');break;
     case 'pickText':case 'pickGraphic':case 'pickErase':endCrop(a);break;
     case 'fsel':{const o=canvas.item(+v);if(o){canvas.setActiveObject(o);canvas.requestRenderAll()}break}
     case 'al':alignObjs(v);break;
     case 'grp':groupSel();break;
     case 'ungrp':ungroupSel();break;
-    case 'lup':case 'ldown':{const o=canvas.item(+v);if(!o||o.isBase)break; if(a==='lup')canvas.bringForward(o); else { const i=canvas.getObjects().indexOf(o); if(base()&&i<=1){toast('মূল ছবির নিচে নেওয়া যাবে না');break} canvas.sendBackwards(o); } canvas.requestRenderAll();save();renderPanel();break}
+    case 'lup':case 'ldown':{const o=canvas.item(+v);if(!o||o.isBase)break; if(a==='lup')canvas.bringForward(o); else { const i=canvas.getObjects().indexOf(o); if(base()&&i<=1){toast('Can’t go below the main picture');break} canvas.sendBackwards(o); } canvas.requestRenderAll();save();renderPanel();break}
     default:act(a);
   }
 };
@@ -898,7 +898,7 @@ $('#chip').addEventListener('click',e=>{if(e.target.classList.contains('fileov')
 
 function resizeCanvas(w,h){ const ow=S.W,oh=S.H;S.W=w;S.H=h;reposition(ow,oh);coverBase();fit();save();renderPanel(); }
 function newBlank(){ S.batch=true;canvas.discardActiveObject();canvas.getObjects().slice().forEach(o=>canvas.remove(o));canvas.backgroundColor='#ffffff';S.W=1080;S.H=1080;
-  S.isSample=false;$('#chip').hidden=true;S.batch=false;fit();save();renderPanel();toast('নতুন খালি ক্যানভাস। আগেরটা ফেরাতে আনডু চাপুন।'); }
+  S.isSample=false;$('#chip').hidden=true;S.batch=false;fit();save();renderPanel();toast('New blank canvas. Press Undo to get the previous one back.'); }
 
 /* ---------- crop ---------- */
 function startCrop(mode='crop'){
@@ -928,7 +928,7 @@ function endCrop(apply){
     const b=r.getBoundingRect(true,true);
     const x0=Math.max(0,b.left),y0=Math.max(0,b.top),x1=Math.min(S.W,b.left+b.width),y1=Math.min(S.H,b.top+b.height);
     const w=Math.round(x1-x0),h=Math.round(y1-y0);
-    if(w>=8&&h>=8){ canvas.getObjects().forEach(o=>{o.set({left:o.left-x0,top:o.top-y0});o.setCoords()}); S.W=w;S.H=h; fit(); save(); toast('ক্রপ হয়েছে: '+bn(w)+' × '+bn(h)); }
+    if(w>=8&&h>=8){ canvas.getObjects().forEach(o=>{o.set({left:o.left-x0,top:o.top-y0});o.setCoords()}); S.W=w;S.H=h; fit(); save(); toast('Cropped to '+bn(w)+' × '+bn(h)); }
   }
   canvas.discardActiveObject();canvas.requestRenderAll();renderPanel();updBar();
 }
@@ -1191,7 +1191,7 @@ function processGraphic(work,it){
   }
   oc.putImageData(od,0,0);
   const mu2=dilate(mu,an.rw,an.rh,2); harmonic(an,mu2,Math.min(10,an.tex*0.8)); work.x.putImageData(an.img,an.rx,an.ry);
-  return {label:it.label||'ডিজাইন',url:out.toDataURL('image/png'),tb:{x0:an.rx+x0,y0:an.ry+y0,x1:an.rx+x1+1,y1:an.ry+y1+1}};
+  return {label:it.label||'Design',url:out.toDataURL('image/png'),tb:{x0:an.rx+x0,y0:an.ry+y0,x1:an.rx+x1+1,y1:an.ry+y1+1}};
 }
 function imgMap(b){ const iw=b.width,ih=b.height;
   return {s:b.scaleX, x:px=>b.left+((b.flipX?iw-px:px)-iw/2)*b.scaleX, y:py=>b.top+((b.flipY?ih-py:py)-ih/2)*b.scaleY,
@@ -1236,7 +1236,7 @@ async function makeText(sp,m){
   else if(sp.outline&&/^#[0-9a-f]{6}$/i.test(sp.outline)) t.set({stroke:sp.outline,strokeWidth:fs*0.07});
   if(st.shadow){ const c=st.shadow.color; const n=parseInt(c.slice(1),16); t.set('shadow',new fabric.Shadow({color:`rgba(${n>>16&255},${n>>8&255},${n&255},${st.shadow.alpha.toFixed(2)})`,blur:Math.max(0,st.shadow.blur*m.s),offsetX:st.shadow.dx*m.s,offsetY:st.shadow.dy*m.s})); }
   if(st.soft>0.15){ t.set({softness:st.soft*m.s,objectCaching:false}); }
-  t.set({kind:'text',found:true,layerName:'লেখা',hintIds:sp.hintIds||null,fontRank:sp.fontKnown?[]:rank.slice(0,5).map(r=>[r.font,r.weight])});
+  t.set({kind:'text',found:true,layerName:'Text',hintIds:sp.hintIds||null,fontRank:sp.fontKnown?[]:rank.slice(0,5).map(r=>[r.font,r.weight])});
   // place it so its letters land exactly where the old letters were
   const tcx=m.x((sp.tb.x0+sp.tb.x1)/2), tcy=m.y((sp.tb.y0+sp.tb.y1)/2);
   t.set({originX:'center',originY:'center',left:tcx,top:tcy}); t.setCoords();
@@ -1275,13 +1275,13 @@ async function canSendImages(s){ try{ const l=await s.limits(); return !!(l&&l.i
 const PROMPT=(w,h)=>`You are helping a photo editor make the text in an image editable. The image is ${w}x${h} px.
 Find every piece of visible text (Bengali, English, digits) and every logo, icon, badge or button shape a person may want to move or recolor.
 Reply with only JSON in this shape:
-{"texts":[{"text":"...","box":[x0,y0,x1,y1],"lines":1,"font":"Hind Siliguri","weight":700,"italic":false,"align":"center","color":"#ffffff","outline":null}],"graphics":[{"label":"লোগো","box":[x0,y0,x1,y1]}]}
+{"texts":[{"text":"...","box":[x0,y0,x1,y1],"lines":1,"font":"Hind Siliguri","weight":700,"italic":false,"align":"center","color":"#ffffff","outline":null}],"graphics":[{"label":"Logo","box":[x0,y0,x1,y1]}]}
 Rules:
 - box is the tight box around the visible glyphs (or the graphic) in 0-1000 coordinates: x relative to image width, y relative to image height. Be as precise as you can.
 - One entry per block of text that shares one style. Put \\n between its lines and set "lines". Split blocks that differ in size, color, font or weight. Keep the exact spelling, including Bengali characters and digits.
 - font: the closest match from this list (use the name only): ${FONT_HINT}.
 - weight: 300-900. color: fill color of the letters as #rrggbb. outline: the stroke color if the letters have a clear outline, otherwise null.
-- graphics: only distinct logos, icons, badges, stickers or button shapes; never the whole photo, the background, people, or plain text. label is a short Bengali name.
+- graphics: only distinct logos, icons, badges, stickers or button shapes; never the whole photo, the background, people, or plain text. label is a short English name.
 - Skip tiny unreadable text. At most 40 texts and 10 graphics. Use empty arrays when there are none.`;
 const READ_PROMPT=`This image is a crop from a design and contains text. Reply with only JSON: {"text":"exact text, \\n between lines","lines":1,"font":"closest of: ${FONT_HINT}","weight":700,"italic":false,"align":"center","color":"#rrggbb","outline":null}. Use the font name only. If there is no readable text, use "text":"".`;
 function normItem(o,w,h){
@@ -1294,13 +1294,13 @@ function cleanText(t){ return {text:String(t.text||'').trim(),lines:Math.max(1,p
 function normalize(res,w,h){
   const texts=[],graphics=[];
   for(const t of (res&&Array.isArray(res.texts)?res.texts:[]).slice(0,40)){ const px=normItem(t,w,h); const c=cleanText(t); if(px&&c.text) texts.push({...c,px}); }
-  for(const g of (res&&Array.isArray(res.graphics)?res.graphics:[]).slice(0,10)){ const px=normItem(g,w,h); if(px) graphics.push({label:String(g.label||'ডিজাইন').slice(0,30),px}); }
+  for(const g of (res&&Array.isArray(res.graphics)?res.graphics:[]).slice(0,10)){ const px=normItem(g,w,h); if(px) graphics.push({label:String(g.label||'Design').slice(0,30),px}); }
   return {texts,graphics}; }
-function errMsg(code){ return ({not_granted:'Claude-কে ছবি পড়ার অনুমতি দেওয়া হয়নি। “নিজে বাছাই করুন” দিয়ে লেখা আলাদা করতে পারেন।',
-  sampling_disabled:'এই অ্যাকাউন্টে এখানে Claude চালু নেই। “নিজে বাছাই করুন” ব্যবহার করুন।',rate_limited:'এই মুহূর্তে অনেক অনুরোধ হয়েছে। একটু পরে আবার চেষ্টা করুন।',
-  image_rejected:'ছবিটি পাঠানো গেল না। অন্য ফাইল চেষ্টা করুন।',refused:'এই ছবিটি বিশ্লেষণ করা গেল না।',invalid_json:'ছবিটি ঠিকমতো পড়া যায়নি। আবার চেষ্টা করুন।',
-  empty_completion:'ছবিটি ঠিকমতো পড়া যায়নি। আবার চেষ্টা করুন।',session_expired:'আবার সাইন ইন করে চেষ্টা করুন।',images_unavailable:'এখানে ছবি পাঠানো চালু নেই। “নিজে বাছাই করুন” ব্যবহার করুন।'})[code]
-  ||'সংযোগে সমস্যা হয়েছে। আবার চেষ্টা করুন।'; }
+function errMsg(code){ return ({not_granted:'Claude wasn’t allowed to read the picture. You can still separate text with “Select manually”.',
+  sampling_disabled:'Claude isn’t available for this account here. Use “Select manually”.',rate_limited:'Too many requests right now. Try again in a little while.',
+  image_rejected:'The picture couldn’t be sent. Try another file.',refused:'This picture couldn’t be analysed.',invalid_json:'The picture couldn’t be read properly. Try again.',
+  empty_completion:'The picture couldn’t be read properly. Try again.',session_expired:'Sign in again and retry.',images_unavailable:'Sending pictures isn’t available here. Use “Select manually”.'})[code]
+  ||'There was a connection problem. Try again.'; }
 function showBusy(on,t,p){ $('#busy').hidden=!on; S.busy=on; if(t)$('#busyT').textContent=t; if(p)$('#busyP').textContent=p; }
 $('#busyStop').addEventListener('click',()=>{ if(S.ctl) S.ctl.abort(); });
 async function toBlobFrom(c,type='image/jpeg'){ return await new Promise(r=>c.toBlob(r,type,0.9)); }
@@ -1317,7 +1317,7 @@ function getOcr(){ if(!ocrP){ ocrP=(async()=>{
     const cUrl=URL.createObjectURL(new Blob([await (await get('tess/tesseract-core-lstm.wasm.js')).text()],{type:'text/javascript'}))+'#core.js';
     await idbPut({'./ben.traineddata':new Uint8Array(await (await get('tess/lang/ben.traineddata.gz')).arrayBuffer()),'./eng.traineddata':new Uint8Array(await (await get('tess/lang/eng.traineddata.gz')).arrayBuffer())});
     return await Tesseract.createWorker(['ben','eng'],1,{workerPath:wUrl,corePath:cUrl,workerBlobURL:false,cacheMethod:'readOnly',gzip:true,langPath:'tess/lang',
-      logger:m=>{ if(S.busy&&m&&typeof m.progress==='number'){ const lbl=m.status==='recognizing text'?'লেখা পড়ছি':'প্রস্তুত হচ্ছে'; $('#busyP').textContent=`${lbl}… ${bn(Math.round(m.progress*100))}%`; } }});
+      logger:m=>{ if(S.busy&&m&&typeof m.progress==='number'){ const lbl=m.status==='recognizing text'?'Reading text':'Getting ready'; $('#busyP').textContent=`${lbl}… ${bn(Math.round(m.progress*100))}%`; } }});
   })(); ocrP.catch(()=>{ocrP=null}); } return ocrP; }
 /* ---------- eyedropper ---------- */
 canvas.on('mouse:down:before',o=>{ if(!S.pickColor) return; const p=canvas.getPointer(o.e,true), rs=canvas.getRetinaScaling();
@@ -1325,7 +1325,7 @@ canvas.on('mouse:down:before',o=>{ if(!S.pickColor) return; const p=canvas.getPo
   const px=canvas.contextContainer.getImageData(Math.round(p.x*rs),Math.round(p.y*rs),1,1).data; if(keep){ sel.visible=true; }
   const col=hex(px[0],px[1],px[2]), prop=S.pickColor; S.pickColor=null; canvas.defaultCursor='default';
   S.pickRestore=sel; setTimeout(()=>{ if(S.pickRestore&&canvas.getObjects().includes(S.pickRestore)){ canvas._currentTransform=null; canvas.setActiveObject(S.pickRestore); } S.pickRestore=null;
-    setProp(prop,col); save(); canvas.requestRenderAll(); renderPanel(); toast('রঙ নেওয়া হয়েছে'); },0); });
+    setProp(prop,col); save(); canvas.requestRenderAll(); renderPanel(); toast('Colour picked'); },0); });
 /* ---------- hints: found text stays untouched until you tap it ---------- */
 S.hints=[]; S.showHints=true; let hintSeq=0;
 function setHints(list){ S.hints=list.map(h=>({...h,id:'h'+(++hintSeq),done:false})); syncHints(); canvas.requestRenderAll(); }
@@ -1354,7 +1354,7 @@ async function convertAllLines(){ // whole lines at once, for people who want ev
   liveHints().forEach(h=>{ if(h.type==='text'&&h.lineId){ if(!groups.has(h.lineId)) groups.set(h.lineId,[]); groups.get(h.lineId).push(h); } else solo.push(h); });
   const items=[...solo]; groups.forEach(ws=>{ const x0=Math.min(...ws.map(w=>w.px.x0)),x1=Math.max(...ws.map(w=>w.px.x1)); const l=ws[0].line;
     items.push({type:'text',text:ws.map(w=>w.text).join(' '),px:{x0,y0:l.y0,x1,y1:l.y1},line:null,ids:ws.map(w=>w.id),font:ws[0].font,weight:ws[0].weight,fontKnown:ws[0].fontKnown,trustColor:ws[0].trustColor,color:ws[0].color}); });
-  if(!items.length) return; showBusy(true,'সব লেখা আলাদা করছি…','প্রতিটা লাইনের ফন্ট মিলিয়ে দেখা হচ্ছে।'); $('#busyStop').hidden=true;
+  if(!items.length) return; showBusy(true,'Separating all text…','Matching the font of every line.'); $('#busyStop').hidden=true;
   try{ await convertHints(items); } finally{ showBusy(false); $('#busyStop').hidden=false; renderPanel(); } }
 let hintBusy=false;
 canvas.on('mouse:down',o=>{ S.tap={x:o.e.clientX??(o.e.touches&&o.e.touches[0]&&o.e.touches[0].clientX),y:o.e.clientY??(o.e.touches&&o.e.touches[0]&&o.e.touches[0].clientY)}; });
@@ -1375,9 +1375,9 @@ function drawHints(ctx){
     ctx.fillStyle='rgba(242,180,44,0.10)'; ctx.fillRect(a-2,bb-2,c-a+4,d-bb+4); ctx.strokeStyle=h.type==='graphic'?'rgba(80,200,255,0.95)':'rgba(242,180,44,0.95)'; ctx.strokeRect(a-2,bb-2,c-a+4,d-bb+4); }
   ctx.restore(); }
 async function ocrDetect(){
-  const b=base(); if(!b){toast('আগে একটি ছবি খুলুন');return}
+  const b=base(); if(!b){toast('Open a picture first');return}
   if(S.busy) return; const assetAt=b.assetId; const work=await getBaseWork(b);
-  S.smart={state:'busy'}; renderPanel(); showBusy(true,'লেখা খুঁজছি…','প্রস্তুত হচ্ছে… প্রথমবার একটু বেশি সময় লাগে।'); $('#busyStop').hidden=true;
+  S.smart={state:'busy'}; renderPanel(); showBusy(true,'Finding text…','Getting ready… the first time takes a little longer.'); $('#busyStop').hidden=true;
   try{
     const w=await getOcr(); const {data}=await w.recognize(work.c,{},{blocks:true,text:false});
     if(base()!==b||b.assetId!==assetAt){ S.smart={state:'idle'}; return; }
@@ -1385,14 +1385,14 @@ async function ocrDetect(){
     const good=lines.filter(l=>l.confidence>=40&&/[\p{L}\p{N}]/u.test(l.text||'')&&(l.bbox.y1-l.bbox.y0)>=10&&(l.bbox.x1-l.bbox.x0)>=10);
     setHints(wordHints(good));
     S.smart={state:'hints',n:S.hints.length};
-    if(S.hints.length) toast('দাগ দেওয়া যেকোনো লেখায় চাপ দিন');
+    if(S.hints.length) toast('Tap any outlined text');
   }catch(e){ console.error(e); S.smart={state:'error',code:'ocr'}; }
   finally{ showBusy(false); $('#busyStop').hidden=false; renderPanel(); }
 }
 async function ocrRead(canvasEl){ try{ const w=await getOcr(); const {data}=await w.recognize(canvasEl); return String(data.text||'').trim(); }catch(e){ return ''; } }
 async function detect(manual){
   if(APP) return ocrDetect();
-  const b=base(); if(!b){toast('আগে একটি ছবি খুলুন');return}
+  const b=base(); if(!b){toast('Open a picture first');return}
   if(S.busy) return;
   const sample=await getSample();
   if(!sample||!(await canSendImages(sample))){ S.smart={state:'unavailable'}; renderPanel(); return; }
@@ -1400,14 +1400,14 @@ async function detect(manual){
   const k=Math.min(1,1568/Math.max(work.w,work.h)); const sc=document.createElement('canvas'); sc.width=Math.round(work.w*k); sc.height=Math.round(work.h*k);
   sc.getContext('2d').drawImage(work.c,0,0,sc.width,sc.height); const blob=await toBlobFrom(sc);
   const ctl=new AbortController(); S.ctl=ctl; S.smart={state:'busy'}; renderPanel();
-  showBusy(true,'লেখা খুঁজছি…','Claude ছবির লেখা ও লোগো পড়ছে। ৩০–৬০ সেকেন্ড লাগতে পারে।');
+  showBusy(true,'Finding text…','Claude is reading the text and logos. This can take 30–60 seconds.');
   try{
     const res=await sample.json(PROMPT(work.w,work.h),{images:blob,signal:ctl.signal});
     if(base()!==b||b.assetId!==assetAt){ S.smart={state:'idle'}; return; }
     const nz=normalize(res,work.w,work.h);
     setHints([...nz.texts.map(t=>({type:'text',...t})),...nz.graphics.map(g=>({type:'graphic',label:g.label,px:g.px}))]);
     S.smart={state:'hints',n:S.hints.length};
-    if(S.hints.length) toast('দাগ দেওয়া যেকোনো লেখায় চাপ দিন');
+    if(S.hints.length) toast('Tap any outlined text');
   }catch(e){ S.smart=e&&e.code==='cancelled'?{state:'idle'}:{state:'error',code:e&&e.code}; }
   finally{ showBusy(false); S.ctl=null; renderPanel(); }
 }
@@ -1416,62 +1416,62 @@ async function pickApply(action,r){
   const [ax,ay]=m.inv(r.left,r.top),[bx,by]=m.inv(r.left+r.width,r.top+r.height);
   const work=await getBaseWork(b);
   const px={x0:clamp(Math.min(ax,bx),0,work.w),y0:clamp(Math.min(ay,by),0,work.h),x1:clamp(Math.max(ax,bx),0,work.w),y1:clamp(Math.max(ay,by),0,work.h)};
-  if(px.x1-px.x0<4||px.y1-px.y0<4){toast('বাছাই করা অংশটি খুব ছোট');return}
+  if(px.x1-px.x0<4||px.y1-px.y0<4){toast('The selected area is too small');return}
   if(action==='pickErase'){
     const an=analyze(work.x,work.w,work.h,px,0); if(!an) return; const mu=new Uint8Array(an.rw*an.rh);
     for(let y=1;y<an.rh-1;y++) for(let x=1;x<an.rw-1;x++) mu[y*an.rw+x]=1;
-    harmonic(an,mu,Math.min(10,an.tex*0.8)); work.x.putImageData(an.img,an.rx,an.ry); await commitBase(b,work); save(); toast('মুছে ফেলা হয়েছে'); return;
+    harmonic(an,mu,Math.min(10,an.tex*0.8)); work.x.putImageData(an.img,an.rx,an.ry); await commitBase(b,work); save(); toast('Erased'); return;
   }
-  if(action==='pickGraphic'){ const n=await runItems({graphics:[{label:'ডিজাইন',px,padF:0}]},work);
-    toast(n.g?'আলাদা হয়েছে। এখন সরানো, বড়-ছোট বা রঙ বদলানো যাবে।':'এখানে আলাদা করার মতো কিছু পাওয়া যায়নি'); return; }
+  if(action==='pickGraphic'){ const n=await runItems({graphics:[{label:'Design',px,padF:0}]},work);
+    toast(n.g?'Separated. You can now move, resize or recolour it.':'Nothing to separate was found here'); return; }
   // text
   let info=null; const sample=APP?null:await getSample();
   if(APP){ const cw=Math.round(px.x1-px.x0),ch=Math.round(px.y1-px.y0),cc=document.createElement('canvas');cc.width=cw;cc.height=ch;cc.getContext('2d').drawImage(work.c,px.x0,px.y0,cw,ch,0,0,cw,ch);
-    showBusy(true,'লেখা পড়ছি…','বাছাই করা অংশের লেখা পড়া হচ্ছে।');$('#busyStop').hidden=true; const t=await ocrRead(cc); showBusy(false);$('#busyStop').hidden=false;
+    showBusy(true,'Reading text…','Reading the text in the selected area.');$('#busyStop').hidden=true; const t=await ocrRead(cc); showBusy(false);$('#busyStop').hidden=false;
     if(t) info={text:t,lines:t.split('\n').length,autoFont:true,align:'center'}; }
   if(sample&&await canSendImages(sample)){
     const cw=Math.round(px.x1-px.x0),ch=Math.round(px.y1-px.y0),cc=document.createElement('canvas'),kk=Math.min(1,1200/Math.max(cw,ch));
     cc.width=Math.max(1,Math.round(cw*kk));cc.height=Math.max(1,Math.round(ch*kk));cc.getContext('2d').drawImage(work.c,px.x0,px.y0,cw,ch,0,0,cc.width,cc.height);
-    const ctl=new AbortController();S.ctl=ctl;showBusy(true,'লেখা পড়ছি…','বাছাই করা অংশের লেখা পড়া হচ্ছে।');
+    const ctl=new AbortController();S.ctl=ctl;showBusy(true,'Reading text…','Reading the text in the selected area.');
     try{ const res=await sample.json(READ_PROMPT,{images:await toBlobFrom(cc,'image/png'),signal:ctl.signal}); const c=cleanText(res||{}); if(c.text) info=c; }
     catch(e){ if(e&&e.code==='cancelled'){showBusy(false);S.ctl=null;return} if(e&&e.code!=='not_granted') toast(errMsg(e.code)); }
     finally{ showBusy(false); S.ctl=null; }
   }
-  if(!info) info={text:'নতুন লেখা',lines:1,font:'Hind Siliguri',weight:600,align:'center'};
+  if(!info) info={text:'New text',lines:1,font:'Hind Siliguri',weight:600,align:'center'};
   await runItems({texts:[{...info,px,padF:0.06,fontKnown:false}]},work);
   const objs=canvas.getObjects(); const last=objs[objs.length-1];
   if(last&&last.type==='textbox'){ canvas.setActiveObject(last); canvas.requestRenderAll(); }
-  if(info.text==='নতুন লেখা') setTimeout(()=>{const ta=$('#pText');if(ta){ta.focus();ta.select()}},60);
+  if(info.text==='New text') setTimeout(()=>{const ta=$('#pText');if(ta){ta.focus();ta.select()}},60);
 }
-const helpNote=()=>APP?'':`<div class="note"><b>Claude অ্যাপে গ্যালারি খুলছে না?</b><br>১. ছবিটি Claude-এর চ্যাটে পাঠিয়ে লিখুন “এডিটরে দাও”, ছবিটি এখানে চলে আসবে।<br>২. অথবা উপরের শেয়ার বোতাম থেকে লিংক কপি করে Chrome-এ খুলুন, সেখানে গ্যালারি থেকে ছবি দেওয়া যায়।</div>`;
+const helpNote=()=>APP?'':`<div class="note"><b>Gallery not opening in the Claude app?</b><br>1. Send the picture in the Claude chat and ask to put it in the editor; it will appear here.<br>2. Or copy the link from the Share button above and open it in Chrome, where the gallery works.</div>`;
 function smartUI(){
   const b=base();
-  if(!b) return `<div class="sec"><div class="pt">স্মার্ট এডিট</div><p class="hint">ছবি দিন। ছবির ভেতরের লেখা আর লোগো আলাদা হয়ে যাবে, তারপর যেকোনো লেখায় চাপ দিলেই ফন্ট, রঙ, আকার বদলানো যাবে।</p>
-    <button class="bigbtn primary" data-a="openBase">${ic('upload')}<span><b>ছবি খুলুন</b><small>JPG, PNG বা WebP</small></span></button>${pasteBox()}${helpNote()}</div>${photosUI()}`;
+  if(!b) return `<div class="sec"><div class="pt">Smart edit</div><p class="hint">Open a picture. Its text and logos become separate, then tap any text to change its font, colour and size.</p>
+    <button class="bigbtn primary" data-a="openBase">${ic('upload')}<span><b>Open picture</b><small>JPG, PNG or WebP</small></span></button>${pasteBox()}${helpNote()}</div>${photosUI()}`;
   const st=S.smart; let cls='',t1='',t2='';
-  if(S.isSample&&liveHints().length){ cls='ok';t1='নমুনা পোস্টার';t2='দাগ দেওয়া যেকোনো শব্দে চাপ দিন, যেমন “ছাড়!”। শুধু সেই শব্দটা এডিটযোগ্য হবে, বাকি লেখা যেমন আছে থাকবে। নীল দাগের লোগো আর বাটনও আলাদা করা যায়।'; }
-  else if(st.state==='busy'){ t1='খোঁজা চলছে…';t2='ছবিটি পড়া হচ্ছে।'; }
-  else if(st.state==='hints'){ const n=liveHints().length; cls=n?'ok':''; t1=n?`${bn(n)}টি লেখা পাওয়া গেছে`:'সব লেখা আলাদা করা হয়েছে';
-    t2=n?'দাগ দেওয়া যেকোনো শব্দে চাপ দিন। শুধু সেই শব্দটাই এডিটযোগ্য হবে, ফন্ট মিলিয়ে বসবে। ভুল পড়লে নিজে টাইপ করে বদলে দিন।':'লেখায় চাপ দিয়ে এডিট করুন।'; }
-  else if(st.state==='done'){ cls='ok'; if(st.t+st.g){t1=st.g?`${bn(st.t)}টি লেখা ও ${bn(st.g)}টি ডিজাইন আলাদা হয়েছে`:`${bn(st.t)}টি লেখা আলাদা হয়েছে`;t2='যেকোনোটায় চাপ দিয়ে এডিট করুন। দুইবার চাপলে সরাসরি লেখা যায়। কিছু বাদ পড়লে “নিজে বাছাই করুন”।'}
-    else {cls='';t1='কোনো লেখা পাওয়া যায়নি';t2='“নিজে বাছাই করুন” দিয়ে লেখার অংশটি ঘিরে দিন।'} }
-  else if(st.state==='unavailable'){ cls='err';t1='স্বয়ংক্রিয় খোঁজা এখানে চালু নেই';t2='“নিজে বাছাই করুন” দিয়ে লেখা বা লোগো ঘিরে দিলে সেটা আলাদা হয়ে যাবে।'; }
-  else if(st.state==='error'){ cls='err';t1='খোঁজা যায়নি';t2=st.code==='ocr'?'ছবিটি পড়া গেল না। আবার চেষ্টা করুন, বা “নিজে বাছাই করুন” দিয়ে লেখা ঘিরে দিন।':errMsg(st.code); }
-  else { t1='ছবি প্রস্তুত';t2='“লেখা ও লোগো খুঁজুন” চাপুন। ছবির সব লেখা আলাদা হয়ে এডিটযোগ্য হবে।'; }
+  if(S.isSample&&liveHints().length){ cls='ok';t1='Sample poster';t2='Tap any outlined word, such as “SALE!”. Only that word becomes editable; the rest stays as it is. The logo and button outlined in blue can be separated too.'; }
+  else if(st.state==='busy'){ t1='Searching…';t2='Reading the picture.'; }
+  else if(st.state==='hints'){ const n=liveHints().length; cls=n?'ok':''; t1=n?`${n} words found`:'All text has been separated';
+    t2=n?'Tap any outlined word. Only that word becomes editable, in a matching font. If it was read wrong, just type the right word.':'Tap text to edit it.'; }
+  else if(st.state==='done'){ cls='ok'; if(st.t+st.g){t1=st.g?`${st.t} text and ${st.g} design parts separated`:`${st.t} text items separated`;t2='Tap any of them to edit. Double-tap to type directly. If something was missed, use “Select manually”.'}
+    else {cls='';t1='No text found';t2='Use “Select manually” to draw a box around the text.'} }
+  else if(st.state==='unavailable'){ cls='err';t1='Automatic finding isn’t available here';t2='Draw a box around text or a logo with “Select manually” to separate it.'; }
+  else if(st.state==='error'){ cls='err';t1='Couldn’t find text';t2=st.code==='ocr'?'The picture couldn’t be read. Try again, or draw a box around the text with “Select manually”.':errMsg(st.code); }
+  else { t1='Picture ready';t2='Press “Find text and logos”. All text in the picture becomes editable.'; }
   const found=canvas.getObjects().map((o,i)=>[o,i]).filter(([o])=>o.found).reverse();
   const ao=canvas.getActiveObject();
-  return `<div class="sec"><div class="pt">স্মার্ট এডিট</div><div class="status ${cls}"><span class="dot"></span><div><b>${t1}</b>${t2}</div></div></div>
-  <div class="sec">${st.state!=='unavailable'?`<button class="bigbtn primary" data-a="detect" ${S.busy?'disabled':''}>${ic('wand')}<span><b>${st.state==='done'||S.isSample?'আবার খুঁজুন':APP?'লেখা খুঁজুন':'লেখা ও লোগো খুঁজুন'}</b><small>${APP?'ছবির লেখা পড়ে এডিটযোগ্য করবে, ইন্টারনেট লাগে না':'Claude ছবি পড়ে লেখাগুলো এডিটযোগ্য করবে'}</small></span></button>`:''}
-  ${liveHints().length?`<button class="bigbtn" data-a="allLines">${ic('text')}<span><b>সব লেখা একসাথে আলাদা করুন</b><small>প্রতিটা লাইন এডিটযোগ্য হবে</small></span></button>
-  <div class="tog"><span>লেখার দাগ দেখান</span><button class="switch${S.showHints?' on':''}" data-a="togHints" aria-pressed="${S.showHints}" aria-label="লেখার দাগ দেখান"></button></div>`:''}
-  <button class="bigbtn" data-a="pick">${ic('select')}<span><b>নিজে বাছাই করুন</b><small>কোনো অংশ ঘিরে লেখা, লোগো বা মুছে ফেলা বেছে নিন</small></span></button>
-  ${b.origAsset?`<button class="bigbtn" id="cmp" data-a="cmp">${ic('compare')}<span><b>চেপে ধরে আগের ছবি দেখুন</b><small>ছাড়লে আবার এডিট করা ছবি</small></span></button>`:''}</div>
+  return `<div class="sec"><div class="pt">Smart edit</div><div class="status ${cls}"><span class="dot"></span><div><b>${t1}</b>${t2}</div></div></div>
+  <div class="sec">${st.state!=='unavailable'?`<button class="bigbtn primary" data-a="detect" ${S.busy?'disabled':''}>${ic('wand')}<span><b>${st.state==='done'||S.isSample?'Find again':APP?'Find text':'Find text and logos'}</b><small>${APP?'Reads the picture’s text and makes it editable, no internet needed':'Claude reads the picture and makes its text editable'}</small></span></button>`:''}
+  ${liveHints().length?`<button class="bigbtn" data-a="allLines">${ic('text')}<span><b>Separate all text at once</b><small>Every line becomes editable</small></span></button>
+  <div class="tog"><span>Show text outlines</span><button class="switch${S.showHints?' on':''}" data-a="togHints" aria-pressed="${S.showHints}" aria-label="Show text outlines"></button></div>`:''}
+  <button class="bigbtn" data-a="pick">${ic('select')}<span><b>Select manually</b><small>Box any area, then choose text, logo or erase</small></span></button>
+  ${b.origAsset?`<button class="bigbtn" id="cmp" data-a="cmp">${ic('compare')}<span><b>Hold to see the original</b><small>Release to see your edit</small></span></button>`:''}</div>
   ${photosUI()}
-  ${found.length?sec('আলাদা করা অংশ',`<div class="list">${found.map(([o,i])=>`<div class="lrow${ao===o?' on':''}${o.visible===false?' off':''}"><button class="nm" data-a="fsel" data-v="${i}">${esc(nameOf(o))} <span class="ty">· ${KIND[kindOf(o)]||''}</span></button></div>`).join('')}</div>`):''}`;
+  ${found.length?sec('Separated parts',`<div class="list">${found.map(([o,i])=>`<div class="lrow${ao===o?' on':''}${o.visible===false?' off':''}"><button class="nm" data-a="fsel" data-v="${i}">${esc(nameOf(o))} <span class="ty">· ${KIND[kindOf(o)]||''}</span></button></div>`).join('')}</div>`):''}`;
 }
-function pickUI(){ return `<div class="sec"><div class="pt">অংশ বাছাই</div><p class="hint">ফ্রেমটি সরিয়ে ও কোণা টেনে লেখা, লোগো বা যে জিনিস সরাতে চান তা ঘিরে দিন। তারপর বেছে নিন:</p>
-  <div class="tiles"><button class="tile" data-a="pickText">${ic('text')}লেখা, এডিট করব</button><button class="tile" data-a="pickGraphic">${ic('shape')}লোগো বা ডিজাইন, আলাদা করব</button><button class="tile" data-a="pickErase">${ic('eraser')}মুছে ফেলুন</button></div>
-  <div><button class="btn" data-a="cropCancel">বাতিল</button></div></div>`; }
+function pickUI(){ return `<div class="sec"><div class="pt">Select area</div><p class="hint">Move the frame and drag its corners around the text, logo or thing you want to remove. Then choose:</p>
+  <div class="tiles"><button class="tile" data-a="pickText">${ic('text')}Text, to edit</button><button class="tile" data-a="pickGraphic">${ic('shape')}Logo or design, to separate</button><button class="tile" data-a="pickErase">${ic('eraser')}Erase</button></div>
+  <div><button class="btn" data-a="cropCancel">Cancel</button></div></div>`; }
 /* compare: hold to see the original */
 let cmpState=null;
 async function cmpDown(){ const b=base(); if(!b||!b.origAsset||cmpState) return; cmpState={pending:true};
@@ -1493,7 +1493,7 @@ canvas.on('object:modified',e=>{ if(isCrop(e.target))return; saveSoon(); });
 canvas.on('text:changed',e=>{ const ta=$('#pText'); if(ta&&document.activeElement!==ta) ta.value=e.target.text; });
 canvas.on('text:editing:exited',()=>{ save(); renderPanel(); });
 canvas.on('path:created',e=>{ if(S.dropPath){ S.dropPath=false; canvas.remove(e.path); return; } const p=e.path,m=S.draw.mode;
-  p.set({kind:'draw',layerName:m==='eraser'?'ইরেজার':m==='marker'?'মার্কার':'কলমের টান'});
+  p.set({kind:'draw',layerName:m==='eraser'?'Eraser':m==='marker'?'Marker':'Pen stroke'});
   if(m==='eraser') p.set({globalCompositeOperation:'destination-out',stroke:'#000000'});
   canvas.requestRenderAll(); });
 
@@ -1504,12 +1504,12 @@ $('#fProj').addEventListener('change',e=>{const f=e.target.files[0];e.target.val
 async function openProject(f){if(!f)return;
   try{const d=JSON.parse(await f.text());if(d.app!=='rong'||!d.c)throw 0;
     d.c.objects.forEach(o=>{if(o.type==='image'&&typeof o.src==='string'&&o.src.startsWith('data:'))o.assetId=addAsset(o.src)});
-    S.isSample=false;$('#chip').hidden=true;load(d,()=>{save();toast('প্রজেক্ট খোলা হয়েছে')});
-  }catch(err){toast('এটা রং স্টুডিওর প্রজেক্ট ফাইল নয়।')}}
+    S.isSample=false;$('#chip').hidden=true;load(d,()=>{save();toast('Project opened')});
+  }catch(err){toast('This isn’t a Rong Studio project file.')}}
 /* file buttons: a transparent file input sits on top of each open button, so the tap lands on the input itself (phone apps often ignore a scripted click) */
 const FILEKIND={addFont:['font','.ttf,.otf,.woff,.woff2'],newImg:['new','image/*'],openBase:['base','image/*'],openLayer:['layer','image/*'],openProj:['proj','.json,application/json']};
 function armFiles(root){ root.querySelectorAll('[data-a="addFont"],[data-a="newImg"],[data-a="openBase"],[data-a="openLayer"],[data-a="openProj"]').forEach(el=>{ if(el.querySelector('.fileov'))return; const [k,acc]=FILEKIND[el.dataset.a];
-  const i=document.createElement('input');i.type='file';i.accept=acc;i.className='fileov';i.dataset.file=k;i.setAttribute('aria-label',el.textContent.trim()||'ফাইল বেছে নিন');i.tabIndex=-1;el.classList.add('filebtn');el.appendChild(i); }); }
+  const i=document.createElement('input');i.type='file';i.accept=acc;i.className='fileov';i.dataset.file=k;i.setAttribute('aria-label',el.textContent.trim()||'Choose file');i.tabIndex=-1;el.classList.add('filebtn');el.appendChild(i); }); }
 document.addEventListener('change',e=>{ const i=e.target; if(!i.classList||!i.classList.contains('fileov'))return; const f=i.files&&i.files[0]; i.value='';
   if(i.dataset.file==='font') addFontFile(f); else if(i.dataset.file==='proj') openProject(f); else handleFile(f,i.dataset.file==='layer',i.dataset.file==='new'); });
 armFiles(document.querySelector('.top'));
@@ -1549,7 +1549,7 @@ function toBlob(u){const [h,b]=u.split(',');const mime=h.match(/:(.*?);/)[1];con
 async function getDL(){ try{ return window.claude&&window.claude.use? await window.claude.use('downloads'):null }catch(e){return null} }
 function maxScale(){ return Math.max(1,Math.min(2,Math.floor(4096/Math.max(S.W,S.H)*10)/10)); }
 function updExp(){
-  const sc=Math.min(S.exp.scale,maxScale());$('#expInfo').textContent=S.exp.fmt==='svg'?'SVG: লেখা আর আকার ভেক্টর থাকে, যেকোনো মাপে ঝকঝকে। ফন্টগুলো যে কম্পিউটারে খুলবেন সেখানে ইনস্টল থাকতে হবে।':`${bn(Math.round(S.W*sc))} × ${bn(Math.round(S.H*sc))} পিক্সেল · ${S.exp.fmt.toUpperCase()}${S.exp.fmt==='jpg'?' (স্বচ্ছ অংশ সাদা হবে)':''}`;
+  const sc=Math.min(S.exp.scale,maxScale());$('#expInfo').textContent=S.exp.fmt==='svg'?'SVG: text and shapes stay vector, sharp at any size. The fonts must be installed on the computer that opens it.':`${bn(Math.round(S.W*sc))} × ${bn(Math.round(S.H*sc))} px · ${S.exp.fmt.toUpperCase()}${S.exp.fmt==='jpg'?' (transparent areas become white)':''}`;
   document.querySelectorAll('#expFmt button').forEach(b=>b.classList.toggle('on',b.dataset.v===S.exp.fmt));
   document.querySelectorAll('#expScale button').forEach(b=>b.classList.toggle('on',+b.dataset.v===S.exp.scale));
 }
@@ -1565,13 +1565,13 @@ async function toB64(data){ const buf=typeof data==='string'?new TextEncoder().e
   for(let i=0;i<buf.length;i+=CH) s+=String.fromCharCode.apply(null,buf.subarray(i,i+CH)); return btoa(s); }
 async function offer(filename,data,fallbackUrl){
   if(APP){ try{ const ext=filename.split('.').pop(); const mime={png:'image/png',jpg:'image/jpeg',webp:'image/webp',json:'application/json'}[ext]||'application/octet-stream';
-      const r=window.Android.saveFile(filename,await toB64(data),mime); toast(r||'সেভ হয়েছে'); return !/না|ব্যর্থ/.test(r||''); }catch(e){ toast('সেভ করা গেল না'); return false; } }
+      const r=window.Android.saveFile(filename,await toB64(data),mime); toast(r||'Saved'); return !/could not|fail|cancel/i.test(r||''); }catch(e){ toast('Couldn’t save'); return false; } }
   const dl=await getDL();
-  if(dl){ try{ await dl.save({filename,data}); toast('সেভ হয়েছে'); return true; }catch(err){
-      if(err&&err.code==='declined'){toast('সেভ বাতিল করা হয়েছে');return false}
-      if(err&&err.code==='rate_limited'){toast('একটু পরে আবার চেষ্টা করুন');return false} } }
+  if(dl){ try{ await dl.save({filename,data}); toast('Saved'); return true; }catch(err){
+      if(err&&err.code==='declined'){toast('Save cancelled');return false}
+      if(err&&err.code==='rate_limited'){toast('Try again in a moment');return false} } }
   if(fallbackUrl){ $('#expImg').src=fallbackUrl; $('#expFallback').hidden=false; }
-  else toast('এখানে ফাইল সেভ চালু নেই।');
+  else toast('Saving files isn’t available here.');
   return false;
 }
 $('#expGo').addEventListener('click',async()=>{
@@ -1618,7 +1618,7 @@ function applySheet(){
   }
   $('.stage-wrap').style.setProperty('--sheetR',(sh.open&&sh.mode!=='float'&&wide)?'340px':'0px');
   $('#sheetMode').innerHTML=ic(sh.mode==='float'?'dock':'float');
-  $('#sheetMode').setAttribute('aria-label',sh.mode==='float'?'নিচে বসান':'ভাসমান করুন');
+  $('#sheetMode').setAttribute('aria-label',sh.mode==='float'?'Dock':'Float');
   $('#sheetClose').innerHTML=ic(!wide&&sh.mode!=='float'?'down2':'close');
   document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('on',b.dataset.t===S.tab&&sh.open));
 }
@@ -1694,10 +1694,10 @@ new ResizeObserver(()=>applySheet()).observe($('.app'));
 S.guides=true; S.guideLines=[]; S.tool='select'; S.clip=null;
 function selObjs(){ const a=canvas.getActiveObject(); if(!a||a.isBase) return []; return a.type==='activeSelection'?a.getObjects().slice():[a]; }
 function reselect(objs){ objs=objs.filter(o=>canvas.getObjects().includes(o)); if(!objs.length){canvas.discardActiveObject();} else if(objs.length===1) canvas.setActiveObject(objs[0]); else canvas.setActiveObject(new fabric.ActiveSelection(objs,{canvas})); canvas.requestRenderAll(); }
-function alignObjs(mode){ const objs=selObjs(); if(!objs.length){toast('আগে কিছু বাছাই করুন');return}
+function alignObjs(mode){ const objs=selObjs(); if(!objs.length){toast('Select something first');return}
   canvas.discardActiveObject(); const rs=objs.map(o=>o.getBoundingRect(true,true));
   const B=objs.length===1?{l:0,t:0,r:S.W,b:S.H}:{l:Math.min(...rs.map(r=>r.left)),t:Math.min(...rs.map(r=>r.top)),r:Math.max(...rs.map(r=>r.left+r.width)),b:Math.max(...rs.map(r=>r.top+r.height))};
-  if(mode==='dh'||mode==='dv'){ if(objs.length<3){toast('সমান দূরত্বের জন্য অন্তত ৩টি বস্তু বাছাই করুন');reselect(objs);return}
+  if(mode==='dh'||mode==='dv'){ if(objs.length<3){toast('Select at least 3 objects to space them evenly');reselect(objs);return}
     const H=mode==='dh', idx=objs.map((o,i)=>i).sort((i,j)=>H?rs[i].left-rs[j].left:rs[i].top-rs[j].top);
     const span=H?B.r-B.l:B.b-B.t, sum=rs.reduce((s2,r)=>s2+(H?r.width:r.height),0), gap=(span-sum)/(objs.length-1); let pos=H?B.l:B.t;
     idx.forEach(i=>{ const o=objs[i],r=rs[i]; if(H) o.left+=pos-r.left; else o.top+=pos-r.top; pos+=(H?r.width:r.height)+gap; o.setCoords(); }); }
@@ -1705,15 +1705,15 @@ function alignObjs(mode){ const objs=selObjs(); if(!objs.length){toast('আগ�
     if(mode==='l') o.left+=B.l-r.left; if(mode==='ch') o.left+=(B.l+B.r)/2-(r.left+r.width/2); if(mode==='r') o.left+=B.r-(r.left+r.width);
     if(mode==='t') o.top+=B.t-r.top; if(mode==='cv') o.top+=(B.t+B.b)/2-(r.top+r.height/2); if(mode==='b') o.top+=B.b-(r.top+r.height); o.setCoords(); });
   reselect(objs); save(); }
-function groupSel(){ const a=canvas.getActiveObject(); if(!a||a.type!=='activeSelection'){toast('গ্রুপ করতে একাধিক বস্তু বাছাই করুন (Shift চেপে ক্লিক)');return}
-  const g=a.toGroup(); g.set({kind:'group',layerName:'গ্রুপ'}); canvas.requestRenderAll(); save(); renderPanel(); }
-function ungroupSel(){ const a=canvas.getActiveObject(); if(!a||a.type!=='group'){toast('আগে একটি গ্রুপ বাছাই করুন');return} a.toActiveSelection(); canvas.requestRenderAll(); save(); renderPanel(); }
+function groupSel(){ const a=canvas.getActiveObject(); if(!a||a.type!=='activeSelection'){toast('Select several objects to group them (Shift+click)');return}
+  const g=a.toGroup(); g.set({kind:'group',layerName:'Group'}); canvas.requestRenderAll(); save(); renderPanel(); }
+function ungroupSel(){ const a=canvas.getActiveObject(); if(!a||a.type!=='group'){toast('Select a group first');return} a.toActiveSelection(); canvas.requestRenderAll(); save(); renderPanel(); }
 function selectAll(){ const objs=canvas.getObjects().filter(o=>!o.isBase&&o.visible!==false&&!o.locked&&o.name!=='__crop'); reselect(objs); renderPanel(); }
 function copySel(cut){ const objs=selObjs(); if(!objs.length) return false; canvas.discardActiveObject(); S.clip=objs.map(o=>o.toObject(PROPS)); S.pasteN=0;
-  if(cut){ objs.forEach(o=>canvas.remove(o)); canvas.requestRenderAll(); save(); renderPanel(); toast('কেটে নেওয়া হয়েছে'); } else { reselect(objs); toast('কপি হয়েছে'); } return true; }
+  if(cut){ objs.forEach(o=>canvas.remove(o)); canvas.requestRenderAll(); save(); renderPanel(); toast('Cut'); } else { reselect(objs); toast('Copied'); } return true; }
 function pasteClip(){ if(!S.clip||!S.clip.length) return false; S.pasteN=(S.pasteN||0)+1; const off=20*K()*S.pasteN;
   fabric.util.enlivenObjects(JSON.parse(JSON.stringify(S.clip)),objs=>{ S.batch=true; objs.forEach(o=>{ o.set({left:o.left+off,top:o.top+off}); if(o.type==='image'&&o.fx&&Object.keys(o.fx).length){o.filters=buildFilters(o.fx);o.applyFilters()} canvas.add(o); }); S.batch=false; reselect(objs); save(); renderPanel(); }); return true; }
-function setTool(t){ S.tool=t; canvas.defaultCursor=t==='hand'?'grab':'default'; canvas.skipTargetFind=t==='hand'; const th=$('#toolHint'); th.hidden=t!=='hand'; th.textContent='হাত টুল: টেনে ছবি সরান · V চাপলে বাছাই টুল'; }
+function setTool(t){ S.tool=t; canvas.defaultCursor=t==='hand'?'grab':'default'; canvas.skipTargetFind=t==='hand'; const th=$('#toolHint'); th.hidden=t!=='hand'; th.textContent='Hand tool: drag to move around · press V for the selection tool'; }
 async function svgExport(){ if(S.crop)endCrop(false); canvas.discardActiveObject();
   const v=canvas.viewportTransform.slice(), cp=canvas.clipPath; canvas.viewportTransform=[1,0,0,1,0,0]; canvas.clipPath=null;
   let svg=''; try{ svg=canvas.toSVG({width:S.W,height:S.H,viewBox:{x:0,y:0,width:S.W,height:S.H}}); } finally{ canvas.viewportTransform=v; canvas.clipPath=cp; canvas.requestRenderAll(); }
@@ -1733,11 +1733,11 @@ canvas.on('after:render',e=>{ const ctx=e&&e.ctx; if(!ctx||ctx!==canvas.contextC
   ctx.stroke(); ctx.restore(); });
 /* menu bar */
 const MENUS=[
- ['ফাইল',[['f:new','নতুন ছবি খুলুন…','Ctrl+O'],['a:openLayer','ছবির উপর ছবি যোগ করুন…',''],['m:blank','খালি ক্যানভাস','Ctrl+Alt+N'],'-',['a:openProj','প্রজেক্ট খুলুন…',''],['m:saveProj','প্রজেক্ট সেভ করুন','Ctrl+S'],'-',['m:export','ছবি হিসেবে সেভ (PNG/JPG)…','Ctrl+E'],['m:svg','SVG হিসেবে সেভ','Ctrl+Shift+E']]],
- ['এডিট',[['m:undo','আনডু','Ctrl+Z'],['m:redo','রিডু','Ctrl+Y'],'-',['m:cut','কাটুন','Ctrl+X'],['m:copy','কপি','Ctrl+C'],['m:paste','পেস্ট','Ctrl+V'],['m:dup','ডুপ্লিকেট','Ctrl+D'],['m:del','মুছুন','Del'],'-',['m:all','সব বাছাই','Ctrl+A'],['m:group','গ্রুপ করুন','Ctrl+G'],['m:ungroup','গ্রুপ ভাঙুন','Ctrl+Shift+G']]],
- ['বস্তু',[['m:fwd','এক ধাপ সামনে','Ctrl+]'],['m:bwd','এক ধাপ পেছনে','Ctrl+['],['m:front','একদম সামনে','Ctrl+Shift+]'],['m:back','একদম পেছনে','Ctrl+Shift+['],'-',['m:al:l','বাঁয়ে মেলান',''],['m:al:ch','মাঝে মেলান (আড়াআড়ি)',''],['m:al:r','ডানে মেলান',''],['m:al:t','উপরে মেলান',''],['m:al:cv','মাঝে মেলান (লম্বালম্বি)',''],['m:al:b','নিচে মেলান',''],'-',['m:al:dh','সমান দূরত্বে (আড়াআড়ি)',''],['m:al:dv','সমান দূরত্বে (লম্বালম্বি)',''],'-',['m:flipX','আড়াআড়ি উল্টান','Shift+H'],['m:flipY','লম্বালম্বি উল্টান','Shift+V'],['m:lock','লক / আনলক','Ctrl+L']]],
- ['টুল',[['m:t:select','বাছাই টুল','V'],['m:t:hand','হাত টুল (সরানো)','H / Space'],'-',['m:t:text','লেখা যোগ','T'],['m:t:rect','আয়ত','R'],['m:t:ellipse','বৃত্ত','E'],['m:t:line','রেখা','L'],['m:t:draw','হাতে আঁকা','B'],['m:t:crop','ক্রপ','C']]],
- ['দেখুন',[['m:zin','বড় করুন','Ctrl++'],['m:zout','ছোট করুন','Ctrl+−'],['m:fit','পর্দায় মানান','Ctrl+0'],['m:z100','আসল মাপ ১০০%','Ctrl+1'],'-',['m:guides','স্মার্ট গাইড চালু/বন্ধ','Ctrl+;'],['m:hints','লেখার দাগ দেখান/লুকান',''],['m:panel','প্যানেল দেখান/লুকান','Tab']]]];
+ ['File',[['f:new','Open new picture…','Ctrl+O'],['a:openLayer','Add picture on top…',''],['m:blank','Blank canvas','Ctrl+Alt+N'],'-',['a:openProj','Open project…',''],['m:saveProj','Save project','Ctrl+S'],'-',['m:export','Save as picture (PNG/JPG)…','Ctrl+E'],['m:svg','Save as SVG','Ctrl+Shift+E']]],
+ ['Edit',[['m:undo','Undo','Ctrl+Z'],['m:redo','Redo','Ctrl+Y'],'-',['m:cut','Cut','Ctrl+X'],['m:copy','Copy','Ctrl+C'],['m:paste','Paste','Ctrl+V'],['m:dup','Duplicate','Ctrl+D'],['m:del','Delete','Del'],'-',['m:all','Select all','Ctrl+A'],['m:group','Group','Ctrl+G'],['m:ungroup','Ungroup','Ctrl+Shift+G']]],
+ ['Object',[['m:fwd','Bring forward','Ctrl+]'],['m:bwd','Send backward','Ctrl+['],['m:front','Bring to front','Ctrl+Shift+]'],['m:back','Send to back','Ctrl+Shift+['],'-',['m:al:l','Align left',''],['m:al:ch','Align centres horizontally',''],['m:al:r','Align right',''],['m:al:t','Align top',''],['m:al:cv','Align centres vertically',''],['m:al:b','Align bottom',''],'-',['m:al:dh','Distribute horizontally',''],['m:al:dv','Distribute vertically',''],'-',['m:flipX','Flip horizontal','Shift+H'],['m:flipY','Flip vertical','Shift+V'],['m:lock','Lock / unlock','Ctrl+L']]],
+ ['Tools',[['m:t:select','Selection tool','V'],['m:t:hand','Hand tool (pan)','H / Space'],'-',['m:t:text','Add text','T'],['m:t:rect','Rectangle','R'],['m:t:ellipse','Circle','E'],['m:t:line','Line','L'],['m:t:draw','Draw','B'],['m:t:crop','Crop','C']]],
+ ['View',[['m:zin','Zoom in','Ctrl++'],['m:zout','Zoom out','Ctrl+−'],['m:fit','Fit to screen','Ctrl+0'],['m:z100','Actual size 100%','Ctrl+1'],'-',['m:guides','Smart guides on/off','Ctrl+;'],['m:hints','Show/hide text outlines',''],['m:panel','Show/hide panel','Tab']]]];
 function buildMenus(){ const mb=$('#menubar'); mb.innerHTML=MENUS.map(([name,items],i)=>`<div><button class="mb" data-menu="${i}">${name}</button><div class="menu" hidden>${items.map(it=>it==='-'?'<div class="msep"></div>':
   (it[0].startsWith('a:')?`<button class="mi" data-a="${it[0].slice(2)}"><span>${it[1]}</span><kbd>${it[2]}</kbd></button>`:it[0]==='f:new'?`<button class="mi" data-a="newImg"><span>${it[1]}</span><kbd>${it[2]}</kbd></button>`:`<button class="mi" data-m="${it[0].slice(2)}"><span>${it[1]}</span><kbd>${it[2]}</kbd></button>`)).join('')}</div></div>`).join('');
   armFiles(mb); }
@@ -1746,14 +1746,14 @@ function showMenu(i){ document.querySelectorAll('#menubar .menu').forEach((m,j)=
 function closeMenus(){ document.querySelectorAll('#menubar .menu').forEach(m=>m.hidden=true); document.querySelectorAll('#menubar .mb').forEach(b=>b.classList.remove('on')); openMenu=null; }
 function runMenu(id){ const [a,b]=id.split(':');
   switch(a){ case 'blank':newBlank();break; case 'saveProj':saveProject();break; case 'export':openExp();break; case 'svg':svgExport();break;
-    case 'undo':undo();break; case 'redo':redo();break; case 'cut':copySel(true);break; case 'copy':copySel(false);break; case 'paste':if(!pasteClip())toast('কপি করা কিছু নেই');break;
+    case 'undo':undo();break; case 'redo':redo();break; case 'cut':copySel(true);break; case 'copy':copySel(false);break; case 'paste':if(!pasteClip())toast('Nothing copied');break;
     case 'dup':act('dup');break; case 'del':act('del');break; case 'all':selectAll();break; case 'group':groupSel();break; case 'ungroup':ungroupSel();break;
-    case 'fwd':case 'bwd':case 'front':case 'back':case 'flipX':case 'flipY':case 'lock': if(!active()){toast('আগে কিছু বাছাই করুন');break} act(a);break;
+    case 'fwd':case 'bwd':case 'front':case 'back':case 'flipX':case 'flipY':case 'lock': if(!active()){toast('Select something first');break} act(a);break;
     case 'al':alignObjs(b);break;
     case 't': if(b==='select'){ setTool('select'); if(S.tab==='draw') setTab('smart'); } else if(b==='hand') setTool('hand'); else if(b==='text'){ setTool('select'); addText(TEXTP[0]); } else if(b==='rect'){ setTool('select'); addShape('rect'); }
       else if(b==='ellipse'){ setTool('select'); addShape('circle'); } else if(b==='line'){ setTool('select'); addShape('line'); } else if(b==='draw'){ setTab('draw'); openSheet(); } else if(b==='crop'){ setTab('size'); openSheet(); startCrop(); } break;
     case 'zin':zoomBy(1.25);break; case 'zout':zoomBy(1/1.25);break; case 'fit':fitView();break; case 'z100':{ const r=visibleRect(); zoomAt(1,r.x+r.w/2,r.y+r.h/2); break; }
-    case 'guides':S.guides=!S.guides;toast(S.guides?'স্মার্ট গাইড চালু':'স্মার্ট গাইড বন্ধ');break; case 'hints':S.showHints=!S.showHints;canvas.requestRenderAll();renderPanel();break;
+    case 'guides':S.guides=!S.guides;toast(S.guides?'Smart guides on':'Smart guides off');break; case 'hints':S.showHints=!S.showHints;canvas.requestRenderAll();renderPanel();break;
     case 'panel': S.sheet.open?closeSheet():openSheet(); break; } }
 $('#menubar').addEventListener('click',e=>{ const mbtn=e.target.closest('.mb'); if(mbtn){ const i=+mbtn.dataset.menu; openMenu===i?closeMenus():showMenu(i); return; }
   if(e.target.classList.contains('fileov')){ setTimeout(closeMenus,0); return; }
@@ -1764,11 +1764,11 @@ buildMenus();
 /* layers dock (desktop side panel) */
 function renderLayersDock(){ const el=$('#layersDock'); const show=isWide()&&S.sheet.open&&S.sheet.mode!=='float'; el.hidden=!show; if(!show) return;
   const all=canvas.getObjects().filter(o=>o.name!=='__crop'), objs=all.slice().reverse(), ao=canvas.getActiveObject(), sel=new Set(ao&&ao.type==='activeSelection'?ao.getObjects():[ao]);
-  el.innerHTML=`<div class="ph" style="margin-bottom:8px"><span class="eyebrow">লেয়ার</span><span class="hint">${bn(all.length)}টি</span></div><div class="list">${objs.map(o=>{const i=canvas.getObjects().indexOf(o);
+  el.innerHTML=`<div class="ph" style="margin-bottom:8px"><span class="eyebrow">Layers</span><span class="hint">${all.length}</span></div><div class="list">${objs.map(o=>{const i=canvas.getObjects().indexOf(o);
     return `<div class="lrow${o.visible===false?' off':''}${sel.has(o)?' on':''}"><button class="nm" data-a="lsel" data-v="${i}">${esc(nameOf(o))} <span class="ty">· ${KIND[kindOf(o)]||''}</span></button>
-    ${o.isBase?'':`<button class="ib" data-a="lup" data-v="${i}" aria-label="সামনে">${ic('up')}</button><button class="ib" data-a="ldown" data-v="${i}" aria-label="পেছনে">${ic('down')}</button>`}
-    <button class="ib" data-a="lvis" data-v="${i}" aria-label="${o.visible===false?'দেখান':'লুকান'}">${ic(o.visible===false?'eyeoff':'eye')}</button>
-    <button class="ib" data-a="llock" data-v="${i}" aria-label="${o.locked?'লক খুলুন':'লক করুন'}">${ic(o.locked?'lock':'unlock')}</button></div>`}).join('')}</div>`; }
+    ${o.isBase?'':`<button class="ib" data-a="lup" data-v="${i}" aria-label="Forward">${ic('up')}</button><button class="ib" data-a="ldown" data-v="${i}" aria-label="Backward">${ic('down')}</button>`}
+    <button class="ib" data-a="lvis" data-v="${i}" aria-label="${o.visible===false?'Show':'Hide'}">${ic(o.visible===false?'eyeoff':'eye')}</button>
+    <button class="ib" data-a="llock" data-v="${i}" aria-label="${o.locked?'Unlock':'Lock'}">${ic(o.locked?'lock':'unlock')}</button></div>`}).join('')}</div>`; }
 ['object:added','object:removed'].forEach(ev=>canvas.on(ev,()=>{ if(!S.restoring) { clearTimeout(S.ldT); S.ldT=setTimeout(renderLayersDock,60); } }));
 /* desktop keyboard: tools, clipboard, arrange, view */
 document.addEventListener('keydown',e=>{
@@ -1792,18 +1792,18 @@ async function initPhotos(){ try{ const db=window.claude&&window.claude.use?awai
   db.collection('photos').orderBy('at','desc').limit(40).onSnapshot(sn=>{ S.photos=sn.docs.map(d=>({id:d.id,...(d.data()||{})})).filter(p=>typeof p.asset==='string');
     if((S.tab==='smart'||S.tab==='image')&&!active()&&!S.crop) renderPanel(); },()=>{}); }catch(e){} }
 function photosUI(){ if(!S.photos.length) return '';
-  return sec('চ্যাটে পাঠানো ছবি',`<div class="tiles" style="grid-template-columns:repeat(auto-fill,minmax(84px,1fr))">${S.photos.map(p=>`<button class="tile ph-t" data-a="photo" data-v="${esc(p.asset)}" aria-label="${esc(p.name||'ছবি')}"><img src="/_blob/${esc(p.asset)}" alt="" loading="lazy"><span>${esc(p.name||'ছবি')}</span></button>`).join('')}</div>`); }
-async function loadPhoto(id){ showBusy(true,'ছবি আনছি…','একটু অপেক্ষা করুন।');
+  return sec('Pictures sent in chat',`<div class="tiles" style="grid-template-columns:repeat(auto-fill,minmax(84px,1fr))">${S.photos.map(p=>`<button class="tile ph-t" data-a="photo" data-v="${esc(p.asset)}" aria-label="${esc(p.name||'Picture')}"><img src="/_blob/${esc(p.asset)}" alt="" loading="lazy"><span>${esc(p.name||'Picture')}</span></button>`).join('')}</div>`); }
+async function loadPhoto(id){ showBusy(true,'Loading picture…','Please wait a moment.');
   try{ let blob=null; try{ const r=await fetch('/_blob/'+id); if(r.ok) blob=await r.blob(); }catch(e){}
     if(blob&&blob.size){ showBusy(false); await handleFile(blob,false); return; }
     const el=await himg('/_blob/'+id); await loadImgEl(el); }
-  catch(e){ toast('ছবিটি আনা গেল না। আবার চেষ্টা করুন।'); }
+  catch(e){ toast('The picture couldn’t be loaded. Try again.'); }
   finally{ if(S.busy&&!S.ctl) showBusy(false); } }
 async function loadImgEl(el){ let w=el.naturalWidth,h=el.naturalHeight; const k=Math.min(1,2048/Math.max(w,h)); w=Math.round(w*k);h=Math.round(h*k);
   const c=document.createElement('canvas');c.width=w;c.height=h;c.getContext('2d').drawImage(el,0,0,w,h); showBusy(false); await setBase(c.toDataURL('image/jpeg',0.92),w,h); }
-const pasteBox=()=>`<div class="pastebox" contenteditable="true" data-paste aria-label="ছবি পেস্ট করার জায়গা">গ্যালারি না খুললে: ছবি কপি করে এখানে চেপে ধরে “পেস্ট” করুন</div>`;
+const pasteBox=()=>`<div class="pastebox" contenteditable="true" data-paste aria-label="Place to paste a picture">If the gallery won’t open: copy a picture, then press and hold here and choose “Paste”</div>`;
 panel.addEventListener('input',async e=>{ const box=e.target.closest&&e.target.closest('[data-paste]'); if(!box) return; const img=box.querySelector('img');
-  if(img){ const src=img.src; box.textContent=''; try{ const el=await himg(src); await loadImgEl(el);}catch(err){toast('এই ছবিটি পেস্ট করা গেল না।')} } });
+  if(img){ const src=img.src; box.textContent=''; try{ const el=await himg(src); await loadImgEl(el);}catch(err){toast('This picture couldn’t be pasted.')} } });
 panel.addEventListener('paste',e=>{ const box=e.target.closest&&e.target.closest('[data-paste]'); if(!box) return; const it=[...(e.clipboardData?.items||[])].find(i=>i.kind==='file');
   if(it){ e.preventDefault(); e.stopPropagation(); handleFile(it.getAsFile(),false); } },true);
 async function init(){
@@ -1822,7 +1822,7 @@ async function init(){
     S.smart={state:'hints'};
   }catch(e){ S.isSample=false; S.batch=false; $('#chip').hidden=true; console.error(e); }
   S.hist=[];S.hi=-1;save();renderPanel();updBar();
-  window.__openShared=async()=>{ try{ const r=await fetch('shared-image?t='+Date.now()); if(r.ok){ const bl=await r.blob(); if(bl.size) await handleFile(bl,false,true); } }catch(e){ toast('ছবিটি খোলা গেল না'); } };
+  window.__openShared=async()=>{ try{ const r=await fetch('shared-image?t='+Date.now()); if(r.ok){ const bl=await r.blob(); if(bl.size) await handleFile(bl,false,true); } }catch(e){ toast('The picture couldn’t be opened'); } };
   if(APP&&window.Android.hasShared&&window.Android.hasShared()) await window.__openShared();
   if(document.fonts&&document.fonts.ready) document.fonts.ready.then(()=>{ if(fabric.util.clearFabricFontCache)fabric.util.clearFabricFontCache(); canvas.getObjects().forEach(o=>{if(o.initDimensions){o.initDimensions();o.setCoords()}}); canvas.requestRenderAll(); });
 }
