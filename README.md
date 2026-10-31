@@ -4,7 +4,7 @@
 
 <p align="center">ছবির ভেতরের লেখায় চাপ দিন, আর সরাসরি বদলে ফেলুন।<br>বাংলা ও ইংরেজি লেখা পড়তে পারে, ইন্টারনেট ছাড়াই চলে।</p>
 
-<p align="center"><a href="https://github.com/hemelsid/Rong-Studio/raw/main/releases/RongStudio-v2.0.apk"><b>⬇ ফোনের অ্যাপ (v2.0)</b></a> &nbsp;·&nbsp; <a href="https://github.com/hemelsid/Rong-Studio/releases/download/desktop-v2.0.0/RongStudio-Setup-2.0.0.exe"><b>⬇ কম্পিউটারের অ্যাপ (Windows)</b></a></p>
+<p align="center"><a href="https://github.com/hemelsid/Rong-Studio/raw/main/releases/RongStudio-v2.1.apk"><b>⬇ ফোনের অ্যাপ (v2.1)</b></a> &nbsp;·&nbsp; <a href="https://github.com/hemelsid/Rong-Studio/releases/download/desktop-v2.1.0/RongStudio-Setup-2.1.0.exe"><b>⬇ কম্পিউটারের অ্যাপ (Windows)</b></a></p>
 
 <p align="center">
   <img src="docs/smart-edit.png" width="240" alt="স্মার্ট এডিট: ছবির লেখা আলাদা করা">
@@ -41,8 +41,8 @@
 
 | ফাইল | কী |
 |---|---|
-| [RongStudio-Setup-2.0.0.exe](https://github.com/hemelsid/Rong-Studio/releases/download/desktop-v2.0.0/RongStudio-Setup-2.0.0.exe) | ইনস্টলার: কম্পিউটারে ইনস্টল হয়, ডেস্কটপ আর স্টার্ট মেনুতে আইকন বসে |
-| [RongStudio-Portable-2.0.0.exe](https://github.com/hemelsid/Rong-Studio/releases/download/desktop-v2.0.0/RongStudio-Portable-2.0.0.exe) | পোর্টেবল: ইনস্টল ছাড়াই চলে, পেনড্রাইভেও রাখা যায় |
+| [RongStudio-Setup-2.1.0.exe](https://github.com/hemelsid/Rong-Studio/releases/download/desktop-v2.1.0/RongStudio-Setup-2.1.0.exe) | ইনস্টলার: কম্পিউটারে ইনস্টল হয়, ডেস্কটপ আর স্টার্ট মেনুতে আইকন বসে |
+| [RongStudio-Portable-2.1.0.exe](https://github.com/hemelsid/Rong-Studio/releases/download/desktop-v2.1.0/RongStudio-Portable-2.1.0.exe) | পোর্টেবল: ইনস্টল ছাড়াই চলে, পেনড্রাইভেও রাখা যায় |
 
 ফোনের অ্যাপের সব কিছু আছে, ইন্টারনেট ছাড়াই চলে। সাথে কম্পিউটারের জন্য বাড়তি সুবিধা:
 
@@ -64,7 +64,8 @@ Windows SmartScreen সতর্ক করলে **More info → Run anyway** �
 
 | ভার্সন | ডাউনলোড | যা বদলেছে |
 |---|---|---|
-| **v2.0** (সর্বশেষ) | [APK, ১৩ MB](https://github.com/hemelsid/Rong-Studio/raw/main/releases/RongStudio-v2.0.apk) | শুরুর পাতা আর ছবি বন্ধ করা, ক্লিক করলে শুধু সেই লেখা বা লোগো এডিট, লোগো বদলানো, ১৩৬টা ফন্ট আর কম্পিউটারের সব ফন্ট, আরও ভালো ফন্ট চেনা, নতুন চেহারা। |
+| **v2.1** (সর্বশেষ) | [APK, ১৩ MB](https://github.com/hemelsid/Rong-Studio/raw/main/releases/RongStudio-v2.1.apk) | স্মার্ট ইরেজার (শুধু অক্ষর মোছে, পেছন ঠিক থাকে), লোগোর ভেতরের লেখা আলাদা করে এডিট, পাশের লেখা ছাড়া লোগো আলাদা করা, ছবি থেকে আরও ভালো ফন্ট চেনা। |
+| **v2.0** | [APK, ১৩ MB](https://github.com/hemelsid/Rong-Studio/raw/main/releases/RongStudio-v2.0.apk) | শুরুর পাতা আর ছবি বন্ধ করা, ক্লিক করলে শুধু সেই লেখা বা লোগো এডিট, লোগো বদলানো, ১৩৬টা ফন্ট আর কম্পিউটারের সব ফন্ট, আরও ভালো ফন্ট চেনা, নতুন চেহারা। |
 | v1.9 | [APK, ৯ MB](https://github.com/hemelsid/Rong-Studio/raw/main/releases/RongStudio-v1.9.apk) | অ্যাপের সব লেখা ইংরেজিতে, নাম “Rong Studio”। |
 | v1.8 | [APK, ৯ MB](https://github.com/hemelsid/Rong-Studio/raw/main/releases/RongStudio-v1.8.apk) | গ্রুপ, একসাথে মেলানো, স্মার্ট গাইড, SVG সেভ। কম্পিউটার সংস্করণ এল। |
 | v1.7 | [APK, ৯ MB](https://github.com/hemelsid/Rong-Studio/raw/main/releases/RongStudio-v1.7.apk) | আসল লেখার মাপ, অক্ষরের ফাঁক, গ্রেডিয়েন্ট, আউটলাইন, ছায়া, আভা আর নরম কিনারা নিজে থেকে মেলায়। গ্রেডিয়েন্ট, ছায়া ও আভা, নরম কিনারা আর রঙ তোলার ড্রপার কন্ট্রোল। |

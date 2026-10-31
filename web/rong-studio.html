@@ -414,7 +414,7 @@ fabric.textureSize=4096;
 fabric.Object.prototype.set({transparentCorners:false,cornerColor:'#ffffff',cornerStrokeColor:'#3d8bfd',borderColor:'#3d8bfd',cornerSize:10,touchCornerSize:32,cornerStyle:'rect',padding:3,borderScaleFactor:1.4});
 const canvas=new fabric.Canvas('c',{preserveObjectStacking:true,backgroundColor:'#ffffff',stopContextMenu:true,selection:false,controlsAboveOverlay:true,allowTouchScrolling:false});
 const S={W:1080,H:1080,zm:1,assets:{},seq:0,tab:'smart',smart:{state:'idle'},hist:[],hi:-1,restoring:false,batch:false,isSample:false,crop:null,
-  draw:{mode:'pen',color:'#f2b42c',size:14},exp:{fmt:'png',scale:1}};
+  draw:{mode:'smart',color:'#f2b42c',size:14},exp:{fmt:'png',scale:1}};
 const K=()=>Math.min(S.W,S.H)/1080;
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 const base=()=>canvas.getObjects().find(o=>o.isBase);
@@ -786,8 +786,8 @@ function tabUI(tab){
     ${sec('Shape',`<div class="tiles">${Object.entries(SHAPES).map(([k,s])=>`<button class="tile" data-a="addShape" data-v="${k}"><svg class="shp" viewBox="0 0 40 40" aria-hidden="true">${s.svg}</svg>${s.lbl}</button>`).join('')}</div>`)}
     ${sec('Emoji and stickers',`<div class="tiles" style="grid-template-columns:repeat(auto-fill,minmax(52px,1fr))">${EMOJI.map(e=>`<button class="tile" style="min-height:52px" data-a="addEmoji" data-v="${e}"><span class="big">${e}</span></button>`).join('')}</div>`)}`;
   if(tab==='draw'){ const d=S.draw; return `<div class="sec"><div class="pt">Draw by hand</div><p class="hint">Draw on the canvas with your finger or mouse. Each stroke is its own layer that you can move or delete later.</p>
-    <div class="tiles">${[['pen','pen','Pen'],['marker','marker','Marker'],['eraser','eraser','Eraser']].map(([m,i,l])=>`<button class="tile${d.mode===m?' on':''}" data-a="drawMode" data-v="${m}">${ic(i)}${l}</button>`).join('')}</div></div>
-    ${d.mode==='eraser'?'<p class="hint">The eraser makes everything underneath transparent. Press Undo if you make a mistake.</p>':sec('Colour',sws('drawColor',d.color))}
+    <div class="tiles">${[['smart','eraser','Smart eraser'],['pen','pen','Pen'],['marker','marker','Marker'],['eraser','eraser','Transparent eraser']].map(([m,i,l])=>`<button class="tile${d.mode===m?' on':''}" data-a="drawMode" data-v="${m}">${ic(i)}${l}</button>`).join('')}</div></div>
+    ${d.mode==='smart'?'<p class="hint">Paint over text, marks or spots on the picture. Only they are removed; the background colour around them is rebuilt. Use a brush a little bigger than the letters.</p>':d.mode==='eraser'?'<p class="hint">Makes everything underneath transparent. To remove text and keep the background, use Smart eraser.</p>':sec('Colour',sws('drawColor',d.color))}
     ${sec('Size',rng('Shape','data-draw="size"',1,120,1,d.size,v=>bn(v)))}`; }
   if(tab==='filter'){ const t=fxTarget(); return `<div class="sec"><div class="pt">Filters and colour</div>${t?`<p class="hint">${t.isBase?'Applies to the main picture. Select another picture to apply it there.':'Applies to the selected picture.'}</p>`:''}</div>${t?filterUI(t):filterUI(null)}`; }
   if(tab==='size'){ const b=base(); return `<div class="sec"><div class="pt">Size & crop</div><p class="hint">Current size: <b style="font-variant-numeric:tabular-nums">${bn(S.W)} × ${bn(S.H)}</b> Pixelate</p>
@@ -876,7 +876,7 @@ async function setFont(f){
 function applyBrush(){
   const d=S.draw;const b=new fabric.PencilBrush(canvas);const k=K();
   b.width=d.size*k*(d.mode==='marker'?2:1);
-  b.color=d.mode==='eraser'?'rgba(255,255,255,0.8)':d.mode==='marker'?hexA(d.color,0.4):d.color;
+  b.color=d.mode==='smart'?'rgba(255,64,96,0.45)':d.mode==='eraser'?'rgba(255,255,255,0.8)':d.mode==='marker'?hexA(d.color,0.4):d.color;
   b.strokeLineCap=d.mode==='marker'?'square':'round';
   canvas.freeDrawingBrush=b;
 }
@@ -1113,6 +1113,25 @@ function smooth(an,mu,passes){ const {rw:w,rh:h}=an,d=an.img.data;
     for(let y=1;y<h-1;y++) for(let x=1;x<w-1;x++){ const i=y*w+x; if(!mu[i])continue;
       for(let c=0;c<3;c++){ let s=0; for(let dy=-1;dy<=1;dy++) for(let dx=-1;dx<=1;dx++) s+=cp[((y+dy)*w+x+dx)*4+c]; d[i*4+c]=s/9; } } } }
 
+/* one word, robustly: inside the word's own small box the background is nearly even, so split dark from light there
+   and call the less common side the letters. Works on photos of screens, gradients and moire. */
+function wordInk(work,px){
+  const ex=Math.max(3,Math.round((px.y1-px.y0)*0.18));
+  const x0=Math.max(0,Math.floor(px.x0-ex)),y0=Math.max(0,Math.floor(px.y0-ex)),x1=Math.min(work.w,Math.ceil(px.x1+ex)),y1=Math.min(work.h,Math.ceil(px.y1+ex)),w=x1-x0,h=y1-y0;
+  if(w<4||h<4) return null; const d=work.x.getImageData(x0,y0,w,h).data,N=w*h,L=new Float32Array(N),hist=new Float64Array(256);
+  for(let i=0;i<N;i++){ const v=0.299*d[i*4]+0.587*d[i*4+1]+0.114*d[i*4+2]; L[i]=v; hist[Math.min(255,v|0)]++; }
+  let sum=0; for(let i=0;i<256;i++) sum+=i*hist[i]; let sB=0,wB=0,best=-1,t=128; for(let i=0;i<256;i++){ wB+=hist[i]; if(!wB) continue; const wF=N-wB; if(!wF) break; sB+=i*hist[i]; const mB=sB/wB,mF=(sum-sB)/wF,v=wB*wF*(mB-mF)**2; if(v>best){best=v;t=i} }
+  // the box edge is background: whichever side most edge pixels fall on is the background, the other side is the letters
+  let edgeDark=0,edgeN=0; for(let x=0;x<w;x++) for(const y of [0,1,h-2,h-1]){ if(y<0||y>=h) continue; edgeN++; if(L[y*w+x]<=t) edgeDark++; }
+  for(let y=2;y<h-2;y++) for(const x of [0,1,w-2,w-1]){ if(x<0||x>=w) continue; edgeN++; if(L[y*w+x]<=t) edgeDark++; }
+  const inkDark=edgeDark<edgeN/2; let inkN=0; for(let i=0;i<N;i++) if(inkDark?L[i]<=t:L[i]>t) inkN++; const frac=inkN/N; if(frac<0.02||frac>0.8) return null;
+  const m=new Uint8Array(N); let a=w,b=h,c=-1,e=-1; const inkL=[],bgL=[];
+  const tx0=px.x0-x0-1,ty0=px.y0-y0-1,tx1=px.x1-x0+1,ty1=px.y1-y0+1;
+  for(let i=0;i<N;i++){ const xx=i%w,yy=i/w|0, inside=xx>=tx0&&xx<=tx1&&yy>=ty0&&yy<=ty1; const isInk=inside&&(inkDark?L[i]<=t:L[i]>t); if(!inside&&!isInk){ bgL.push(i); continue; } if(isInk){ m[i]=1; const x=i%w,y=i/w|0; if(x<a)a=x;if(x>c)c=x;if(y<b)b=y;if(y>e)e=y; inkL.push(i); } else bgL.push(i); }
+  inkL.sort((p,q)=>inkDark?L[p]-L[q]:L[q]-L[p]); const core=inkL.slice(0,Math.max(3,Math.floor(inkL.length*0.4)));
+  const med=list=>{ const R=[],G=[],B=[]; list.forEach(i=>{R.push(d[i*4]);G.push(d[i*4+1]);B.push(d[i*4+2])}); const md=q=>{q.sort((p,r)=>p-r);return q[q.length>>1]}; return [md(R),md(G),md(B)]; };
+  const fill=med(core), bgc=med(bgL); if(cdist(fill,bgc)<25) return null;
+  return {an:{rx:x0,ry:y0,rw:w,rh:h,mask:m}, mask:m, tb:{x0:x0+a,y0:y0+b,x1:x0+c+1,y1:y0+e+1}, fill, bgc}; }
 function processText(work,it){
   let box=it.px, an=null;
   for(let pass=0;pass<2;pass++){
@@ -1140,10 +1159,20 @@ function processText(work,it){
         if(cnt>an.cnt*0.3){ const cb={x0:an.rx+a,y0:an.ry+b,x1:an.rx+c+1,y1:an.ry+e+1}; it.ink=inkGrid(an,cb,m50); it.innerTb=cb; used=true; } }
       if(!used) it.ink=inkGrid(an,tb); }
     const lineH=(tb.y1-tb.y0)/Math.max(1,it.lines||1);
-    const mu=dilate(an.mask,an.rw,an.rh,Math.max(2,Math.round(lineH*0.07)));
-    if(it.style&&it.style.erase){ for(let i=0;i<mu.length;i++) if(it.style.erase[i]) mu[i]=1; delete it.style.erase; }
-    harmonic(an,mu,Math.min(10,an.tex*0.8),an.fullMask?dilate(an.fullMask,an.rw,an.rh,Math.max(2,Math.round(lineH*0.07))):null); work.x.putImageData(an.img,an.rx,an.ry);
-    if(!it.trustColor&&!it.outline&&an.color) color=it.style&&it.style.fill?toHex(it.style.fill):an.color;
+    // single words: check the result against the word's own box; on photos the wider look-around can get light and dark backwards
+    let wi=null, trusted=true; if(it.clip&&!it.trustColor){ wi=wordInk(work,it.px);
+      if(wi){ const st=it.style||{}; trusted=!!st.fill&&cdist(st.fill,wi.fill)<60;
+        if(!trusted){ it.ink=inkGrid(wi.an,wi.tb,wi.mask); it.innerTb=wi.tb; tb=wi.tb; }
+        if(!trusted&&it.style){ it.style.grad=null; it.style.stroke=null; it.style.shadow=null; it.style.soft=0; it.style.fill=wi.fill; delete it.style.erase; } } }
+    if(wi&&!trusted){
+      const ex=Math.max(3,Math.round((it.px.y1-it.px.y0)*0.15)), bx={x0:Math.max(0,Math.floor(it.px.x0-ex)),y0:Math.max(0,Math.floor(it.px.y0-ex)),x1:Math.min(work.w,Math.ceil(it.px.x1+ex)),y1:Math.min(work.h,Math.ceil(it.px.y1+ex))};
+      const br=new Uint8Array(work.w*work.h); for(let y=bx.y0;y<bx.y1;y++) for(let x=bx.x0;x<bx.x1;x++) br[y*work.w+x]=1;
+      smartErase(work,br,bx,Math.max(4,(it.px.y1-it.px.y0)*0.7)); if(it.style) delete it.style.erase;
+    } else {
+      const mu=dilate(an.mask,an.rw,an.rh,Math.max(2,Math.round(lineH*0.07)));
+      if(it.style&&it.style.erase){ for(let i=0;i<mu.length;i++) if(it.style.erase[i]) mu[i]=1; delete it.style.erase; }
+      harmonic(an,mu,Math.min(10,an.tex*0.8),an.fullMask?dilate(an.fullMask,an.rw,an.rh,Math.max(2,Math.round(lineH*0.07))):null); work.x.putImageData(an.img,an.rx,an.ry); }
+    if(!it.trustColor&&!it.outline&&an.color) color=wi&&!trusted?toHex(wi.fill):it.style&&it.style.fill?toHex(it.style.fill):an.color;
     density=an.cnt/Math.max(1,(tb.x1-tb.x0)*(tb.y1-tb.y0));
   }
   return {...it,tb,density,color:color||'#ffffff'};
@@ -1222,6 +1251,29 @@ function styleFromInk(an,lineH){
   if(layers.length){ const out=dilate(mask,w,h,1); let part=0; for(let i=0;i<N;i++) if(out[i]&&!mask[i]&&an.dist[i]>an.thr*0.3) part++;
     const ratio=part/Math.max(1,layers[0].length); st.softRatio=ratio; st.soft=clamp((ratio-0.75)*1.6,0,5); }
   return st; }
+/* smart erase: inside a painted area remove only the marks (letters, lines, specks) and rebuild the background around them */
+function smartErase(work,brush,box,R){ // brush: Uint8Array work.w*work.h (1 = painted), box: bbox of painted pixels in image px, R: look-around radius
+  R=Math.max(3,Math.round(R)); const pad=R+3;
+  const rx=Math.max(0,box.x0-pad),ry=Math.max(0,box.y0-pad),rx1=Math.min(work.w,box.x1+pad),ry1=Math.min(work.h,box.y1+pad),w=rx1-rx,h=ry1-ry; if(w<3||h<3) return 0;
+  const img=work.x.getImageData(rx,ry,w,h),d=img.data,N=w*h,B=new Uint8Array(N);
+  for(let y=0;y<h;y++) for(let x=0;x<w;x++) B[y*w+x]=brush[(ry+y)*work.w+rx+x];
+  // local background: median of samples on two rings around each pixel
+  const offs=[]; for(const [r,n] of [[R,16],[Math.max(2,Math.round(R*0.6)),10]]) for(let k=0;k<n;k++){ const a=k/n*Math.PI*2; offs.push([Math.round(Math.cos(a)*r),Math.round(Math.sin(a)*r)]); }
+  const bg=new Float32Array(N*3), dist=new Float32Array(N), near=dilate(B,w,h,2), R0=[],G0=[],B0=[];
+  for(let y=0;y<h;y++) for(let x=0;x<w;x++){ const i=y*w+x; if(!near[i]){ bg[i*3]=d[i*4];bg[i*3+1]=d[i*4+1];bg[i*3+2]=d[i*4+2]; continue; }
+    R0.length=G0.length=B0.length=0; for(const [dx,dy] of offs){ const xx=x+dx,yy=y+dy; if(xx<0||yy<0||xx>=w||yy>=h) continue; const j=(yy*w+xx)*4; R0.push(d[j]);G0.push(d[j+1]);B0.push(d[j+2]); }
+    if(!R0.length) continue; const md=a=>{a.sort((p,q)=>p-q);return a[a.length>>1]};
+    bg[i*3]=md(R0);bg[i*3+1]=md(G0);bg[i*3+2]=md(B0); dist[i]=Math.hypot(d[i*4]-bg[i*3],d[i*4+1]-bg[i*3+1],d[i*4+2]-bg[i*3+2]); }
+  const ds=[]; for(let i=0;i<N;i++) if(B[i]) ds.push(dist[i]); if(!ds.length) return 0; ds.sort((p,q)=>p-q);
+  const T=Math.max(26,ds[Math.floor(ds.length*0.9)]*0.4);
+  const ink=new Uint8Array(N); let cnt=0; for(let i=0;i<N;i++) if(B[i]&&dist[i]>T){ ink[i]=1; cnt++; }
+  if(!cnt) return 0;
+  const hole=dilate(ink,w,h,2); const inB=dilate(B,w,h,2); for(let i=0;i<N;i++) if(!inB[i]) hole[i]=0;
+  const avoid=new Uint8Array(N); for(let i=0;i<N;i++) if(near[i]&&dist[i]>T&&!hole[i]) avoid[i]=1; // marks outside the brush: do not copy them in
+  let nsum=0,nc=0; for(let i=0;i<N;i++) if(B[i]&&!ink[i]){ nsum+=Math.abs(d[i*4]-bg[i*3]); nc++; }
+  const an={rw:w,rh:h,img,bg};
+  harmonic(an,hole,Math.min(8,nc?nsum/nc*1.2:2),avoid);
+  work.x.putImageData(img,rx,ry); return cnt; }
 function clipAn(an,box){ // keep only ink inside box (image px); used for single words so neighbours stay untouched
   an.fullMask=an.mask.slice();
   const x0=Math.floor(box.x0-an.rx),x1=Math.ceil(box.x1-an.rx),y0=Math.floor(box.y0-an.ry),y1=Math.ceil(box.y1-an.ry);
@@ -1268,9 +1320,27 @@ async function rankPass(text,ink,cands,PX,bnT){
     const score=0.6*f1+0.4*(uni?inter/uni:0)-0.35*Math.abs(Math.log((bw/bh)/ink.aspect))-0.24*Math.abs(fill)-(!bnT&&FONTS.find(z=>z[0]===f)?.[1]==='bn'?0.03:0)+(SYS_W[f]?0.01:0)-(['display','script'].includes(FONTS.find(z=>z[0]===f)?.[2])?0.04:0);
     out.push({font:f,weight:w,score,bw:bw/sc,bh:bh/sc}); }
   return out.sort((p,q)=>q.score-p.score); }
+function keepMainShape(an,it){ const {rw:w,rh:h,mask}=an,N=w*h;
+  (it.exclude||[]).forEach(bb=>{ const a=Math.floor(bb.x0-an.rx)-1,b=Math.floor(bb.y0-an.ry)-1,c=Math.ceil(bb.x1-an.rx)+1,e=Math.ceil(bb.y1-an.ry)+1;
+    for(let y=Math.max(0,b);y<Math.min(h,e);y++) for(let x=Math.max(0,a);x<Math.min(w,c);x++) mask[y*w+x]=0; });
+  const lab=new Int32Array(N),comps=[]; let id=0;
+  const cx0=it.px.x0-an.rx,cy0=it.px.y0-an.ry,cx1=it.px.x1-an.rx,cy1=it.px.y1-an.ry, mx=(cx0+cx1)/2,my=(cy0+cy1)/2,qw=(cx1-cx0)/4,qh=(cy1-cy0)/4;
+  for(let i=0;i<N;i++){ if(!mask[i]||lab[i]) continue; id++; const st=[i]; lab[i]=id; let n=0,a=w,b=h,c=-1,e=-1,central=false;
+    while(st.length){ const j=st.pop(),x=j%w,y=j/w|0; n++; if(x<a)a=x;if(x>c)c=x;if(y<b)b=y;if(y>e)e=y; if(Math.abs(x-mx)<=qw&&Math.abs(y-my)<=qh) central=true;
+      for(const q of [j-1,j+1,j-w,j+w]){ if(q<0||q>=N||lab[q]||!mask[q]) continue; if((q===j-1&&x===0)||(q===j+1&&x===w-1)) continue; lab[q]=id; st.push(q); } }
+    comps.push({id,n,a,b,c,e,central}); }
+  if(!comps.length){ an.tb=null; return; }
+  const big=comps.reduce((p,q)=>q.n>p.n?q:p); const keep=new Set(comps.filter(c=>c.central&&c.n>=big.n*0.05).map(c=>c.id)); if(!keep.size) keep.add(big.id);
+  // pieces fully inside the kept shapes' box (like letters printed on the logo) stay with it
+  let A=w,B=h,C=-1,E=-1; comps.forEach(c=>{ if(keep.has(c.id)){ A=Math.min(A,c.a);B=Math.min(B,c.b);C=Math.max(C,c.c);E=Math.max(E,c.e); } });
+  comps.forEach(c=>{ if(!keep.has(c.id)&&c.a>=A&&c.c<=C&&c.b>=B&&c.e<=E) keep.add(c.id); });
+  let cnt=0; for(let i=0;i<N;i++){ if(mask[i]&&!keep.has(lab[i])) mask[i]=0; else if(mask[i]) cnt++; }
+  an.cnt=cnt; an.tb=cnt?{x0:A,y0:B,x1:C,y1:E}:null; }
 function processGraphic(work,it){
   const area=(it.px.x1-it.px.x0)*(it.px.y1-it.px.y0); if(area>work.w*work.h*0.6||area<16) return null;
   const an=analyze(work.x,work.w,work.h,it.px,it.padF??0.12); if(!an||!an.tb) return null;
+  if(it.keepMain!==false) keepMainShape(an,it);
+  if(!an.tb) return null;
   const t=an.tb,p=2,x0=Math.max(0,t.x0-p),y0=Math.max(0,t.y0-p),x1=Math.min(an.rw-1,t.x1+p),y1=Math.min(an.rh-1,t.y1+p);
   const cw=x1-x0+1,ch=y1-y0+1; const cov=an.cnt/((t.x1-t.x0+1)*(t.y1-t.y0+1)); const rect=cov>0.97;
   const out=document.createElement('canvas');out.width=cw;out.height=ch;const oc=out.getContext('2d');const od=oc.createImageData(cw,ch);
@@ -1286,7 +1356,7 @@ function processGraphic(work,it){
     for(let j=0;j<cw*ch;j++) if(!seen[j]&&A[j*4+3]<=128){A[j*4+3]=255;mu[(((j/cw)|0)+y0)*an.rw+(j%cw)+x0]=1;}
   }
   oc.putImageData(od,0,0);
-  const mu2=dilate(mu,an.rw,an.rh,2); harmonic(an,mu2,Math.min(10,an.tex*0.8)); work.x.putImageData(an.img,an.rx,an.ry);
+  const mu2=dilate(mu,an.rw,an.rh,3); const av=new Uint8Array(an.rw*an.rh); for(let i=0;i<av.length;i++) if(!mu2[i]&&an.dist[i]>an.thr*0.5) av[i]=1; harmonic(an,mu2,Math.min(6,an.tex*0.6),av); work.x.putImageData(an.img,an.rx,an.ry);
   return {label:it.label||'Design',url:out.toDataURL('image/png'),tb:{x0:an.rx+x0,y0:an.ry+y0,x1:an.rx+x1+1,y1:an.ry+y1+1}};
 }
 function imgMap(b){ const iw=b.width,ih=b.height;
@@ -1438,10 +1508,10 @@ async function convertHints(hs,opts={}){
   const b=base(); if(!b||!hs.length) return null; const work=await getBaseWork(b);
   const texts=[],graphics=[];
   for(const h of hs){
-    if(h.type==='graphic'){ graphics.push({label:h.label,px:h.px,padF:0.12}); continue; }
+    if(h.type==='graphic'){ graphics.push({label:h.label,px:h.px,padF:0.12,exclude:S.hints.filter(x=>x.type==='text'&&!x.done&&!x.tight).map(x=>x.line?{x0:x.px.x0,y0:x.line.y0,x1:x.px.x1,y1:x.line.y1}:x.px)}); continue; }
     const pad=Math.max(2,(h.line?h.line.y1-h.line.y0:h.px.y1-h.px.y0)*0.08);
     texts.push({text:h.text,lines:h.lines||1,font:h.font,weight:h.weight,italic:h.italic,align:'center',color:h.color,outline:h.outline,fontKnown:!!h.fontKnown,trustColor:!!h.trustColor,
-      px:h.px,line:h.line||null,padF:h.line?0.25:0.3,clip:h.line?{x0:h.px.x0-pad,y0:h.line.y0-pad,x1:h.px.x1+pad,y1:h.line.y1+pad}:null,hintIds:h.ids||[h.id]}); }
+      px:h.px,line:h.line||null,padF:h.tight?0.06:h.line?0.25:0.3,clip:h.line?{x0:h.px.x0-pad,y0:h.line.y0-pad,x1:h.px.x1+pad,y1:h.line.y1+pad}:null,hintIds:h.ids||[h.id]}); }
   await runItems({texts,graphics},work); syncHints();
   const objs=canvas.getObjects(); const last=objs[objs.length-1];
   if(opts.select&&last&&last.found){ canvas.setActiveObject(last); canvas.requestRenderAll(); openSheet();
@@ -1470,9 +1540,34 @@ canvas.on('mouse:up',async o=>{
   if(o.target&&!o.target.isBase) return;
   const b=base(); if(!b||S.isSample&&!liveHints().length) return;
   const r=hintAt(o); hintBusy=true;
-  try{ if(r&&r.hit){ S.hoverHint=null; await convertHints([r.hit],{select:true}); }
+  try{ if(r&&r.hit&&r.hit.type==='graphic'&&APP&&!r.hit.scanned){ const inner=await textInside(r.hit,r.ix,r.iy); if(inner){ S.hoverHint=null; await convertHints([inner],{select:true}); return; } }
+    if(r&&r.hit){ S.hoverHint=null; await convertHints([r.hit],{select:true}); }
     else if(APP&&S.smart&&S.smart.state==='hints'&&!S.isSample) await readAt(r.ix,r.iy); }
   finally{ hintBusy=false; } });
+/* text inside a logo or badge: read just that area, larger, and edit the word under the click instead of the whole logo */
+async function textInside(g,ix,iy){ g.scanned=true; const b=base(); if(!b) return null; const work=await getBaseWork(b);
+  const x0=Math.max(0,Math.floor(g.px.x0-4)),y0=Math.max(0,Math.floor(g.px.y0-4)),x1=Math.min(work.w,Math.ceil(g.px.x1+4)),y1=Math.min(work.h,Math.ceil(g.px.y1+4));
+  const k=clamp(Math.round(160/Math.max(8,Math.min(x1-x0,y1-y0))),1,4), M=24, c=document.createElement('canvas'); c.width=(x1-x0)*k+M*2; c.height=(y1-y0)*k+M*2;
+  const cx=c.getContext('2d',{willReadFrequently:true}); cx.imageSmoothingQuality='high'; cx.drawImage(work.c,x0,y0,x1-x0,y1-y0,M,M,(x1-x0)*k,(y1-y0)*k);
+  { // clean black-on-white text image: the logo's own colour is the background; anything inside the logo that differs from it is text
+    const id=cx.getImageData(0,0,c.width,c.height),dd=id.data,W2=c.width,H2=c.height,N2=W2*H2;
+    const ccx=M+(ix-x0)*k,ccy=M+(iy-y0)*k, rr=Math.max(6,Math.min(x1-x0,y1-y0)*k*0.35), R=[],G=[],Bl=[];
+    for(let y=Math.max(M,Math.round(ccy-rr));y<Math.min(H2-M,ccy+rr);y++) for(let x=Math.max(M,Math.round(ccx-rr));x<Math.min(W2-M,ccx+rr);x++){ const j=(y*W2+x)*4; R.push(dd[j]);G.push(dd[j+1]);Bl.push(dd[j+2]); }
+    const md=a=>{a.sort((p,q)=>p-q);return a[a.length>>1]}; const lb=[md(R),md(G),md(Bl)];
+    const body=new Uint8Array(N2); for(let i=0;i<N2;i++){ const y=i/W2|0,x=i%W2; if(y<M||y>=H2-M||x<M||x>=W2-M) continue; if(Math.hypot(dd[i*4]-lb[0],dd[i*4+1]-lb[1],dd[i*4+2]-lb[2])<60) body[i]=1; }
+    const out=new Uint8Array(N2), st=[]; for(let x=0;x<W2;x++){ st.push(x,(H2-1)*W2+x); } for(let y=0;y<H2;y++){ st.push(y*W2,y*W2+W2-1); }
+    while(st.length){ const j=st.pop(); if(out[j]||body[j]) continue; out[j]=1; const x=j%W2; if(x>0) st.push(j-1); if(x<W2-1) st.push(j+1); if(j>=W2) st.push(j-W2); if(j<N2-W2) st.push(j+W2); }
+    for(let i=0;i<N2;i++){ const v=(!out[i]&&!body[i])?0:255; dd[i*4]=dd[i*4+1]=dd[i*4+2]=v; dd[i*4+3]=255; }
+    cx.putImageData(id,0,0); }
+  showBusy(true,'Reading the logo…','Looking for text inside it.'); $('#busyStop').hidden=true;
+  try{ const w=await getOcr(); const {data}=await w.recognize(c,{},{blocks:true,text:false}); const found=[];
+    (data.blocks||[]).forEach(bl=>(bl.paragraphs||[]).forEach(pa=>(pa.lines||[]).forEach(l=>(l.words||[]).forEach(wd=>{ const t=String(wd.text||'').trim();
+      if(!/[\p{L}\p{N}]/u.test(t)||wd.confidence<45) return; const bb={x0:x0+(wd.bbox.x0-M)/k,y0:y0+(wd.bbox.y0-M)/k,x1:x0+(wd.bbox.x1-M)/k,y1:y0+(wd.bbox.y1-M)/k};
+      found.push({type:'text',id:'h'+(++hintSeq),text:t,px:bb,line:null,tight:true,lineId:'G'+hintSeq,lineText:t}); }))));
+    if(found.length) S.hints.push(...found);
+    const tol=4/(canvas.getZoom()*b.scaleX);
+    return found.find(h=>ix>=h.px.x0-tol&&ix<=h.px.x1+tol&&iy>=h.px.y0-tol&&iy<=h.px.y1+tol)||null; }
+  catch(e){ return null; } finally{ showBusy(false); $('#busyStop').hidden=false; } }
 /* clicked on text the first reading missed: read a band around the click and take the word under it */
 async function readAt(ix,iy){ const b=base(); if(!b) return; const work=await getBaseWork(b); if(ix<0||iy<0||ix>work.w||iy>work.h) return;
   const bh=Math.max(60,Math.round(work.h*0.06)), bw=Math.max(300,Math.round(work.w*0.5));
@@ -1513,12 +1608,12 @@ function findGraphics(work,words){
   // remove text
   words.forEach(h=>{ const bb=h.line||h.px, mg=Math.max(3,(bb.y1-bb.y0)*0.45*k); const a=Math.floor(h.px.x0*k-mg),b=Math.floor(bb.y0*k-mg),c3=Math.ceil(h.px.x1*k+mg),e=Math.ceil(bb.y1*k+mg);
     for(let y=Math.max(0,b);y<Math.min(H,e);y++) for(let xx=Math.max(0,a);xx<Math.min(W,c3);xx++) m[y*W+xx]=0; });
-  const mm=dilate(m,W,H,2), lab=new Int32Array(N), out=[]; let id=0;
+  const mm=dilate(m,W,H,1), lab=new Int32Array(N), out=[]; let id=0;
   for(let i=0;i<N;i++){ if(!mm[i]||lab[i]) continue; id++; const st=[i]; lab[i]=id; let x0=W,y0=H,x1=-1,y1=-1,cnt=0;
     while(st.length){ const j=st.pop(),xx=j%W,y=j/W|0; cnt++; if(xx<x0)x0=xx;if(xx>x1)x1=xx;if(y<y0)y0=y;if(y>y1)y1=y;
       for(const q of [j-1,j+1,j-W,j+W]){ if(q<0||q>=N||lab[q]||!mm[q]) continue; if((q===j-1&&xx===0)||(q===j+1&&xx===W-1)) continue; lab[q]=id; st.push(q); } }
     const bw=x1-x0+1,bh=y1-y0+1, area=bw*bh;
-    if(bw<10||bh<10||area<N*0.002||area>N*0.35) continue; if(bw/bh>6||bh/bw>6) continue; if(cnt/area<0.18) continue;
+    if(bw<10||bh<10||area<N*0.002||area>N*0.35) continue; if(bw/bh>6||bh/bw>6) continue; if(cnt/area<0.3) continue;
     const edges=(x0<=1)+(y0<=1)+(x1>=W-2)+(y1>=H-2); if(edges>=2) continue;
     out.push({type:'graphic',label:'Logo / image',px:{x0:x0/k,y0:y0/k,x1:(x1+1)/k,y1:(y1+1)/k}}); }
   return out.sort((p,q)=>(q.px.x1-q.px.x0)*(q.px.y1-q.px.y0)-(p.px.x1-p.px.x0)*(p.px.y1-p.px.y0)).slice(0,25); }
@@ -1568,9 +1663,10 @@ async function pickApply(action,r){
   const px={x0:clamp(Math.min(ax,bx),0,work.w),y0:clamp(Math.min(ay,by),0,work.h),x1:clamp(Math.max(ax,bx),0,work.w),y1:clamp(Math.max(ay,by),0,work.h)};
   if(px.x1-px.x0<4||px.y1-px.y0<4){toast('The selected area is too small');return}
   if(action==='pickErase'){
-    const an=analyze(work.x,work.w,work.h,px,0); if(!an) return; const mu=new Uint8Array(an.rw*an.rh);
-    for(let y=1;y<an.rh-1;y++) for(let x=1;x<an.rw-1;x++) mu[y*an.rw+x]=1;
-    harmonic(an,mu,Math.min(10,an.tex*0.8)); work.x.putImageData(an.img,an.rx,an.ry); await commitBase(b,work); save(); toast('Erased'); return;
+    const br=new Uint8Array(work.w*work.h), bx={x0:Math.floor(px.x0),y0:Math.floor(px.y0),x1:Math.ceil(px.x1),y1:Math.ceil(px.y1)};
+    for(let y=bx.y0;y<bx.y1;y++) for(let x=bx.x0;x<bx.x1;x++) br[y*work.w+x]=1;
+    const n=smartErase(work,br,bx,clamp(Math.min(bx.x1-bx.x0,bx.y1-bx.y0)*0.45,4,60));
+    if(!n){ toast('Nothing to erase was found in that area'); return; } await commitBase(b,work); save(); toast('Erased'); return;
   }
   if(action==='pickGraphic'){ const n=await runItems({graphics:[{label:'Design',px,padF:0}]},work);
     toast(n.g?'Separated. You can now move, resize or recolour it.':'Nothing to separate was found here'); return; }
@@ -1634,6 +1730,18 @@ panel.addEventListener('pointerdown',e=>{ if(e.target.closest('#cmp')){ e.preven
 panel.addEventListener('keydown',e=>{ if(e.target.closest&&e.target.closest('#cmp')&&(e.key===' '||e.key==='Enter')){e.preventDefault();cmpDown()} });
 panel.addEventListener('keyup',()=>{ if(cmpState) cmpUp(); });
 
+/* smart eraser brush: turn the painted stroke into a mask on the picture, then remove only the marks under it */
+async function smartBrush(p){ const b=base(); S.batch=true; canvas.remove(p); S.batch=false; if(!b){ toast('Open a picture first'); return; }
+  if(S.erasing) return; S.erasing=true;
+  try{ const work=await getBaseWork(b), mc=document.createElement('canvas'); mc.width=work.w; mc.height=work.h; const x=mc.getContext('2d');
+    x.setTransform(1/b.scaleX,0,0,1/b.scaleY,-b.left/b.scaleX+b.width/2,-b.top/b.scaleY+b.height/2);
+    p.set({stroke:'#ffffff',objectCaching:false}); p.render(x);
+    const md=x.getImageData(0,0,work.w,work.h).data, br=new Uint8Array(work.w*work.h); let x0=work.w,y0=work.h,x1=-1,y1=-1;
+    for(let i=0;i<br.length;i++) if(md[i*4+3]>40){ br[i]=1; const xx=i%work.w,yy=i/work.w|0; if(xx<x0)x0=xx;if(xx>x1)x1=xx;if(yy<y0)y0=yy;if(yy>y1)y1=yy; }
+    if(x1<0) return; if(b.flipX||b.flipY){ toast('Smart eraser needs an unflipped picture'); return; }
+    const n=smartErase(work,br,{x0,y0,x1:x1+1,y1:y1+1},(p.strokeWidth||10)/b.scaleX*0.9);
+    if(n){ await commitBase(b,work); save(); } else toast('Nothing to erase under the brush');
+  } finally{ S.erasing=false; canvas.requestRenderAll(); } }
 /* ---------- canvas events ---------- */
 const isCrop=o=>o&&o.name==='__crop';
 canvas.on('object:added',e=>{ if(isCrop(e.target)||S.restoring)return; saveSoon(); if(S.tab==='layers'&&!active())renderPanel(); });
@@ -1643,6 +1751,7 @@ canvas.on('object:modified',e=>{ if(isCrop(e.target))return; saveSoon(); });
 canvas.on('text:changed',e=>{ const ta=$('#pText'); if(ta&&document.activeElement!==ta) ta.value=e.target.text; });
 canvas.on('text:editing:exited',()=>{ save(); renderPanel(); });
 canvas.on('path:created',e=>{ if(S.dropPath){ S.dropPath=false; canvas.remove(e.path); return; } const p=e.path,m=S.draw.mode;
+  if(m==='smart'){ smartBrush(p); return; }
   p.set({kind:'draw',layerName:m==='eraser'?'Eraser':m==='marker'?'Marker':'Pen stroke'});
   if(m==='eraser') p.set({globalCompositeOperation:'destination-out',stroke:'#000000'});
   canvas.requestRenderAll(); });
@@ -1886,7 +1995,7 @@ const MENUS=[
  ['File',[['f:new','Open new picture…','Ctrl+O'],['a:openLayer','Add picture on top…',''],['m:blank','Blank canvas','Ctrl+Alt+N'],['m:close','Close picture','Ctrl+W'],'-',['a:openProj','Open project…',''],['m:saveProj','Save project','Ctrl+S'],'-',['m:export','Save as picture (PNG/JPG)…','Ctrl+E'],['m:svg','Save as SVG','Ctrl+Shift+E']]],
  ['Edit',[['m:undo','Undo','Ctrl+Z'],['m:redo','Redo','Ctrl+Y'],'-',['m:cut','Cut','Ctrl+X'],['m:copy','Copy','Ctrl+C'],['m:paste','Paste','Ctrl+V'],['m:dup','Duplicate','Ctrl+D'],['m:del','Delete','Del'],'-',['m:all','Select all','Ctrl+A'],['m:group','Group','Ctrl+G'],['m:ungroup','Ungroup','Ctrl+Shift+G']]],
  ['Object',[['m:fwd','Bring forward','Ctrl+]'],['m:bwd','Send backward','Ctrl+['],['m:front','Bring to front','Ctrl+Shift+]'],['m:back','Send to back','Ctrl+Shift+['],'-',['m:al:l','Align left',''],['m:al:ch','Align centres horizontally',''],['m:al:r','Align right',''],['m:al:t','Align top',''],['m:al:cv','Align centres vertically',''],['m:al:b','Align bottom',''],'-',['m:al:dh','Distribute horizontally',''],['m:al:dv','Distribute vertically',''],'-',['m:flipX','Flip horizontal','Shift+H'],['m:flipY','Flip vertical','Shift+V'],['m:lock','Lock / unlock','Ctrl+L']]],
- ['Tools',[['m:t:select','Selection tool','V'],['m:t:hand','Hand tool (pan)','H / Space'],'-',['m:t:text','Add text','T'],['m:t:rect','Rectangle','R'],['m:t:ellipse','Circle','E'],['m:t:line','Line','L'],['m:t:draw','Draw','B'],['m:t:crop','Crop','C']]],
+ ['Tools',[['m:t:select','Selection tool','V'],['m:t:hand','Hand tool (pan)','H / Space'],'-',['m:t:text','Add text','T'],['m:t:rect','Rectangle','R'],['m:t:ellipse','Circle','E'],['m:t:line','Line','L'],['m:t:draw','Draw','B'],['m:t:smart','Smart eraser','Shift+E'],['m:t:crop','Crop','C']]],
  ['View',[['m:zin','Zoom in','Ctrl++'],['m:zout','Zoom out','Ctrl+−'],['m:fit','Fit to screen','Ctrl+0'],['m:z100','Actual size 100%','Ctrl+1'],'-',['m:guides','Smart guides on/off','Ctrl+;'],['m:hints','Show/hide text outlines',''],['m:panel','Show/hide panel','Tab']]]];
 function buildMenus(){ const mb=$('#menubar'); mb.innerHTML=MENUS.map(([name,items],i)=>`<div><button class="mb" data-menu="${i}">${name}</button><div class="menu" hidden>${items.map(it=>it==='-'?'<div class="msep"></div>':
   (it[0].startsWith('a:')?`<button class="mi" data-a="${it[0].slice(2)}"><span>${it[1]}</span><kbd>${it[2]}</kbd></button>`:it[0]==='f:new'?`<button class="mi" data-a="newImg"><span>${it[1]}</span><kbd>${it[2]}</kbd></button>`:`<button class="mi" data-m="${it[0].slice(2)}"><span>${it[1]}</span><kbd>${it[2]}</kbd></button>`)).join('')}</div></div>`).join('');
@@ -1901,7 +2010,7 @@ function runMenu(id){ const [a,b]=id.split(':');
     case 'fwd':case 'bwd':case 'front':case 'back':case 'flipX':case 'flipY':case 'lock': if(!active()){toast('Select something first');break} act(a);break;
     case 'al':alignObjs(b);break;
     case 't': if(b==='select'){ setTool('select'); if(S.tab==='draw') setTab('smart'); } else if(b==='hand') setTool('hand'); else if(b==='text'){ setTool('select'); addText(TEXTP[0]); } else if(b==='rect'){ setTool('select'); addShape('rect'); }
-      else if(b==='ellipse'){ setTool('select'); addShape('circle'); } else if(b==='line'){ setTool('select'); addShape('line'); } else if(b==='draw'){ setTab('draw'); openSheet(); } else if(b==='crop'){ setTab('size'); openSheet(); startCrop(); } break;
+      else if(b==='ellipse'){ setTool('select'); addShape('circle'); } else if(b==='line'){ setTool('select'); addShape('line'); } else if(b==='draw'){ S.draw.mode='pen'; setTab('draw'); openSheet(); } else if(b==='smart'){ S.draw.mode='smart'; setTab('draw'); openSheet(); } else if(b==='crop'){ setTab('size'); openSheet(); startCrop(); } break;
     case 'zin':zoomBy(1.25);break; case 'zout':zoomBy(1/1.25);break; case 'fit':fitView();break; case 'z100':{ const r=visibleRect(); zoomAt(1,r.x+r.w/2,r.y+r.h/2); break; }
     case 'guides':S.guides=!S.guides;toast(S.guides?'Smart guides on':'Smart guides off');break; case 'hints':S.showHints=!S.showHints;canvas.requestRenderAll();renderPanel();break;
     case 'panel': S.sheet.open?closeSheet():openSheet(); break; } }
@@ -1932,8 +2041,8 @@ document.addEventListener('keydown',e=>{
     if(k==='w') id='close'; else if(k==='n'&&e.altKey) id='blank'; else if(k==='s') id='saveProj'; else if(k==='e') id=sh?'svg':'export'; else if(k==='c') id='copy'; else if(k==='x') id='cut'; else if(k==='v'){ if(S.clip&&S.clip.length){ id='paste'; } else return; }
     else if(k==='a') id='all'; else if(k==='g') id=sh?'ungroup':'group'; else if(e.key===']'||e.key==='}') id=sh?'front':'fwd'; else if(e.key==='['||e.key==='{') id=sh?'back':'bwd';
     else if(k==='l') id='lock'; else if(e.key==='='||e.key==='+') id='zin'; else if(e.key==='-'||e.key==='_') id='zout'; else if(e.key==='0') id='fit'; else if(e.key==='1') id='z100'; else if(e.key===';') id='guides'; }
-  else if(!e.altKey){ if(k==='v'&&!sh) id='t:select'; else if(k==='h'&&!sh) id='t:hand'; else if(k==='t') id='t:text'; else if(k==='r') id='t:rect'; else if(k==='e') id='t:ellipse'; else if(k==='l') id='t:line'; else if(k==='b') id='t:draw';
-    else if(k==='c'&&!S.crop) id='t:crop'; else if(sh&&k==='h') id='flipX'; else if(sh&&k==='v') id='flipY'; else if(e.key==='Tab'){ id='panel'; } }
+  else if(!e.altKey){ if(k==='v'&&!sh) id='t:select'; else if(k==='h'&&!sh) id='t:hand'; else if(k==='t') id='t:text'; else if(k==='r') id='t:rect'; else if(k==='e'&&!sh) id='t:ellipse'; else if(k==='l') id='t:line'; else if(k==='b') id='t:draw';
+    else if(k==='c'&&!S.crop) id='t:crop'; else if(sh&&k==='e') id='t:smart'; else if(sh&&k==='h') id='flipX'; else if(sh&&k==='v') id='flipY'; else if(e.key==='Tab'){ id='panel'; } }
   if(id){ e.preventDefault(); e.stopImmediatePropagation(); runMenu(id); } },true);
 document.addEventListener('keyup',e=>{ if(e.key===' '&&S.spacePan){ S.spacePan=false; setTool('select'); } });
 /* photos sent through the chat (stored with the artifact) and pasted images */
