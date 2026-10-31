@@ -4,7 +4,7 @@
 
 <p align="center">ছবির ভেতরের লেখায় চাপ দিন, আর সরাসরি বদলে ফেলুন।<br>বাংলা ও ইংরেজি লেখা পড়তে পারে, ইন্টারনেট ছাড়াই চলে।</p>
 
-<p align="center"><a href="https://github.com/hemelsid/Rong-Studio/raw/main/releases/RongStudio-v1.9.apk"><b>⬇ ফোনের অ্যাপ (v1.9)</b></a> &nbsp;·&nbsp; <a href="https://github.com/hemelsid/Rong-Studio/releases/download/desktop-v1.9.0/RongStudio-Setup-1.9.0.exe"><b>⬇ কম্পিউটারের অ্যাপ (Windows)</b></a></p>
+<p align="center"><a href="https://github.com/hemelsid/Rong-Studio/raw/main/releases/RongStudio-v2.0.apk"><b>⬇ ফোনের অ্যাপ (v2.0)</b></a> &nbsp;·&nbsp; <a href="https://github.com/hemelsid/Rong-Studio/releases/download/desktop-v2.0.0/RongStudio-Setup-2.0.0.exe"><b>⬇ কম্পিউটারের অ্যাপ (Windows)</b></a></p>
 
 <p align="center">
   <img src="docs/smart-edit.png" width="240" alt="স্মার্ট এডিট: ছবির লেখা আলাদা করা">
@@ -19,7 +19,7 @@
 - **ছবির লেখা এডিট:** ছবি দিলে অ্যাপ প্রতিটা শব্দ খুঁজে দাগ দেয়। যে শব্দে চাপ দেবেন শুধু সেটা মুছে একই জায়গায় এডিটযোগ্য লেখা বসে। অ্যাপ সব ফন্টের সাথে আকার মিলিয়ে সবচেয়ে কাছের ফন্ট নিজেই বেছে নেয়। লেখার মাপ, অক্ষরের ফাঁক, গ্রেডিয়েন্ট, আউটলাইন, ছায়া, আভা আর নরম কিনারাও মিলিয়ে বসায়। তারপর শব্দ, ফন্ট, রঙ, আকার, আউটলাইন বদলানো যায়।
 - **লোগো ও ডিজাইন আলাদা করা:** “নিজে বাছাই করুন” দিয়ে কোনো অংশ ঘিরে দিলে সেটা আলাদা স্তর হয়ে যায়। তখন সরানো, বড়-ছোট করা আর রঙ বদলানো যায়। কোনো অংশ মুছেও ফেলা যায়।
 - **নতুন লেখা ও ডিজাইন:** তৈরি স্টাইলের লেখা, আকার, ইমোজি আর দ্রুত লেআউট আছে, যেমন ক্যাপশন পটি, ফ্রেম, ছাড়ের ব্যাজ, উদ্ধৃতি কার্ড।
-- **১৭টি ফন্ট:** এর মধ্যে ৮টি বাংলা (Hind Siliguri, Anek Bangla, Baloo Da 2, Tiro Bangla, Galada…)। নিজের .ttf বা .otf ফন্টও যোগ করা যায়।
+- **১৩৬টি ফন্ট (কম্পিউটারে আরও কয়েকশো):** এর মধ্যে ৮টি বাংলা (Hind Siliguri, Anek Bangla, Baloo Da 2, Tiro Bangla, Galada…)। নিজের .ttf বা .otf ফন্টও যোগ করা যায়।
 - **ফিল্টার:** ৮টি প্রিসেট আছে। উজ্জ্বলতা, কনট্রাস্ট, উষ্ণতা, ঝাপসা ইত্যাদি নিজে ঠিক করা যায়।
 - **আঁকা, ক্রপ, ঘোরানো, মাপ বদল:** ইনস্টাগ্রাম, স্টোরি, ফেসবুক কভার, ইউটিউব থাম্বনেইলের মাপ তৈরি আছে।
 - **লেয়ার, আনডু-রিডু।**
@@ -41,8 +41,8 @@
 
 | ফাইল | কী |
 |---|---|
-| [RongStudio-Setup-1.9.0.exe](https://github.com/hemelsid/Rong-Studio/releases/download/desktop-v1.9.0/RongStudio-Setup-1.9.0.exe) | ইনস্টলার: কম্পিউটারে ইনস্টল হয়, ডেস্কটপ আর স্টার্ট মেনুতে আইকন বসে |
-| [RongStudio-Portable-1.9.0.exe](https://github.com/hemelsid/Rong-Studio/releases/download/desktop-v1.9.0/RongStudio-Portable-1.9.0.exe) | পোর্টেবল: ইনস্টল ছাড়াই চলে, পেনড্রাইভেও রাখা যায় |
+| [RongStudio-Setup-2.0.0.exe](https://github.com/hemelsid/Rong-Studio/releases/download/desktop-v2.0.0/RongStudio-Setup-2.0.0.exe) | ইনস্টলার: কম্পিউটারে ইনস্টল হয়, ডেস্কটপ আর স্টার্ট মেনুতে আইকন বসে |
+| [RongStudio-Portable-2.0.0.exe](https://github.com/hemelsid/Rong-Studio/releases/download/desktop-v2.0.0/RongStudio-Portable-2.0.0.exe) | পোর্টেবল: ইনস্টল ছাড়াই চলে, পেনড্রাইভেও রাখা যায় |
 
 ফোনের অ্যাপের সব কিছু আছে, ইন্টারনেট ছাড়াই চলে। সাথে কম্পিউটারের জন্য বাড়তি সুবিধা:
 
@@ -64,7 +64,8 @@ Windows SmartScreen সতর্ক করলে **More info → Run anyway** �
 
 | ভার্সন | ডাউনলোড | যা বদলেছে |
 |---|---|---|
-| **v1.9** (সর্বশেষ) | [APK, ৯ MB](https://github.com/hemelsid/Rong-Studio/raw/main/releases/RongStudio-v1.9.apk) | অ্যাপের সব লেখা ইংরেজিতে, নাম “Rong Studio”। |
+| **v2.0** (সর্বশেষ) | [APK, ১৩ MB](https://github.com/hemelsid/Rong-Studio/raw/main/releases/RongStudio-v2.0.apk) | শুরুর পাতা আর ছবি বন্ধ করা, ক্লিক করলে শুধু সেই লেখা বা লোগো এডিট, লোগো বদলানো, ১৩৬টা ফন্ট আর কম্পিউটারের সব ফন্ট, আরও ভালো ফন্ট চেনা, নতুন চেহারা। |
+| v1.9 | [APK, ৯ MB](https://github.com/hemelsid/Rong-Studio/raw/main/releases/RongStudio-v1.9.apk) | অ্যাপের সব লেখা ইংরেজিতে, নাম “Rong Studio”। |
 | v1.8 | [APK, ৯ MB](https://github.com/hemelsid/Rong-Studio/raw/main/releases/RongStudio-v1.8.apk) | গ্রুপ, একসাথে মেলানো, স্মার্ট গাইড, SVG সেভ। কম্পিউটার সংস্করণ এল। |
 | v1.7 | [APK, ৯ MB](https://github.com/hemelsid/Rong-Studio/raw/main/releases/RongStudio-v1.7.apk) | আসল লেখার মাপ, অক্ষরের ফাঁক, গ্রেডিয়েন্ট, আউটলাইন, ছায়া, আভা আর নরম কিনারা নিজে থেকে মেলায়। গ্রেডিয়েন্ট, ছায়া ও আভা, নরম কিনারা আর রঙ তোলার ড্রপার কন্ট্রোল। |
 | v1.6 | [APK, ৯ MB](https://github.com/hemelsid/Rong-Studio/raw/main/releases/RongStudio-v1.6.apk) | শব্দে চাপ দিলে শুধু সেই শব্দ এডিট হয়, ফন্ট নিজে থেকে মিলিয়ে বসে, সেরা মিলের ফন্ট বোতাম হিসেবে দেখায়। ভুল পড়া লেখা নিজে টাইপ করে বদলানো যায়। |

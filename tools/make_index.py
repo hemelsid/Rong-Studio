@@ -14,8 +14,8 @@ src, dst = sys.argv[1], sys.argv[2]
 s = open(src, encoding="utf-8").read()
 
 s = re.sub(r'<link rel="preconnect"[^>]*>\n?', "", s)
-s = re.sub(r'<link rel="stylesheet" href="https://fonts.googleapis.com[^>]*>',
-           '<link rel="stylesheet" href="fonts.css">', s)
+s = re.sub(r'<link rel="stylesheet" href="https://fonts.googleapis.com[^>]*>\n?', '', s)
+s = s.replace('<style>', '<link rel="stylesheet" href="fonts.css">\n<style>', 1)
 s = s.replace(
     '<script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.0/fabric.min.js"></script>',
     '<script src="fabric.min.js"></script>\n<script src="tess/tesseract.min.js"></script>')

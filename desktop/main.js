@@ -1,5 +1,5 @@
 // Rong Studio for Windows / Mac / Linux: the same editor as the phone app, in its own window, fully offline.
-const { app, BrowserWindow, protocol, net, ipcMain, dialog, shell, Menu } = require('electron');
+const { app, BrowserWindow, protocol, net, ipcMain, dialog, shell, Menu, session } = require('electron');
 const path = require('path');
 const fs = require('fs');
 const { pathToFileURL } = require('url');
@@ -38,6 +38,9 @@ app.whenReady().then(() => {
     return net.fetch(pathToFileURL(full).toString());
   });
 
+  // let the editor list the fonts installed on this computer, so it can match text against them
+  session.defaultSession.setPermissionCheckHandler((_wc, perm) => perm === 'local-fonts' || perm === 'clipboard-sanitized-write');
+  session.defaultSession.setPermissionRequestHandler((_wc, perm, cb) => cb(perm === 'local-fonts' || perm === 'clipboard-sanitized-write'));
   Menu.setApplicationMenu(null); // the editor has its own menu bar
   win = new BrowserWindow({
     width: 1440, height: 900, minWidth: 900, minHeight: 600,
